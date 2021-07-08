@@ -31,19 +31,43 @@ static size_t data_capacity = 0;
 static size_t data_size = 0;
 
 
+// Data type to handle index ranges.
+
+typedef struct
+{
+  size_t start;
+  size_t end;
+} idx_t;
+
+
 /**
  * Check for valid index range.
  *
- * @param[in] idx_start Start index (1-based) of MPFR variables.
- * @param[in] idx_end   End   index (1-based) of MPFR variables.
+ * @param[in] idx Pointer to index (1-based, idx_t) of MPFR variables.
  *
- * @returns success of MPFR variables creation.
+ * @returns `0` if `idx` is invalid, otherwise `idx` is valid.
  */
 
 int
-is_valid_index_range (size_t idx_start, size_t idx_end)
+is_valid (idx_t *idx)
 {
-  return ((1 <= idx_start) && (idx_start <= idx_end) && (idx_end <= data_size));
+  return ((1 <= (*idx).start) && ((*idx).start <= (*idx).end)
+          && ((*idx).end <= data_size));
+}
+
+
+/**
+ * Get length of index range.
+ *
+ * @param[in] idx Pointer to index (1-based, idx_t) of MPFR variables.
+ *
+ * @returns `0` if `idx` is invalid, otherwise `idx` is valid.
+ */
+
+inline size_t
+length (idx_t *idx)
+{
+  return ((*idx).end - (*idx).start + 1);
 }
 
 
@@ -70,14 +94,15 @@ mpfr_tidy_up (void)
  *
  * @param[in] count Number of MPFR variables to create.
  * @param[in] prec MPFR precision of the new MPFR variables.
- * @param[out] idx_start Start index (1-based) of the new MPFR variables.
- * @param[out] idx_end   End   index (1-based) of the new MPFR variables.
+ * @param[out] idx If function returns `1`, pointer to index (1-based, idx_t)
+ *                 of MPFR variables, otherwise the value of `idx` remains
+ *                 unchanged.
  *
  * @returns success of MPFR variables creation.
  */
 
 int
-mpfr_create (size_t count, mpfr_prec_t prec, size_t* idx_start, size_t* idx_end)
+mpfr_create (size_t count, mpfr_prec_t prec, idx_t *idx)
 {
   DBG_PRINTF ("%s\n", "Call");
   // Check for trivial case, failure as indices do not make sense.
@@ -111,13 +136,13 @@ mpfr_create (size_t count, mpfr_prec_t prec, size_t* idx_start, size_t* idx_end)
   for (size_t i = 0; i < count; i++)
     mpfr_init2 (&data[data_size + i], prec);
 
-  *idx_start = data_size + 1;
+  (*idx).start = data_size + 1;
   data_size += count;
-  *idx_end = data_size;
-  DBG_PRINTF ("New MPFR variable(s) '%d:%d' (prec = %d)\n", *idx_start,
-              *idx_end, (int) prec);
+  (*idx).end = data_size;
+  DBG_PRINTF ("New MPFR variable(s) [%d:%d] (prec = %d)\n", (*idx).start,
+              (*idx).end, (int) prec);
 
-  return is_valid_index_range (*idx_start, *idx_end);
+  return is_valid (idx);
 }
 
 
@@ -240,6 +265,37 @@ extract_ui_vector (int idx, int nrhs, const mxArray *prhs[], uint64_t **ui,
         return 1;
       mxFree (*ui);  // In case of an error free space.
       *ui = NULL;
+    }
+  DBG_PRINTF ("%s\n", "Failed.");
+  return 0;
+}
+
+
+/**
+ * Safely read an index (idx_t) structure.
+ *
+ * @param[in] idx MEX input position index (0 is first).
+ * @param[in] nrhs Number of right-hand sides.
+ * @param[in] mxArray  MEX input array.
+ * @param[out] idx_vec If function returns `1`, `idx_vec` contains a valid
+ *                     index (idx_t) structure extracted from the MEX input,
+ *                     otherwise `idx_vec` remains unchanged.
+ *
+ * @returns success of extraction.
+ */
+
+int
+extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t* idx_vec)
+{
+  uint64_t *ui = NULL;
+  if (extract_ui_vector (idx, nrhs, prhs, &ui, 2))
+    {
+      (*idx_vec).start = ui[0];
+      (*idx_vec).end   = ui[1];
+      mxFree (ui);
+      if (is_valid (idx_vec))
+        return 1;
+      DBG_PRINTF ("Invalid index [%d:%d].\n", (*idx_vec).start, (*idx_vec).end);
     }
   DBG_PRINTF ("%s\n", "Failed.");
   return 0;
@@ -542,9 +598,8 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
 
-          size_t idx_start = 0;
-          size_t idx_end = 0;
-          if (! mpfr_create (count, prec, &idx_start, &idx_end))
+          idx_t idx;
+          if (! mpfr_create (count, prec, &idx))
             {
               MEX_FCN_ERR ("%s\n", "Memory allocation failed.");
               break;
@@ -552,8 +607,8 @@ mexFunction (int nlhs, mxArray *plhs[],
           // Return start and end indices (1-based).
           plhs[0] = mxCreateNumericMatrix (2, 1, mxDOUBLE_CLASS, mxREAL);
           double* ptr = mxGetPr (plhs[0]);
-          ptr[0] = (double) idx_start;
-          ptr[1] = (double) idx_end;
+          ptr[0] = (double) idx.start;
+          ptr[1] = (double) idx.end;
         }
 
       /**
@@ -596,19 +651,14 @@ mexFunction (int nlhs, mxArray *plhs[],
               MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
               break;
             }
-          if (! extract_ui_vector (1, nrhs, prhs, &idx_vec, 2))
+          idx_t idx;
+          if (! extract_idx (1, nrhs, prhs, &idx))
             {
               MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
               break;
             }
-          if (! is_valid_index_range (idx_vec[0], idx_vec[1]))
-            {
-              MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
-              break;
-            }
-          size_t len = idx_vec[1] - idx_vec[0] + 1;
           if (! mxIsDouble (prhs[2])
-              || ((mxGetM (prhs[2]) * mxGetN (prhs[2])) != len))
+              || ((mxGetM (prhs[2]) * mxGetN (prhs[2])) != length (&idx)))
             {
               MEX_FCN_ERR ("%s: Invalid number of double values.\n", cmd_buf);
               break;
@@ -621,9 +671,9 @@ mexFunction (int nlhs, mxArray *plhs[],
                           "-1 and 3.\n", cmd_buf);
               break;
             }
-          DBG_PRINTF ("Set values to '%d:%d'\n", idx_vec[0], idx_vec[1]);
-          for (size_t i = 0; i < len; i++)
-            mpfr_set_d (&data[(idx_vec[0] - 1) + i], op_vec[i], rnd);
+          DBG_PRINTF ("Set values to '%d:%d'\n", idx.start, idx.end);
+          for (size_t i = 0; i < length (&idx); i++)
+            mpfr_set_d (&data[(idx.start - 1) + i], op_vec[i], rnd);
         }
 
       /**
@@ -649,12 +699,8 @@ mexFunction (int nlhs, mxArray *plhs[],
               MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
               break;
             }
-          if (! extract_ui_vector (1, nrhs, prhs, &idx_vec, 2))
-            {
-              MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
-              break;
-            }
-          if (! is_valid_index_range (idx_vec[0], idx_vec[1]))
+          idx_t idx;
+          if (! extract_idx (1, nrhs, prhs, &idx))
             {
               MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
               break;
@@ -666,11 +712,11 @@ mexFunction (int nlhs, mxArray *plhs[],
                           "-1 and 3.\n", cmd_buf);
               break;
             }
-          size_t len = idx_vec[1] - idx_vec[0] + 1;
-          plhs[0] = mxCreateNumericMatrix (len, 1, mxDOUBLE_CLASS, mxREAL);
+          plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
+                                           mxREAL);
           double* op_vec = mxGetPr (plhs[0]);
-          for (size_t i = 0; i < len; i++)
-            op_vec[i] = mpfr_get_d (&data[(idx_vec[0] - 1) + i], rnd);
+          for (size_t i = 0; i < length (&idx); i++)
+            op_vec[i] = mpfr_get_d (&data[(idx.start - 1) + i], rnd);
         }
       else
         MEX_FCN_ERR ("Unknown command '%s'\n", cmd_buf);
