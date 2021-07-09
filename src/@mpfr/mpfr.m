@@ -109,25 +109,14 @@ classdef mpfr
       fprintf (1, '\n');
     end
 
-    function add (rop, op1, op2, rnd)
-      % Set rop to op1 + op2 rounded in the direction rnd.  The IEEE 754
-      % rules are used, in particular for signed zeros.  But for types having
-      % no signed zeros, 0 is considered unsigned (i.e., (+0) + 0 = (+0) and
-      % (-0) + 0 = (-0)).  The mpfr_add_d function assumes that the radix of
-      % the double type is a power of 2, with a precision at most that
-      % declared by the C implementation (macro IEEE_DBL_MANT_DIG, and if not
-      % defined 53 bits).
-      %keyboard ();
-      mpfr_ ("add", rop.idx, op1.idx, op2.idx, rnd);
-    end
-
     function c = plus (a, b)
       % Binary addition `a + b`
       if (isequal (a.dims, b.dims))
         %TODO: in-place c==a or c==b
         prec = mpfr.get_default_prec ();  %TODO: max prec of a or b
         cc = mpfr (zeros (a.dims), prec);
-        add (cc, a, b, mpfr.get_default_rounding_mode ());
+        keyboard ();
+        mpfr_ ("add", cc, a, b, mpfr.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
       else
         error ('mpfr:plus', 'Dimensions of a and b do not match.');

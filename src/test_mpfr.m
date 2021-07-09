@@ -1,12 +1,12 @@
 function test_mpfr ()
 % Self-test for @mpfr class and mpfr_ low-level interface.
 
-  clear -f mpfr_
+  clear -f mpfr_interface
   clear -c
   if (exist('OCTAVE_VERSION', 'builtin') == 5)
-    mex --std=c99 -Wall -Wextra mpfr_.c -lmpfr -lgmp
+    mex --std=c99 -Wall -Wextra mpfr_interface.c -lmpfr -lgmp
   else
-    mex CFLAGS='$CFLAGS --std=c99 -Wall -Wextra' mpfr_.c -lmpfr -lgmp
+    mex CFLAGS='$CFLAGS --std=c99 -Wall -Wextra' mpfr_interface.c -lmpfr -lgmp
   end
 
   % Good input
