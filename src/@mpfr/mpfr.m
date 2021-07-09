@@ -74,7 +74,7 @@ classdef mpfr
       end
 
       if (isnumeric (x))
-        obj.idx = mpfr_ ('init2', prod (obj.dims), prec)';
+        obj.idx = mpfr_ ('create', prod (obj.dims), prec)';
         mpfr_ ('set_d', obj.idx, x(:), rnd);
       elseif (ischar (x))
         error ('mpfr:mpfr', 'TODO');
@@ -115,7 +115,6 @@ classdef mpfr
         %TODO: in-place c==a or c==b
         prec = mpfr.get_default_prec ();  %TODO: max prec of a or b
         cc = mpfr (zeros (a.dims), prec);
-        keyboard ();
         mpfr_ ("add", cc, a, b, mpfr.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
       else
