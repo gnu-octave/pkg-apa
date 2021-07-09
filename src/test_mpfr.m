@@ -100,4 +100,6 @@ function test_mpfr ()
   end
   mpfr_ ("set_verbose", 1);
 
+  % Arithmetic operations
+  assert (isequal (double (mpfr (1:3) + mpfr (1:3)), (1:3) .* 2));
 end

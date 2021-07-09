@@ -545,8 +545,8 @@ mexFunction (int nlhs, mxArray *plhs[],
             mpfr_set_default_prec (prec);
           else
             MEX_FCN_ERR ("%s: Precision must be a numeric scalar between "
-                        "%ld and %ld.\n", cmd_buf, MPFR_PREC_MIN,
-                        MPFR_PREC_MAX);
+                         "%ld and %ld.\n", cmd_buf, MPFR_PREC_MIN,
+                         MPFR_PREC_MAX);
         }
 
       /**
@@ -583,7 +583,7 @@ mexFunction (int nlhs, mxArray *plhs[],
             mpfr_set_default_rounding_mode (rnd);
           else
             MEX_FCN_ERR ("%s: Rounding must be a numeric scalar between "
-                        "-1 and 3.\n", cmd_buf);
+                         "-1 and 3.\n", cmd_buf);
         }
 
       /**
@@ -613,14 +613,14 @@ mexFunction (int nlhs, mxArray *plhs[],
           if (! extract_ui (1, nrhs, prhs, &count))
             {
               MEX_FCN_ERR ("%s: Count must be a positive numeric scalar.\n",
-                          cmd_buf);
+                           cmd_buf);
               break;
             }
           mpfr_prec_t prec = mpfr_get_default_prec ();
           if (! extract_prec (2, nrhs, prhs, &prec))
             {
               MEX_FCN_ERR ("%s: Precision must be a numeric scalar between "
-                          "%ld and %ld.\n", cmd_buf, MPFR_PREC_MIN,
+                           "%ld and %ld.\n", cmd_buf, MPFR_PREC_MIN,
                           MPFR_PREC_MAX);
               break;
             }
@@ -695,7 +695,7 @@ mexFunction (int nlhs, mxArray *plhs[],
           if (! extract_rounding_mode (3, nrhs, prhs, &rnd))
             {
               MEX_FCN_ERR ("%s: Rounding must be a numeric scalar between "
-                          "-1 and 3.\n", cmd_buf);
+                           "-1 and 3.\n", cmd_buf);
               break;
             }
           DBG_PRINTF ("Set values to '%d:%d'\n", idx.start, idx.end);
@@ -736,7 +736,7 @@ mexFunction (int nlhs, mxArray *plhs[],
           if (! extract_rounding_mode (2, nrhs, prhs, &rnd))
             {
               MEX_FCN_ERR ("%s: Rounding must be a numeric scalar between "
-                          "-1 and 3.\n", cmd_buf);
+                           "-1 and 3.\n", cmd_buf);
               break;
             }
           plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
@@ -744,6 +744,59 @@ mexFunction (int nlhs, mxArray *plhs[],
           double* op_vec = mxGetPr (plhs[0]);
           for (size_t i = 0; i < length (&idx); i++)
             op_vec[i] = mpfr_get_d (&data[(idx.start - 1) + i], rnd);
+        }
+
+      /**
+       * int mpfr_add (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       *
+       * Set rop to op1 + op2 rounded in the direction rnd.  The IEEE 754
+       * rules are used, in particular for signed zeros.  But for types having
+       * no signed zeros, 0 is considered unsigned (i.e., (+0) + 0 = (+0) and
+       * (-0) + 0 = (-0)).  The mpfr_add_d function assumes that the radix of
+       * the double type is a power of 2, with a precision at most that
+       * declared by the C implementation (macro IEEE_DBL_MANT_DIG, and if not
+       * defined 53 bits).
+       */
+      else if (strcmp (cmd_buf, "add") == 0)
+        {
+          if (nrhs != 5)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          idx_t rop;
+          if (! extract_idx (1, nrhs, prhs, &rop))
+            {
+              MEX_FCN_ERR ("%s:rop Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+          idx_t op1;
+          if (! extract_idx (2, nrhs, prhs, &op1)
+              || (length (&rop) != length (&op1)))
+            {
+              MEX_FCN_ERR ("%s:op1 Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+          idx_t op2;
+          if (! extract_idx (3, nrhs, prhs, &op2)
+              || (length (&rop) != length (&op2)))
+            {
+              MEX_FCN_ERR ("%s:op2 Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+          mpfr_rnd_t rnd = mpfr_get_default_rounding_mode ();
+          if (! extract_rounding_mode (4, nrhs, prhs, &rnd))
+            {
+              MEX_FCN_ERR ("%s: Rounding must be a numeric scalar between "
+                           "-1 and 3.\n", cmd_buf);
+              break;
+            }
+          DBG_PRINTF ("Add '%d:%d' = '%d:%d' + '%d:%d' using %d\n",
+                      rop.start, rop.end, op1.start, op1.end,
+                      op2.start, op2.end, (int) rnd);
+          for (size_t i = 0; i < length (&rop); i++)
+            mpfr_add (&data[(rop.start - 1) + i], &data[(op1.start - 1) + i],
+                      &data[(op2.start - 1) + i], rnd);
         }
       else
         MEX_FCN_ERR ("Unknown command '%s'\n", cmd_buf);
