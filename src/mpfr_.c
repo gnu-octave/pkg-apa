@@ -12,11 +12,17 @@
         do { if (DEBUG) mexPrintf ("DBG %s:%d:%s():" fmt, __FILE__, \
                                    __LINE__, __func__, __VA_ARGS__); } while (0)
 
+// State deciding about the verbosity level
+//   0 print no MEX_FCN_ERR to stdout
+//   1 print    MEX_FCN_ERR to stdout
+static int VERBOSE = 1;
+
 // Macro to print a message to stdout and set mexFunction error state variable.
 // IMPORTANT: Only call within mexFunction!!
 #define MEX_FCN_ERR(fmt, ...) \
-        do { mexPrintf ("%s:%d:%s():" fmt, __FILE__, __LINE__, __func__, \
-                        __VA_ARGS__); throw_error = 1; } while (0)
+        do { if (VERBOSE) mexPrintf ("%s:%d:%s():" fmt, __FILE__, __LINE__, \
+                                     __func__, __VA_ARGS__); throw_error = 1; \
+           } while (0)
 
 // MPFR memory management
 // ======================
@@ -451,11 +457,11 @@ mexFunction (int nlhs, mxArray *plhs[],
   do
     {
       /**
-       * size_t data_capacity (void)
+       * size_t get_data_capacity (void)
        *
        * MPFR memory management helper function.
        */
-      if (strcmp (cmd_buf, "data_capacity") == 0)
+      if (strcmp (cmd_buf, "get_data_capacity") == 0)
         {
           if (nrhs != 1)
             {
@@ -466,11 +472,11 @@ mexFunction (int nlhs, mxArray *plhs[],
         }
 
       /**
-       * size_t data_size (void)
+       * size_t get_data_size (void)
        *
        * MPFR memory management helper function.
        */
-      else if (strcmp (cmd_buf, "data_size") == 0)
+      else if (strcmp (cmd_buf, "get_data_size") == 0)
         {
           if (nrhs != 1)
             {
@@ -478,6 +484,27 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
           plhs[0] = mxCreateDoubleScalar ((double) data_size);
+        }
+
+      /**
+       * void set_verbose (int level)
+       *
+       *   0 print no MEX_FCN_ERR to stdout
+       *   1 print    MEX_FCN_ERR to stdout
+       */
+      else if (strcmp (cmd_buf, "set_verbose") == 0)
+        {
+          if (nrhs != 2)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          int64_t level = 1;
+          if (extract_si (1, nrhs, prhs, &level)
+              && ((level == 0) || (level == 1)))
+            VERBOSE = (int) level;
+          else
+            MEX_FCN_ERR ("%s: VERBOSE must be 0 or 1.\n", cmd_buf);
         }
 
       /**
