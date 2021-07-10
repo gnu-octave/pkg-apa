@@ -104,7 +104,6 @@ mpfr_tidy_up (void)
  * Constructor for new MPFR variables.
  *
  * @param[in] count Number of MPFR variables to create.
- * @param[in] prec MPFR precision of the new MPFR variables.
  * @param[out] idx If function returns `1`, pointer to index (1-based, idx_t)
  *                 of MPFR variables, otherwise the value of `idx` remains
  *                 unchanged.
@@ -113,9 +112,8 @@ mpfr_tidy_up (void)
  */
 
 int
-mpfr_create (size_t count, mpfr_prec_t prec, idx_t *idx)
+mex_mpfr_allocate (size_t count, idx_t *idx)
 {
-  DBG_PRINTF ("%s\n", "Call");
   // Check for trivial case, failure as indices do not make sense.
   if (count == 0)
     return 0;
@@ -128,7 +126,7 @@ mpfr_create (size_t count, mpfr_prec_t prec, idx_t *idx)
       while ((data_size + count) > data_new_capacity)
         data_new_capacity += DATA_CHUNK_SIZE;
 
-      DBG_PRINTF ("Increase capacity to '%d'\n", data_new_capacity);
+      DBG_PRINTF ("Increase capacity to '%d'.\n", data_new_capacity);
       // Reallocate memory.
       if (data == NULL)
         {
@@ -145,13 +143,13 @@ mpfr_create (size_t count, mpfr_prec_t prec, idx_t *idx)
 
   // Initialize new MPFR variables and increase number of elements in `data`.
   for (size_t i = 0; i < count; i++)
-    mpfr_init2 (&data[data_size + i], prec);
+    mpfr_init (&data[data_size + i]);
 
   (*idx).start = data_size + 1;
   data_size += count;
   (*idx).end = data_size;
-  DBG_PRINTF ("New MPFR variable(s) [%d:%d] (prec = %d)\n", (*idx).start,
-              (*idx).end, (int) prec);
+  DBG_PRINTF ("New MPFR variables [%d:%d] allocated.\n",
+              (*idx).start, (*idx).end);
 
   return is_valid (idx);
 }

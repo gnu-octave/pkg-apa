@@ -56,11 +56,11 @@ function test_mpfr ()
   assert (isequal (obj.idx, [2, N^2 + 1]));
   assert (mpfr.get_data_size () == N^2 + 1);
   assert (mpfr.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
-  % Bad input INTERNAL function "init2"
+  % Bad input non-MPFR function "allocate"
   mpfr_ ("set_verbose", 0);
   for i = {1/2, inf, -42, -1, -2, nan, 'c', eye(3)}
     try
-      mpfr_ ('init2', i{1}, 75);
+      mpfr_ ('allocate', i{1});
       error ('mp:test:missed', 'Should never be reached');
     catch e
       assert (strcmp (e.identifier, 'mp:mexFunction'));
@@ -101,5 +101,15 @@ function test_mpfr ()
   mpfr_ ("set_verbose", 1);
 
   % Arithmetic operations
+  % =====================
+  
+  % plus(a, b)
   assert (isequal (double (mpfr (1:3) + mpfr (1:3)), (1:3) .* 2));
+  assert (isequal (double (mpfr (1:3) + mpfr (1)  ), (1:3) + 1));
+  assert (isequal (double (mpfr (1)   + mpfr (1:3)), (1:3) + 1));
+
+  assert (isequal (double (mpfr (1:3) + (1:3)), (1:3) .* 2));
+  assert (isequal (double ((1:3) + mpfr (1:3)), (1:3) .* 2));
+  assert (isequal (double (mpfr (1:3) + 1), (1:3) + 1));
+  assert (isequal (double (1 + mpfr (1:3)), (1:3) + 1));
 end

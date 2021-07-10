@@ -26,7 +26,7 @@ mexFunction (int nlhs, mxArray *plhs[],
 
   // Index vector for MPFR variables.
   size_t* idx_vec = NULL;
-  DBG_PRINTF ("Command: '%s'\n", cmd_buf);
+  DBG_PRINTF ("Command: [%d] = %s(%d)\n", nlhs, cmd_buf, nrhs);
   do
     {
       /*
@@ -88,19 +88,17 @@ mexFunction (int nlhs, mxArray *plhs[],
         }
 
       /**
-       * idx_t mpfr_create (size_t count, mpfr_prec_t prec)
+       * idx_t mex_mpfr_allocate (size_t count)
        *
-       * Where `count` is the number of MPFR variables to create.
+       * Allocate memory for `count` new MPFR variables and initialize them to
+       * default precision.
        *
-       * For all created MPFR variables the precision is set to be exactly
-       * prec bits and its values are set to NaN.
-       *
-       * Returned is the start and end index (1-based) of the internally created MPFR
-       * variables.
+       * Returns the start and end index (1-based) of the internally newly
+       * created MPFR variables.
        */
-      else if (strcmp (cmd_buf, "create") == 0)
+      else if (strcmp (cmd_buf, "allocate") == 0)
         {
-          if (nrhs != 3)
+          if (nrhs != 2)
             {
               MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
               break;
@@ -112,17 +110,10 @@ mexFunction (int nlhs, mxArray *plhs[],
                            cmd_buf);
               break;
             }
-          mpfr_prec_t prec = mpfr_get_default_prec ();
-          if (! extract_prec (2, nrhs, prhs, &prec))
-            {
-              MEX_FCN_ERR ("%s: Precision must be a numeric scalar between "
-                           "%ld and %ld.\n", cmd_buf, MPFR_PREC_MIN,
-                          MPFR_PREC_MAX);
-              break;
-            }
 
+          DBG_PRINTF ("allocate '%d' new MPFR variables\n", count);
           idx_t idx;
-          if (! mpfr_create (count, prec, &idx))
+          if (! mex_mpfr_allocate (count, &idx))
             {
               MEX_FCN_ERR ("%s\n", "Memory allocation failed.");
               break;
@@ -222,6 +213,49 @@ mexFunction (int nlhs, mxArray *plhs[],
         }
 
       /**
+       * mpfr_prec_t mpfr_get_prec (mpfr_t x)
+       *
+       * Return the precision of x, i.e., the number of bits used to store its
+       * significand.
+       */
+      else if (strcmp (cmd_buf, "get_prec") == 0)
+        {
+          if (nrhs != 2)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          idx_t idx;
+          if (! extract_idx (1, nrhs, prhs, &idx))
+            {
+              MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+
+          DBG_PRINTF ("get_prec [%d:%d]\n", idx.start, idx.end);
+          plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
+                                           mxREAL);
+          double* plhs_0_pr = mxGetPr (plhs[0]);
+          for (size_t i = 0; i < length (&idx); i++)
+            plhs_0_pr[i] = (double) mpfr_get_prec (&data[(idx.start - 1) + i]);
+        }
+
+      /**
+       * void mpfr_set_prec (mpfr_t x, mpfr_prec_t prec)
+       *
+       * Set the precision of x to be exactly prec bits, and set its value to
+       * NaN.  The previous value stored in x is lost.  It is equivalent to a
+       * call to mpfr_clear(x) followed by a call to mpfr_init2(x, prec), but
+       * more efficient as no allocation is done in case the current allocated
+       * space for the significand of x is enough.  The precision prec can be
+       * any integer between MPFR_PREC_MIN and MPFR_PREC_MAX.  In case you
+       * want to keep the previous value stored in x, use mpfr_prec_round
+       * instead.
+       *
+       * Warning! You must not use this function if x was initialized with
+       * MPFR_DECL_INIT or with mpfr_custom_init_set (see Custom Interface).
+       *
+       *
        * void mpfr_init2 (mpfr_t x, mpfr_prec_t prec)
        *
        * Initialize x, set its precision to be exactly prec bits and its value
@@ -237,8 +271,11 @@ mexFunction (int nlhs, mxArray *plhs[],
        * reallocations. The precision prec must be an integer between
        * MPFR_PREC_MIN and MPFR_PREC_MAX (otherwise the behavior is undefined).
        */
-      else if (strcmp (cmd_buf, "init2") == 0)
+      else if ((strcmp (cmd_buf, "set_prec") == 0)
+               || (strcmp (cmd_buf, "init2") == 0))
         {
+          // Note combined, as due to this MEX interface, there are no
+          // uninitialized MPFR variables.
           if (nrhs != 3)
             {
               MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
@@ -259,10 +296,55 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
 
-          DBG_PRINTF ("init2 '%d:%d' (prec = %d)\n", idx.start, idx.end,
-                      (int) prec);
+          DBG_PRINTF ("%s: [%d:%d] (prec = %d)\n",
+                      cmd_buf, idx.start, idx.end, (int) prec);
           for (size_t i = 0; i < length (&idx); i++)
-            mpfr_init2 (&data[(idx.start - 1) + i], prec);
+            mpfr_set_prec (&data[(idx.start - 1) + i], prec);
+        }
+
+      /**
+       * double mpfr_get_d (mpfr_t op, mpfr_rnd_t rnd)
+       *
+       * Convert op to a float (respectively double, long double, _Decimal64,
+       * or _Decimal128) using the rounding mode rnd.
+       * If op is NaN, some fixed NaN (either quiet or signaling) or the result
+       * of 0.0/0.0 is returned.
+       * If op is ±Inf, an infinity of the same sign or the result of ±1.0/0.0
+       * is returned.
+       * If op is zero, these functions return a zero, trying to preserve its
+       * sign, if possible.
+       * The mpfr_get_float128, mpfr_get_decimal64 and mpfr_get_decimal128
+       * functions are built only under some conditions: see the documentation
+       * of mpfr_set_float128, mpfr_set_decimal64 and mpfr_set_decimal128
+       * respectively.
+       */
+      else if (strcmp (cmd_buf, "get_d") == 0)
+        {
+          if (nrhs != 3)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          idx_t idx;
+          if (! extract_idx (1, nrhs, prhs, &idx))
+            {
+              MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+          mpfr_rnd_t rnd = mpfr_get_default_rounding_mode ();
+          if (! extract_rounding_mode (2, nrhs, prhs, &rnd))
+            {
+              MEX_FCN_ERR ("%s: Rounding must be a numeric scalar between "
+                           "-1 and 3.\n", cmd_buf);
+              break;
+            }
+
+          DBG_PRINTF ("get_d [%d:%d]\n", idx.start, idx.end);
+          plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
+                                           mxREAL);
+          double* plhs_0_pr = mxGetPr (plhs[0]);
+          for (size_t i = 0; i < length (&idx); i++)
+            plhs_0_pr[i] = mpfr_get_d (&data[(idx.start - 1) + i], rnd);
         }
 
       /**
@@ -326,54 +408,9 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
 
-          DBG_PRINTF ("set_d '%d:%d'\n", idx.start, idx.end);
+          DBG_PRINTF ("set_d [%d:%d]\n", idx.start, idx.end);
           for (size_t i = 0; i < length (&idx); i++)
             mpfr_set_d (&data[(idx.start - 1) + i], op_pr[i], rnd);
-        }
-
-      /**
-       * double mpfr_get_d (mpfr_t op, mpfr_rnd_t rnd)
-       *
-       * Convert op to a float (respectively double, long double, _Decimal64,
-       * or _Decimal128) using the rounding mode rnd.
-       * If op is NaN, some fixed NaN (either quiet or signaling) or the result
-       * of 0.0/0.0 is returned.
-       * If op is ±Inf, an infinity of the same sign or the result of ±1.0/0.0
-       * is returned.
-       * If op is zero, these functions return a zero, trying to preserve its
-       * sign, if possible.
-       * The mpfr_get_float128, mpfr_get_decimal64 and mpfr_get_decimal128
-       * functions are built only under some conditions: see the documentation
-       * of mpfr_set_float128, mpfr_set_decimal64 and mpfr_set_decimal128
-       * respectively.
-       */
-      else if (strcmp (cmd_buf, "get_d") == 0)
-        {
-          if (nrhs != 3)
-            {
-              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
-              break;
-            }
-          idx_t idx;
-          if (! extract_idx (1, nrhs, prhs, &idx))
-            {
-              MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
-              break;
-            }
-          mpfr_rnd_t rnd = mpfr_get_default_rounding_mode ();
-          if (! extract_rounding_mode (2, nrhs, prhs, &rnd))
-            {
-              MEX_FCN_ERR ("%s: Rounding must be a numeric scalar between "
-                           "-1 and 3.\n", cmd_buf);
-              break;
-            }
-
-          DBG_PRINTF ("get_d '%d:%d'\n", idx.start, idx.end);
-          plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
-                                           mxREAL);
-          double* plhs_0_pr = mxGetPr (plhs[0]);
-          for (size_t i = 0; i < length (&idx); i++)
-            plhs_0_pr[i] = mpfr_get_d (&data[(idx.start - 1) + i], rnd);
         }
 
       /**
@@ -401,15 +438,13 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
           idx_t op1;
-          if (! extract_idx (2, nrhs, prhs, &op1)
-              || (length (&rop) != length (&op1)))
+          if (! extract_idx (2, nrhs, prhs, &op1))
             {
               MEX_FCN_ERR ("%s:op1 Invalid MPFR variable indices.\n", cmd_buf);
               break;
             }
           idx_t op2;
-          if (! extract_idx (3, nrhs, prhs, &op2)
-              || (length (&rop) != length (&op2)))
+          if (! extract_idx (3, nrhs, prhs, &op2))
             {
               MEX_FCN_ERR ("%s:op2 Invalid MPFR variable indices.\n", cmd_buf);
               break;
@@ -421,12 +456,112 @@ mexFunction (int nlhs, mxArray *plhs[],
                            "-1 and 3.\n", cmd_buf);
               break;
             }
-          DBG_PRINTF ("Add '%d:%d' = '%d:%d' + '%d:%d' using %d\n",
+
+          DBG_PRINTF ("%s [%d:%d] = [%d:%d] + [%d:%d] (rnd = %d)\n", cmd_buf,
                       rop.start, rop.end, op1.start, op1.end,
                       op2.start, op2.end, (int) rnd);
-          for (size_t i = 0; i < length (&rop); i++)
-            mpfr_add (&data[(rop.start - 1) + i], &data[(op1.start - 1) + i],
-                      &data[(op2.start - 1) + i], rnd);
+
+          if ((length (&rop) == length (&op1))
+              && (length (&rop) == length (&op2)))
+            {
+              for (size_t i = 0; i < length (&rop); i++)
+                mpfr_add (&data[(rop.start - 1) + i],
+                          &data[(op1.start - 1) + i],
+                          &data[(op2.start - 1) + i], rnd);
+            }
+          else if ((length (&rop) == length (&op1)) && (length (&op2) == 1))
+            {
+              for (size_t i = 0; i < length (&rop); i++)
+                mpfr_add (&data[(rop.start - 1) + i],
+                          &data[(op1.start - 1) + i],
+                          &data[(op2.start - 1)], rnd);
+            }
+          else if ((length (&rop) == length (&op2)) && (length (&op1) == 1))
+            {
+              for (size_t i = 0; i < length (&rop); i++)
+                mpfr_add (&data[(rop.start - 1) + i],
+                          &data[(op1.start - 1)],
+                          &data[(op2.start - 1) + i], rnd);
+            }
+          else
+            {
+              MEX_FCN_ERR ("%s: Bad operand dimensions.\n", cmd_buf);
+              break;
+            }
+        }
+
+      /**
+       *  int mpfr_add_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+       *
+       * Set rop to op1 + op2 rounded in the direction rnd.  The IEEE 754
+       * rules are used, in particular for signed zeros.  But for types having
+       * no signed zeros, 0 is considered unsigned (i.e., (+0) + 0 = (+0) and
+       * (-0) + 0 = (-0)).  The mpfr_add_d function assumes that the radix of
+       * the double type is a power of 2, with a precision at most that
+       * declared by the C implementation (macro IEEE_DBL_MANT_DIG, and if not
+       * defined 53 bits).
+       */
+      else if (strcmp (cmd_buf, "add_d") == 0)
+        {
+          if (nrhs != 5)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          idx_t rop;
+          if (! extract_idx (1, nrhs, prhs, &rop))
+            {
+              MEX_FCN_ERR ("%s:rop Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+          idx_t op1;
+          if (! extract_idx (2, nrhs, prhs, &op1)
+              || (length (&rop) != length (&op1)))
+            {
+              MEX_FCN_ERR ("%s:op1 Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+          if (! mxIsDouble (prhs[2]))
+            {
+              MEX_FCN_ERR ("%s:op2 Invalid.\n", cmd_buf);
+              break;
+            }
+          double op2 = 0.0;
+          double* op2_pr = NULL;
+          if (! extract_d (3, nrhs, prhs, &op2))
+            {
+              if ((mxGetM (prhs[3]) * mxGetN (prhs[3])) != length (&rop))
+                {
+                  MEX_FCN_ERR ("%s:op2 Bad dimensions.\n", cmd_buf);
+                  break;
+                }
+              else
+                op2_pr = mxGetPr (prhs[3]);
+            }
+          mpfr_rnd_t rnd = mpfr_get_default_rounding_mode ();
+          if (! extract_rounding_mode (4, nrhs, prhs, &rnd))
+            {
+              MEX_FCN_ERR ("%s: Rounding must be a numeric scalar between "
+                           "-1 and 3.\n", cmd_buf);
+              break;
+            }
+
+          DBG_PRINTF ("%s [%d:%d] = [%d:%d] + [%d:%d] (rnd = %d)\n", cmd_buf,
+                      rop.start, rop.end, op1.start, op1.end,
+                      mxGetM (prhs[2]), mxGetN (prhs[2]), (int) rnd);
+
+          if (op2_pr != NULL)
+            {
+              for (size_t i = 0; i < length (&rop); i++)
+                mpfr_add_d (&data[(rop.start - 1) + i],
+                            &data[(op1.start - 1) + i], op2_pr[i], rnd);
+            }
+          else
+            {
+              for (size_t i = 0; i < length (&rop); i++)
+                mpfr_add_d (&data[(rop.start - 1) + i],
+                            &data[(op1.start - 1) + i], op2, rnd);
+            }
         }
       else
         MEX_FCN_ERR ("Unknown command '%s'\n", cmd_buf);

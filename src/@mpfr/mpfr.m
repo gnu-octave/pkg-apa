@@ -74,7 +74,8 @@ classdef mpfr
       end
 
       if (isnumeric (x))
-        obj.idx = mpfr_ ('create', prod (obj.dims), prec)';
+        obj.idx = mpfr_ ('allocate', prod (obj.dims))';
+        mpfr_ ('set_prec', obj.idx, prec);
         mpfr_ ('set_d', obj.idx, x(:), rnd);
       elseif (ischar (x))
         error ('mpfr:mpfr', 'TODO');
@@ -111,14 +112,33 @@ classdef mpfr
 
     function c = plus (a, b)
       % Binary addition `a + b`
-      if (isequal (a.dims, b.dims))
-        %TODO: in-place c==a or c==b
-        prec = mpfr.get_default_prec ();  %TODO: max prec of a or b
-        cc = mpfr (zeros (a.dims), prec);
-        mpfr_ ("add", cc, a, b, mpfr.get_default_rounding_mode ());
+      % Precision of result is the maximum precision of a and b.
+      % Using default rounding mode.
+      if (isnumeric (a))
+        c = plus (b, a);
+      elseif (isa (a, 'mpfr') && isnumeric (b))
+        if (isscalar (b) || isequal (a.dims, size (b)))
+          prec = max (mpfr_ ('get_prec', a));
+          cc = mpfr (zeros (a.dims), prec);
+        else
+          error ('mpfr:plus', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('add_d', cc, a, double (b(:)),
+               mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      elseif (isa (a, 'mpfr') && isa (b, 'mpfr'))
+        prec = max (max (mpfr_ ('get_prec', a)), max (mpfr_ ('get_prec', b)));
+        if (isequal (a.dims, b.dims) || isequal (b.dims, [1 1]))
+          cc = mpfr (zeros (a.dims), prec);
+        elseif (isequal (a.dims, [1 1]))
+          cc = mpfr (zeros (b.dims), prec);
+        else
+          error ('mpfr:plus', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('add', cc, a, b, mpfr.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
       else
-        error ('mpfr:plus', 'Dimensions of a and b do not match.');
+        error ('mpfr:plus', 'Invalid operands a and b.');
       end
     end
 
