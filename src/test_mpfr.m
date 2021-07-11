@@ -102,14 +102,54 @@ function test_mpfr ()
 
   % Arithmetic operations
   % =====================
-  
-  % plus(a, b)
-  assert (isequal (double (mpfr (1:3) + mpfr (1:3)), (1:3) .* 2));
-  assert (isequal (double (mpfr (1:3) + mpfr (1)  ), (1:3) + 1));
-  assert (isequal (double (mpfr (1)   + mpfr (1:3)), (1:3) + 1));
 
-  assert (isequal (double (mpfr (1:3) + (1:3)), (1:3) .* 2));
-  assert (isequal (double ((1:3) + mpfr (1:3)), (1:3) .* 2));
+  % plus (a, b)
+  assert (isequal (double (mpfr (1:3) + mpfr (1:3)), (1:3) + (1:3)));
+  assert (isequal (double (mpfr (1:3) + mpfr (1)  ), (1:3) + 1));
+  assert (isequal (double (mpfr (1)   + mpfr (1:3)), 1 + (1:3)));
+
+  assert (isequal (double (mpfr (1:3) + (1:3)), (1:3) + (1:3)));
+  assert (isequal (double ((1:3) + mpfr (1:3)), (1:3) + (1:3)));
   assert (isequal (double (mpfr (1:3) + 1), (1:3) + 1));
-  assert (isequal (double (1 + mpfr (1:3)), (1:3) + 1));
+  assert (isequal (double (1 + mpfr (1:3)), 1 + (1:3)));
+
+  % minus (a, b)
+  assert (isequal (double (mpfr (1:3) - mpfr (1:3)), (1:3) - (1:3)));
+  assert (isequal (double (mpfr (1:3) - mpfr (1)  ), (1:3) - 1));
+  assert (isequal (double (mpfr (1)   - mpfr (1:3)), 1 - (1:3)));
+
+  assert (isequal (double (mpfr (1:3) - (1:3)), (1:3) - (1:3)));
+  assert (isequal (double ((1:3) - mpfr (1:3)), (1:3) - (1:3)));
+  assert (isequal (double (mpfr (1:3) - 1), (1:3) - 1));
+  assert (isequal (double (1 - mpfr (1:3)), 1 - (1:3)));
+
+  % times (a, b)
+  assert (isequal (double (mpfr (1:3) .* mpfr (1:3)), (1:3) .* (1:3)));
+  assert (isequal (double (mpfr (1:3) .* mpfr (1)  ), (1:3) .* 1));
+  assert (isequal (double (mpfr (1)   .* mpfr (1:3)), 1 .* (1:3)));
+
+  assert (isequal (double (mpfr (1:3) .* (1:3)), (1:3) .* (1:3)));
+  assert (isequal (double ((1:3) .* mpfr (1:3)), (1:3) .* (1:3)));
+  assert (isequal (double (mpfr (1:3) .* 1), (1:3) .* 1));
+  assert (isequal (double (1 .* mpfr (1:3)), 1 .* (1:3)));
+
+  % rdivide (a, b)
+  assert (isequal (double (mpfr (1:3) ./ mpfr (1:3)), (1:3) ./ (1:3)));
+  assert (isequal (double (mpfr (1:3) ./ mpfr (1)  ), (1:3) ./ 1));
+  assert (isequal (double (mpfr (1)   ./ mpfr (1:3)), 1 ./ (1:3)));
+
+  assert (isequal (double (mpfr (1:3) ./ (1:3)), (1:3) ./ (1:3)));
+  assert (isequal (double ((1:3) ./ mpfr (1:3)), (1:3) ./ (1:3)));
+  assert (isequal (double (mpfr (1:3) ./ 1), (1:3) ./ 1));
+  assert (isequal (double (1 ./ mpfr (1:3)), 1 ./ (1:3)));
+
+  % ldivide (a, b)
+  assert (isequal (double (mpfr (1:3) .\ mpfr (1:3)), (1:3) .\ (1:3)));
+  assert (isequal (double (mpfr (1:3) .\ mpfr (1)  ), (1:3) .\ 1));
+  assert (isequal (double (mpfr (1)   .\ mpfr (1:3)), 1 .\ (1:3)));
+
+  assert (isequal (double (mpfr (1:3) .\ (1:3)), (1:3) .\ (1:3)));
+  assert (isequal (double ((1:3) .\ mpfr (1:3)), (1:3) .\ (1:3)));
+  assert (isequal (double (mpfr (1:3) .\ 1), (1:3) .\ 1));
+  assert (isequal (double (1 .\ mpfr (1:3)), 1 .\ (1:3)));
 end

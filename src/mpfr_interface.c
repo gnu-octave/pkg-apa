@@ -423,8 +423,39 @@ mexFunction (int nlhs, mxArray *plhs[],
        * the double type is a power of 2, with a precision at most that
        * declared by the C implementation (macro IEEE_DBL_MANT_DIG, and if not
        * defined 53 bits).
+       *
+       *
+       * int mpfr_sub (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       *
+       * Set rop to op1 - op2 rounded in the direction rnd.  The IEEE 754
+       * rules are used, in particular for signed zeros. But for types having
+       * no signed zeros, 0 is considered unsigned (i.e., (+0) - 0 = (+0),
+       * (-0) - 0 = (-0), 0 - (+0) = (-0) and 0 - (-0) = (+0)).  The same
+       * restrictions than for mpfr_add_d apply to mpfr_d_sub and mpfr_sub_d.
+       *
+       *
+       * int mpfr_mul (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       *
+       * Set rop to op1 times op2 rounded in the direction rnd.  When a result
+       * is zero, its sign is the product of the signs of the operands (for
+       * types having no signed zeros, 0 is considered positive).  The same
+       * restrictions than for mpfr_add_d apply to mpfr_mul_d.
+       *
+       *
+       * int mpfr_div (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       *
+       * Set rop to op1/op2 rounded in the direction rnd.  When a result is
+       * zero, its sign is the product of the signs of the operands.  For
+       * types having no signed zeros, 0 is considered positive; but note that
+       * if op1 is non-zero and op2 is zero, the result might change from ±Inf
+       * to NaN in future MPFR versions if there is an opposite decision on
+       * the IEEE 754 side. The same restrictions than for mpfr_add_d apply
+       * to mpfr_d_div and mpfr_div_d.
        */
-      else if (strcmp (cmd_buf, "add") == 0)
+      else if ((strcmp (cmd_buf, "add") == 0)
+               || (strcmp (cmd_buf, "sub") == 0)
+               || (strcmp (cmd_buf, "mul") == 0)
+               || (strcmp (cmd_buf, "div") == 0))
         {
           if (nrhs != 5)
             {
@@ -461,25 +492,40 @@ mexFunction (int nlhs, mxArray *plhs[],
                       rop.start, rop.end, op1.start, op1.end,
                       op2.start, op2.end, (int) rnd);
 
+          int (*operator) (mpfr_t, const mpfr_t, const mpfr_t, mpfr_rnd_t);
+          if (strcmp (cmd_buf, "add") == 0)
+            operator = mpfr_add;
+          else if (strcmp (cmd_buf, "sub") == 0)
+            operator = mpfr_sub;
+          else if (strcmp (cmd_buf, "mul") == 0)
+            operator = mpfr_mul;
+          else if (strcmp (cmd_buf, "div") == 0)
+            operator = mpfr_div;
+          else
+            {
+              MEX_FCN_ERR ("%s: Bad operator.\n", cmd_buf);
+              break;
+            }
+
           if ((length (&rop) == length (&op1))
               && (length (&rop) == length (&op2)))
             {
               for (size_t i = 0; i < length (&rop); i++)
-                mpfr_add (&data[(rop.start - 1) + i],
+                operator (&data[(rop.start - 1) + i],
                           &data[(op1.start - 1) + i],
                           &data[(op2.start - 1) + i], rnd);
             }
           else if ((length (&rop) == length (&op1)) && (length (&op2) == 1))
             {
               for (size_t i = 0; i < length (&rop); i++)
-                mpfr_add (&data[(rop.start - 1) + i],
+                operator (&data[(rop.start - 1) + i],
                           &data[(op1.start - 1) + i],
                           &data[(op2.start - 1)], rnd);
             }
           else if ((length (&rop) == length (&op2)) && (length (&op1) == 1))
             {
               for (size_t i = 0; i < length (&rop); i++)
-                mpfr_add (&data[(rop.start - 1) + i],
+                operator (&data[(rop.start - 1) + i],
                           &data[(op1.start - 1)],
                           &data[(op2.start - 1) + i], rnd);
             }
@@ -491,17 +537,17 @@ mexFunction (int nlhs, mxArray *plhs[],
         }
 
       /**
-       *  int mpfr_add_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+       * int mpfr_add_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+       * int mpfr_sub_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+       * int mpfr_mul_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+       * int mpfr_div_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
        *
-       * Set rop to op1 + op2 rounded in the direction rnd.  The IEEE 754
-       * rules are used, in particular for signed zeros.  But for types having
-       * no signed zeros, 0 is considered unsigned (i.e., (+0) + 0 = (+0) and
-       * (-0) + 0 = (-0)).  The mpfr_add_d function assumes that the radix of
-       * the double type is a power of 2, with a precision at most that
-       * declared by the C implementation (macro IEEE_DBL_MANT_DIG, and if not
-       * defined 53 bits).
+       * See help text for add, sub, etc. above.
        */
-      else if (strcmp (cmd_buf, "add_d") == 0)
+      else if ((strcmp (cmd_buf, "add_d") == 0)
+               || (strcmp (cmd_buf, "sub_d") == 0)
+               || (strcmp (cmd_buf, "mul_d") == 0)
+               || (strcmp (cmd_buf, "div_d") == 0))
         {
           if (nrhs != 5)
             {
@@ -548,21 +594,118 @@ mexFunction (int nlhs, mxArray *plhs[],
 
           DBG_PRINTF ("%s [%d:%d] = [%d:%d] + [%d:%d] (rnd = %d)\n", cmd_buf,
                       rop.start, rop.end, op1.start, op1.end,
-                      mxGetM (prhs[2]), mxGetN (prhs[2]), (int) rnd);
+                      mxGetM (prhs[3]), mxGetN (prhs[3]), (int) rnd);
+
+          int (*operator) (mpfr_t, const mpfr_t, const double, mpfr_rnd_t);
+          if (strcmp (cmd_buf, "add_d") == 0)
+            operator = mpfr_add_d;
+          else if (strcmp (cmd_buf, "sub_d") == 0)
+            operator = mpfr_sub_d;
+          else if (strcmp (cmd_buf, "mul_d") == 0)
+            operator = mpfr_mul_d;
+          else if (strcmp (cmd_buf, "div_d") == 0)
+            operator = mpfr_div_d;
+          else
+            {
+              MEX_FCN_ERR ("%s: Bad operator.\n", cmd_buf);
+              break;
+            }
 
           if (op2_pr != NULL)
             {
               for (size_t i = 0; i < length (&rop); i++)
-                mpfr_add_d (&data[(rop.start - 1) + i],
-                            &data[(op1.start - 1) + i], op2_pr[i], rnd);
+                operator (&data[(rop.start - 1) + i],
+                          &data[(op1.start - 1) + i], op2_pr[i], rnd);
             }
           else
             {
               for (size_t i = 0; i < length (&rop); i++)
-                mpfr_add_d (&data[(rop.start - 1) + i],
-                            &data[(op1.start - 1) + i], op2, rnd);
+                operator (&data[(rop.start - 1) + i],
+                          &data[(op1.start - 1) + i], op2, rnd);
             }
         }
+
+      /**
+       * int mpfr_d_sub (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
+       * int mpfr_d_div (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
+       *
+       * See help text for add, sub, etc. above.
+       */
+      else if ((strcmp (cmd_buf, "d_sub") == 0)
+               || (strcmp (cmd_buf, "d_div") == 0))
+        {
+          if (nrhs != 5)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          idx_t rop;
+          if (! extract_idx (1, nrhs, prhs, &rop))
+            {
+              MEX_FCN_ERR ("%s:rop Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+          if (! mxIsDouble (prhs[2]))
+            {
+              MEX_FCN_ERR ("%s:op1 Invalid.\n", cmd_buf);
+              break;
+            }
+          double op1 = 0.0;
+          double* op1_pr = NULL;
+          if (! extract_d (2, nrhs, prhs, &op1))
+            {
+              if ((mxGetM (prhs[2]) * mxGetN (prhs[2])) != length (&rop))
+                {
+                  MEX_FCN_ERR ("%s:op1 Bad dimensions.\n", cmd_buf);
+                  break;
+                }
+              else
+                op1_pr = mxGetPr (prhs[2]);
+            }
+          idx_t op2;
+          if (! extract_idx (3, nrhs, prhs, &op2)
+              || (length (&rop) != length (&op2)))
+            {
+              MEX_FCN_ERR ("%s:op1 Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+          mpfr_rnd_t rnd = mpfr_get_default_rounding_mode ();
+          if (! extract_rounding_mode (4, nrhs, prhs, &rnd))
+            {
+              MEX_FCN_ERR ("%s: Rounding must be a numeric scalar between "
+                           "-1 and 3.\n", cmd_buf);
+              break;
+            }
+
+          DBG_PRINTF ("%s [%d:%d] = [%d:%d] + [%d:%d] (rnd = %d)\n", cmd_buf,
+                      rop.start, rop.end, mxGetM (prhs[2]), mxGetN (prhs[2]),
+                      op2.start, op2.end, (int) rnd);
+
+          int (*operator) (mpfr_t, const double, const mpfr_t, mpfr_rnd_t);
+          if (strcmp (cmd_buf, "d_sub") == 0)
+            operator = mpfr_d_sub;
+          else if (strcmp (cmd_buf, "d_div") == 0)
+            operator = mpfr_d_div;
+          else
+            {
+              MEX_FCN_ERR ("%s: Bad operator.\n", cmd_buf);
+              break;
+            }
+
+          if (op1_pr != NULL)
+            {
+              for (size_t i = 0; i < length (&rop); i++)
+                operator (&data[(rop.start - 1) + i], op1_pr[i],
+                          &data[(op2.start - 1) + i], rnd);
+            }
+          else
+            {
+              for (size_t i = 0; i < length (&rop); i++)
+                operator (&data[(rop.start - 1) + i], op1,
+                          &data[(op2.start - 1) + i], rnd);
+            }
+        }
+
       else
         MEX_FCN_ERR ("Unknown command '%s'\n", cmd_buf);
     }

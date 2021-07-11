@@ -142,9 +142,45 @@ classdef mpfr
       end
     end
 
-%    function minus(a,b)
-%    % Binary subtraction `a - b`
-%    end
+    function c = minus (a, b)
+      % Binary subtraction `a - b`
+      % Precision of result is the maximum precision of a and b.
+      % Using default rounding mode.
+      if (isnumeric (a) && isa (b, 'mpfr'))
+        if (isscalar (a) || isequal (size (a), b.dims))
+          prec = max (mpfr_ ('get_prec', b));
+          cc = mpfr (zeros (b.dims), prec);
+        else
+          error ('mpfr:minus', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('d_sub', cc, double (a(:)), b,
+               mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      elseif (isa (a, 'mpfr') && isnumeric (b))
+        if (isscalar (b) || isequal (a.dims, size (b)))
+          prec = max (mpfr_ ('get_prec', a));
+          cc = mpfr (zeros (a.dims), prec);
+        else
+          error ('mpfr:minus', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('sub_d', cc, a, double (b(:)),
+               mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      elseif (isa (a, 'mpfr') && isa (b, 'mpfr'))
+        prec = max (max (mpfr_ ('get_prec', a)), max (mpfr_ ('get_prec', b)));
+        if (isequal (a.dims, b.dims) || isequal (b.dims, [1 1]))
+          cc = mpfr (zeros (a.dims), prec);
+        elseif (isequal (a.dims, [1 1]))
+          cc = mpfr (zeros (b.dims), prec);
+        else
+          error ('mpfr:minus', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('sub', cc, a, b, mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      else
+        error ('mpfr:minus', 'Invalid operands a and b.');
+      end
+    end
 
 %    function uminus(a)
 %    % Unary minus `-a`
@@ -154,21 +190,86 @@ classdef mpfr
 %    % Unary plus `+a`
 %    end
 
-%    function times(a,b)
-%    % Element-wise multiplication `a.*b`
-%    end
+    function c = times (a, b)
+      % Element-wise multiplication `a .* b`
+      % Precision of result is the maximum precision of a and b.
+      % Using default rounding mode.
+      if (isnumeric (a))
+        c = times (b, a);
+      elseif (isa (a, 'mpfr') && isnumeric (b))
+        if (isscalar (b) || isequal (a.dims, size (b)))
+          prec = max (mpfr_ ('get_prec', a));
+          cc = mpfr (zeros (a.dims), prec);
+        else
+          error ('mpfr:times', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('mul_d', cc, a, double (b(:)),
+               mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      elseif (isa (a, 'mpfr') && isa (b, 'mpfr'))
+        prec = max (max (mpfr_ ('get_prec', a)), max (mpfr_ ('get_prec', b)));
+        if (isequal (a.dims, b.dims) || isequal (b.dims, [1 1]))
+          cc = mpfr (zeros (a.dims), prec);
+        elseif (isequal (a.dims, [1 1]))
+          cc = mpfr (zeros (b.dims), prec);
+        else
+          error ('mpfr:times', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('mul', cc, a, b, mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      else
+        error ('mpfr:times', 'Invalid operands a and b.');
+      end
+    end
 
 %    function mtimes(a,b)
 %    % Matrix multiplication `a*b`
 %    end
 
-%    function rdivide(a,b)
-%    % Right element-wise division `a./b`
-%    end
+     function c = rdivide (a, b)
+      % Right element-wise division `a ./ b`
+      % Precision of result is the maximum precision of a and b.
+      % Using default rounding mode.
+      if (isnumeric (a) && isa (b, 'mpfr'))
+        if (isscalar (a) || isequal (size (a), b.dims))
+          prec = max (mpfr_ ('get_prec', b));
+          cc = mpfr (zeros (b.dims), prec);
+        else
+          error ('mpfr:rdivide', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('d_div', cc, double (a(:)), b,
+               mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      elseif (isa (a, 'mpfr') && isnumeric (b))
+        if (isscalar (b) || isequal (a.dims, size (b)))
+          prec = max (mpfr_ ('get_prec', a));
+          cc = mpfr (zeros (a.dims), prec);
+        else
+          error ('mpfr:rdivide', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('div_d', cc, a, double (b(:)),
+               mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      elseif (isa (a, 'mpfr') && isa (b, 'mpfr'))
+        prec = max (max (mpfr_ ('get_prec', a)), max (mpfr_ ('get_prec', b)));
+        if (isequal (a.dims, b.dims) || isequal (b.dims, [1 1]))
+          cc = mpfr (zeros (a.dims), prec);
+        elseif (isequal (a.dims, [1 1]))
+          cc = mpfr (zeros (b.dims), prec);
+        else
+          error ('mpfr:rdivide', 'Incompatible dimensions of a and b.');
+        end
+        mpfr_ ('div', cc, a, b, mpfr.get_default_rounding_mode ());
+        c = cc;  % Do not assign c before calculation succeeded!
+      else
+        error ('mpfr:rdivide', 'Invalid operands a and b.');
+      end
+    end
 
-%    function ldivide(a,b)
-%    % Left element-wise division `a.\b`
-%    end
+    function c = ldivide (a, b)
+      % Left element-wise division `a .\ b`
+      c = rdivide (b, a);
+    end
 
 %    function mrdivide(a,b)
 %    % Matrix right division `a/b`
