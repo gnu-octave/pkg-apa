@@ -135,9 +135,6 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * mpfr_prec_t mpfr_get_default_prec (void)
-       *
-       * Return the current default MPFR precision in bits.  See the
-       * documentation of mpfr_set_default_prec.
        */
       else if (strcmp (cmd_buf, "get_default_prec") == 0)
         {
@@ -151,13 +148,6 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * void mpfr_set_default_prec (mpfr_prec_t prec)
-       *
-       * Set the default precision to be exactly prec bits, where prec can be
-       * any integer between MPFR_PREC_MIN and MPFR_PREC_MAX.  The precision of
-       * a variable means the number of bits used to store its significand. All
-       * subsequent calls to mpfr_init or mpfr_inits will use this precision,
-       * but previously initialized variables are unaffected.  The default
-       * precision is set to 53 bits initially.
        */
       else if (strcmp (cmd_buf, "set_default_prec") == 0)
         {
@@ -177,8 +167,6 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * mpfr_rnd_t mpfr_get_default_rounding_mode (void)
-       *
-       * Get the default rounding mode.
        */
       else if (strcmp (cmd_buf, "get_default_rounding_mode") == 0)
         {
@@ -193,9 +181,6 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * void mpfr_set_default_rounding_mode (mpfr_rnd_t rnd)
-       *
-       * Set the default rounding mode to rnd.  The default rounding mode is
-       * to nearest initially.
        */
       else if (strcmp (cmd_buf, "set_default_rounding_mode") == 0)
         {
@@ -214,9 +199,6 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * mpfr_prec_t mpfr_get_prec (mpfr_t x)
-       *
-       * Return the precision of x, i.e., the number of bits used to store its
-       * significand.
        */
       else if (strcmp (cmd_buf, "get_prec") == 0)
         {
@@ -242,34 +224,7 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * void mpfr_set_prec (mpfr_t x, mpfr_prec_t prec)
-       *
-       * Set the precision of x to be exactly prec bits, and set its value to
-       * NaN.  The previous value stored in x is lost.  It is equivalent to a
-       * call to mpfr_clear(x) followed by a call to mpfr_init2(x, prec), but
-       * more efficient as no allocation is done in case the current allocated
-       * space for the significand of x is enough.  The precision prec can be
-       * any integer between MPFR_PREC_MIN and MPFR_PREC_MAX.  In case you
-       * want to keep the previous value stored in x, use mpfr_prec_round
-       * instead.
-       *
-       * Warning! You must not use this function if x was initialized with
-       * MPFR_DECL_INIT or with mpfr_custom_init_set (see Custom Interface).
-       *
-       *
        * void mpfr_init2 (mpfr_t x, mpfr_prec_t prec)
-       *
-       * Initialize x, set its precision to be exactly prec bits and its value
-       * to NaN. (Warning: the corresponding MPF function initializes to zero
-       * instead.)
-       *
-       * Normally, a variable should be initialized once only or at least be
-       * cleared, using mpfr_clear, between initializations.  To change the
-       * precision of a variable that has already been initialized, use
-       * mpfr_set_prec or mpfr_prec_round; note that if the precision is
-       * decreased, the unused memory will not be freed, so that it may be
-       * wise to choose a large enough initial precision in order to avoid
-       * reallocations. The precision prec must be an integer between
-       * MPFR_PREC_MIN and MPFR_PREC_MAX (otherwise the behavior is undefined).
        */
       else if ((strcmp (cmd_buf, "set_prec") == 0)
                || (strcmp (cmd_buf, "init2") == 0))
@@ -304,19 +259,6 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * double mpfr_get_d (mpfr_t op, mpfr_rnd_t rnd)
-       *
-       * Convert op to a float (respectively double, long double, _Decimal64,
-       * or _Decimal128) using the rounding mode rnd.
-       * If op is NaN, some fixed NaN (either quiet or signaling) or the result
-       * of 0.0/0.0 is returned.
-       * If op is ±Inf, an infinity of the same sign or the result of ±1.0/0.0
-       * is returned.
-       * If op is zero, these functions return a zero, trying to preserve its
-       * sign, if possible.
-       * The mpfr_get_float128, mpfr_get_decimal64 and mpfr_get_decimal128
-       * functions are built only under some conditions: see the documentation
-       * of mpfr_set_float128, mpfr_set_decimal64 and mpfr_set_decimal128
-       * respectively.
        */
       else if (strcmp (cmd_buf, "get_d") == 0)
         {
@@ -349,36 +291,6 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * int mpfr_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)
-       *
-       * Set the value of rop from op, rounded toward the given direction rnd.
-       * Note that the input 0 is converted to +0 by mpfr_set_ui, mpfr_set_si,
-       * mpfr_set_uj, mpfr_set_sj, The mpfr_set_float128 function is built
-       * only with the configure option ‘--enable-float128’, which requires
-       * the compiler or system provides the ‘_Float128’ data type (GCC 4.3
-       * or later supports this data type); to use mpfr_set_float128, one
-       * should define the macro MPFR_WANT_FLOAT128 before including mpfr.h.
-       * mpfr_set_z, mpfr_set_q and mpfr_set_f, regardless of the rounding mode.
-       * If the system does not support the IEEE 754 standard, mpfr_set_flt,
-       * mpfr_set_d, mpfr_set_ld, mpfr_set_decimal64 and mpfr_set_decimal128
-       * might not preserve the signed zeros. The mpfr_set_decimal64 and
-       * mpfr_set_decimal128 functions are built only with the configure
-       * option ‘--enable-decimal-float’, and when the compiler or system
-       * provides the ‘_Decimal64’ and ‘_Decimal128’ data type; to use those
-       * functions, one should define the macro MPFR_WANT_DECIMAL_FLOATS
-       * before including mpfr.h. mpfr_set_q might fail if the numerator
-       * (or the denominator) cannot be represented as a mpfr_t.
-       *
-       * For mpfr_set, the sign of a NaN is propagated in order to mimic the
-       * IEEE 754 copy operation.  But contrary to IEEE 754, the NaN flag is
-       * set as usual.
-       *
-       * Note: If you want to store a floating-point constant to a mpfr_t,
-       * you should use mpfr_set_str (or one of the MPFR constant functions,
-       * such as mpfr_const_pi for Pi) instead of mpfr_set_flt, mpfr_set_d,
-       * mpfr_set_ld, mpfr_set_decimal64 or mpfr_set_decimal128.  Otherwise
-       * the floating-point constant will be first converted into a reduced-
-       * precision (e.g., 53-bit) binary (or decimal, for mpfr_set_decimal64
-       * and mpfr_set_decimal128) number before MPFR can work with it.
        */
       else if (strcmp (cmd_buf, "set_d") == 0)
         {
@@ -415,47 +327,28 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * int mpfr_add (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
-       *
-       * Set rop to op1 + op2 rounded in the direction rnd.  The IEEE 754
-       * rules are used, in particular for signed zeros.  But for types having
-       * no signed zeros, 0 is considered unsigned (i.e., (+0) + 0 = (+0) and
-       * (-0) + 0 = (-0)).  The mpfr_add_d function assumes that the radix of
-       * the double type is a power of 2, with a precision at most that
-       * declared by the C implementation (macro IEEE_DBL_MANT_DIG, and if not
-       * defined 53 bits).
-       *
-       *
        * int mpfr_sub (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
-       *
-       * Set rop to op1 - op2 rounded in the direction rnd.  The IEEE 754
-       * rules are used, in particular for signed zeros. But for types having
-       * no signed zeros, 0 is considered unsigned (i.e., (+0) - 0 = (+0),
-       * (-0) - 0 = (-0), 0 - (+0) = (-0) and 0 - (-0) = (+0)).  The same
-       * restrictions than for mpfr_add_d apply to mpfr_d_sub and mpfr_sub_d.
-       *
-       *
        * int mpfr_mul (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
-       *
-       * Set rop to op1 times op2 rounded in the direction rnd.  When a result
-       * is zero, its sign is the product of the signs of the operands (for
-       * types having no signed zeros, 0 is considered positive).  The same
-       * restrictions than for mpfr_add_d apply to mpfr_mul_d.
-       *
-       *
        * int mpfr_div (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
-       *
-       * Set rop to op1/op2 rounded in the direction rnd.  When a result is
-       * zero, its sign is the product of the signs of the operands.  For
-       * types having no signed zeros, 0 is considered positive; but note that
-       * if op1 is non-zero and op2 is zero, the result might change from ±Inf
-       * to NaN in future MPFR versions if there is an opposite decision on
-       * the IEEE 754 side. The same restrictions than for mpfr_add_d apply
-       * to mpfr_d_div and mpfr_div_d.
+       * int mpfr_dim (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       * int mpfr_pow (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       * int mpfr_beta (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       * int mpfr_agm (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       * int mpfr_min (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       * int mpfr_max (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+       * int mpfr_copysign (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
        */
       else if ((strcmp (cmd_buf, "add") == 0)
                || (strcmp (cmd_buf, "sub") == 0)
                || (strcmp (cmd_buf, "mul") == 0)
-               || (strcmp (cmd_buf, "div") == 0))
+               || (strcmp (cmd_buf, "div") == 0)
+               || (strcmp (cmd_buf, "dim") == 0)
+               || (strcmp (cmd_buf, "pow") == 0)
+               || (strcmp (cmd_buf, "beta") == 0)
+               || (strcmp (cmd_buf, "agm") == 0)
+               || (strcmp (cmd_buf, "min") == 0)
+               || (strcmp (cmd_buf, "max") == 0)
+               || (strcmp (cmd_buf, "copysign") == 0))
         {
           if (nrhs != 5)
             {
@@ -469,13 +362,15 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
           idx_t op1;
-          if (! extract_idx (2, nrhs, prhs, &op1))
+          if (! extract_idx (2, nrhs, prhs, &op1)
+              || ((length (&rop) != length (&op1)) && (length (&op1) != 1)))
             {
               MEX_FCN_ERR ("%s:op1 Invalid MPFR variable indices.\n", cmd_buf);
               break;
             }
           idx_t op2;
-          if (! extract_idx (3, nrhs, prhs, &op2))
+          if (! extract_idx (3, nrhs, prhs, &op2)
+              || ((length (&rop) != length (&op2)) && (length (&op2) != 1)))
             {
               MEX_FCN_ERR ("%s:op2 Invalid MPFR variable indices.\n", cmd_buf);
               break;
@@ -501,38 +396,43 @@ mexFunction (int nlhs, mxArray *plhs[],
             operator = mpfr_mul;
           else if (strcmp (cmd_buf, "div") == 0)
             operator = mpfr_div;
+          else if (strcmp (cmd_buf, "dim") == 0)
+            operator = mpfr_dim;
+          else if (strcmp (cmd_buf, "pow") == 0)
+            operator = mpfr_pow;
+          else if (strcmp (cmd_buf, "beta") == 0)
+            operator = mpfr_beta;
+          else if (strcmp (cmd_buf, "agm") == 0)
+            operator = mpfr_agm;
+          else if (strcmp (cmd_buf, "min") == 0)
+            operator = mpfr_min;
+          else if (strcmp (cmd_buf, "max") == 0)
+            operator = mpfr_max;
+          else if (strcmp (cmd_buf, "copysign") == 0)
+            operator = mpfr_copysign;
           else
             {
               MEX_FCN_ERR ("%s: Bad operator.\n", cmd_buf);
               break;
             }
 
-          if ((length (&rop) == length (&op1))
-              && (length (&rop) == length (&op2)))
+          plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                           mxDOUBLE_CLASS, mxREAL);
+          double*  ret_ptr = mxGetPr (plhs[0]);
+          mpfr_ptr rop_ptr = &data[rop.start - 1];
+          mpfr_ptr op1_ptr = &data[op1.start - 1];
+          mpfr_ptr op2_ptr = &data[op2.start - 1];
+          size_t ret_stride = (nlhs) ? 1 : 0;
+          size_t rop_stride = 1;
+          size_t op1_stride = (length (&op1) == 1) ? 0 : 1;
+          size_t op2_stride = (length (&op2) == 1) ? 0 : 1;
+          for (size_t i = 0; i < length (&rop); i++)
             {
-              for (size_t i = 0; i < length (&rop); i++)
-                operator (&data[(rop.start - 1) + i],
-                          &data[(op1.start - 1) + i],
-                          &data[(op2.start - 1) + i], rnd);
-            }
-          else if ((length (&rop) == length (&op1)) && (length (&op2) == 1))
-            {
-              for (size_t i = 0; i < length (&rop); i++)
-                operator (&data[(rop.start - 1) + i],
-                          &data[(op1.start - 1) + i],
-                          &data[(op2.start - 1)], rnd);
-            }
-          else if ((length (&rop) == length (&op2)) && (length (&op1) == 1))
-            {
-              for (size_t i = 0; i < length (&rop); i++)
-                operator (&data[(rop.start - 1) + i],
-                          &data[(op1.start - 1)],
-                          &data[(op2.start - 1) + i], rnd);
-            }
-          else
-            {
-              MEX_FCN_ERR ("%s: Bad operand dimensions.\n", cmd_buf);
-              break;
+              ret_ptr[i * ret_stride] =
+                (double) operator (rop_ptr + (i * rop_stride),
+                                   op1_ptr + (i * op1_stride),
+                                   op2_ptr + (i * op2_stride),
+                                   rnd);
             }
         }
 
@@ -541,8 +441,6 @@ mexFunction (int nlhs, mxArray *plhs[],
        * int mpfr_sub_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
        * int mpfr_mul_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
        * int mpfr_div_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
-       *
-       * See help text for add, sub, etc. above.
        */
       else if ((strcmp (cmd_buf, "add_d") == 0)
                || (strcmp (cmd_buf, "sub_d") == 0)
@@ -567,22 +465,13 @@ mexFunction (int nlhs, mxArray *plhs[],
               MEX_FCN_ERR ("%s:op1 Invalid MPFR variable indices.\n", cmd_buf);
               break;
             }
-          if (! mxIsDouble (prhs[2]))
+          size_t op2M = mxGetM (prhs[3]);
+          size_t op2N = mxGetN (prhs[3]);
+          if (! mxIsDouble (prhs[3])
+              || (((op2M * op2N) != length (&rop)) && ((op2M * op2N) != 1)))
             {
               MEX_FCN_ERR ("%s:op2 Invalid.\n", cmd_buf);
               break;
-            }
-          double op2 = 0.0;
-          double* op2_pr = NULL;
-          if (! extract_d (3, nrhs, prhs, &op2))
-            {
-              if ((mxGetM (prhs[3]) * mxGetN (prhs[3])) != length (&rop))
-                {
-                  MEX_FCN_ERR ("%s:op2 Bad dimensions.\n", cmd_buf);
-                  break;
-                }
-              else
-                op2_pr = mxGetPr (prhs[3]);
             }
           mpfr_rnd_t rnd = mpfr_get_default_rounding_mode ();
           if (! extract_rounding_mode (4, nrhs, prhs, &rnd))
@@ -594,7 +483,7 @@ mexFunction (int nlhs, mxArray *plhs[],
 
           DBG_PRINTF ("%s [%d:%d] = [%d:%d] + [%d:%d] (rnd = %d)\n", cmd_buf,
                       rop.start, rop.end, op1.start, op1.end,
-                      mxGetM (prhs[3]), mxGetN (prhs[3]), (int) rnd);
+                      op2M, op2N, (int) rnd);
 
           int (*operator) (mpfr_t, const mpfr_t, const double, mpfr_rnd_t);
           if (strcmp (cmd_buf, "add_d") == 0)
@@ -611,25 +500,27 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
 
-          if (op2_pr != NULL)
+          plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                           mxDOUBLE_CLASS, mxREAL);
+          double*  ret_ptr = mxGetPr (plhs[0]);
+          mpfr_ptr rop_ptr = &data[rop.start - 1];
+          mpfr_ptr op1_ptr = &data[op1.start - 1];
+          double*  op2_ptr = mxGetPr (prhs[3]);
+          size_t ret_stride = (nlhs) ? 1 : 0;
+          size_t op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
+          for (size_t i = 0; i < length (&rop); i++)
             {
-              for (size_t i = 0; i < length (&rop); i++)
-                operator (&data[(rop.start - 1) + i],
-                          &data[(op1.start - 1) + i], op2_pr[i], rnd);
-            }
-          else
-            {
-              for (size_t i = 0; i < length (&rop); i++)
-                operator (&data[(rop.start - 1) + i],
-                          &data[(op1.start - 1) + i], op2, rnd);
+              ret_ptr[i * ret_stride] =
+                (double) operator (rop_ptr + i,
+                                   op1_ptr + i,
+                                   op2_ptr[i * op2_stride],
+                                   rnd);
             }
         }
 
       /**
        * int mpfr_d_sub (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
        * int mpfr_d_div (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
-       *
-       * See help text for add, sub, etc. above.
        */
       else if ((strcmp (cmd_buf, "d_sub") == 0)
                || (strcmp (cmd_buf, "d_div") == 0))
@@ -645,22 +536,13 @@ mexFunction (int nlhs, mxArray *plhs[],
               MEX_FCN_ERR ("%s:rop Invalid MPFR variable indices.\n", cmd_buf);
               break;
             }
-          if (! mxIsDouble (prhs[2]))
+          size_t op1M = mxGetM (prhs[2]);
+          size_t op1N = mxGetN (prhs[2]);
+          if (! mxIsDouble (prhs[2])
+              || (((op1M * op1N) != length (&rop)) && ((op1M * op1N) != 1)))
             {
               MEX_FCN_ERR ("%s:op1 Invalid.\n", cmd_buf);
               break;
-            }
-          double op1 = 0.0;
-          double* op1_pr = NULL;
-          if (! extract_d (2, nrhs, prhs, &op1))
-            {
-              if ((mxGetM (prhs[2]) * mxGetN (prhs[2])) != length (&rop))
-                {
-                  MEX_FCN_ERR ("%s:op1 Bad dimensions.\n", cmd_buf);
-                  break;
-                }
-              else
-                op1_pr = mxGetPr (prhs[2]);
             }
           idx_t op2;
           if (! extract_idx (3, nrhs, prhs, &op2)
@@ -678,7 +560,7 @@ mexFunction (int nlhs, mxArray *plhs[],
             }
 
           DBG_PRINTF ("%s [%d:%d] = [%d:%d] + [%d:%d] (rnd = %d)\n", cmd_buf,
-                      rop.start, rop.end, mxGetM (prhs[2]), mxGetN (prhs[2]),
+                      rop.start, rop.end, op1M, op1N,
                       op2.start, op2.end, (int) rnd);
 
           int (*operator) (mpfr_t, const double, const mpfr_t, mpfr_rnd_t);
@@ -692,17 +574,21 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
 
-          if (op1_pr != NULL)
+          plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                           mxDOUBLE_CLASS, mxREAL);
+          double*  ret_ptr = mxGetPr (plhs[0]);
+          mpfr_ptr rop_ptr = &data[rop.start - 1];
+          double*  op1_ptr = mxGetPr (prhs[2]);
+          mpfr_ptr op2_ptr = &data[op2.start - 1];
+          size_t ret_stride = (nlhs) ? 1 : 0;
+          size_t op1_stride = ((op1M * op1N) == 1) ? 0 : 1;
+          for (size_t i = 0; i < length (&rop); i++)
             {
-              for (size_t i = 0; i < length (&rop); i++)
-                operator (&data[(rop.start - 1) + i], op1_pr[i],
-                          &data[(op2.start - 1) + i], rnd);
-            }
-          else
-            {
-              for (size_t i = 0; i < length (&rop); i++)
-                operator (&data[(rop.start - 1) + i], op1,
-                          &data[(op2.start - 1) + i], rnd);
+              ret_ptr[i * ret_stride] =
+                (double) operator (rop_ptr + i,
+                                   op1_ptr[i * op1_stride],
+                                   op2_ptr + i,
+                                   rnd);
             }
         }
 

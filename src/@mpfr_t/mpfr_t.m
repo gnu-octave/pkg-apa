@@ -1,4 +1,4 @@
-classdef mpfr
+classdef mpfr_t
 
   properties (SetAccess = protected)
     dims  % Original object dimensions.
@@ -56,13 +56,14 @@ classdef mpfr
 
 
   methods
-    function obj = mpfr (x, prec, rnd)
+    function obj = mpfr_t (x, prec, rnd)
       if (nargin < 1)
-        error ('mpfr:mpfr', 'At least one argument must be provided.');
+        error ('mpfr_t:mpfr_t', 'At least one argument must be provided.');
       end
 
-      if (ndims (x) > 2)
-        error ('mpfr:mpfr', 'Only two dimensional matrix input is supported.');
+      if (~ismatrix (x))
+        error ('mpfr_t:mpfr_t', ...
+          'Only two dimensional matrix input is supported.');
       end
       obj.dims = size (x);
 
@@ -78,11 +79,11 @@ classdef mpfr
         mpfr_ ('set_prec', obj.idx, prec);
         mpfr_ ('set_d', obj.idx, x(:), rnd);
       elseif (ischar (x))
-        error ('mpfr:mpfr', 'TODO');
-      elseif (isa (x, 'mpfr'))
-        error ('mpfr:mpfr', 'TODO');
+        error ('mpfr_t:mpfr_t', 'TODO');
+      elseif (isa (x, 'mpfr_t'))
+        error ('mpfr_t:mpfr_t', 'TODO');
       else
-        error ('mpfr:mpfr', 'Input must be numeric, string, or MPFR.');
+        error ('mpfr_t:mpfr_t', 'Input must be numeric, string, or mpfr_t.');
       end
     end
 
@@ -98,14 +99,8 @@ classdef mpfr
     % https://www.mathworks.com/help/matlab/matlab_oop/implementing-operators-for-your-class.html
     % https://www.mathworks.com/help/matlab/matlab_oop/methods-that-modify-default-behavior.html
 
-    function display (obj)
-      % Object display
-      disp (obj);
-    end
-
     function disp (obj)
       % Object display
-      fprintf (1, '\n');
       fprintf (1, '  %dx%d MPFR matrix\n', obj.dims(1), obj.dims(2));
       fprintf (1, '\n');
     end
@@ -116,29 +111,29 @@ classdef mpfr
       % Using default rounding mode.
       if (isnumeric (a))
         c = plus (b, a);
-      elseif (isa (a, 'mpfr') && isnumeric (b))
+      elseif (isa (a, 'mpfr_t') && isnumeric (b))
         if (isscalar (b) || isequal (a.dims, size (b)))
           prec = max (mpfr_ ('get_prec', a));
-          cc = mpfr (zeros (a.dims), prec);
+          cc = mpfr_t (zeros (a.dims), prec);
         else
-          error ('mpfr:plus', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:plus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('add_d', cc, a, double (b(:)),
-               mpfr.get_default_rounding_mode ());
+        mpfr_ ('add_d', cc, a, double (b(:)), ...
+               mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
-      elseif (isa (a, 'mpfr') && isa (b, 'mpfr'))
+      elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         prec = max (max (mpfr_ ('get_prec', a)), max (mpfr_ ('get_prec', b)));
         if (isequal (a.dims, b.dims) || isequal (b.dims, [1 1]))
-          cc = mpfr (zeros (a.dims), prec);
+          cc = mpfr_t (zeros (a.dims), prec);
         elseif (isequal (a.dims, [1 1]))
-          cc = mpfr (zeros (b.dims), prec);
+          cc = mpfr_t (zeros (b.dims), prec);
         else
-          error ('mpfr:plus', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:plus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('add', cc, a, b, mpfr.get_default_rounding_mode ());
+        mpfr_ ('add', cc, a, b, mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
       else
-        error ('mpfr:plus', 'Invalid operands a and b.');
+        error ('mpfr_t:plus', 'Invalid operands a and b.');
       end
     end
 
@@ -146,39 +141,39 @@ classdef mpfr
       % Binary subtraction `a - b`
       % Precision of result is the maximum precision of a and b.
       % Using default rounding mode.
-      if (isnumeric (a) && isa (b, 'mpfr'))
+      if (isnumeric (a) && isa (b, 'mpfr_t'))
         if (isscalar (a) || isequal (size (a), b.dims))
           prec = max (mpfr_ ('get_prec', b));
-          cc = mpfr (zeros (b.dims), prec);
+          cc = mpfr_t (zeros (b.dims), prec);
         else
-          error ('mpfr:minus', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:minus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('d_sub', cc, double (a(:)), b,
-               mpfr.get_default_rounding_mode ());
+        mpfr_ ('d_sub', cc, double (a(:)), b, ...
+               mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
-      elseif (isa (a, 'mpfr') && isnumeric (b))
+      elseif (isa (a, 'mpfr_t') && isnumeric (b))
         if (isscalar (b) || isequal (a.dims, size (b)))
           prec = max (mpfr_ ('get_prec', a));
-          cc = mpfr (zeros (a.dims), prec);
+          cc = mpfr_t (zeros (a.dims), prec);
         else
-          error ('mpfr:minus', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:minus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('sub_d', cc, a, double (b(:)),
-               mpfr.get_default_rounding_mode ());
+        mpfr_ ('sub_d', cc, a, double (b(:)), ...
+               mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
-      elseif (isa (a, 'mpfr') && isa (b, 'mpfr'))
+      elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         prec = max (max (mpfr_ ('get_prec', a)), max (mpfr_ ('get_prec', b)));
         if (isequal (a.dims, b.dims) || isequal (b.dims, [1 1]))
-          cc = mpfr (zeros (a.dims), prec);
+          cc = mpfr_t (zeros (a.dims), prec);
         elseif (isequal (a.dims, [1 1]))
-          cc = mpfr (zeros (b.dims), prec);
+          cc = mpfr_t (zeros (b.dims), prec);
         else
-          error ('mpfr:minus', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:minus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('sub', cc, a, b, mpfr.get_default_rounding_mode ());
+        mpfr_ ('sub', cc, a, b, mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
       else
-        error ('mpfr:minus', 'Invalid operands a and b.');
+        error ('mpfr_t:minus', 'Invalid operands a and b.');
       end
     end
 
@@ -196,29 +191,29 @@ classdef mpfr
       % Using default rounding mode.
       if (isnumeric (a))
         c = times (b, a);
-      elseif (isa (a, 'mpfr') && isnumeric (b))
+      elseif (isa (a, 'mpfr_t') && isnumeric (b))
         if (isscalar (b) || isequal (a.dims, size (b)))
           prec = max (mpfr_ ('get_prec', a));
-          cc = mpfr (zeros (a.dims), prec);
+          cc = mpfr_t (zeros (a.dims), prec);
         else
-          error ('mpfr:times', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:times', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('mul_d', cc, a, double (b(:)),
-               mpfr.get_default_rounding_mode ());
+        mpfr_ ('mul_d', cc, a, double (b(:)), ...
+               mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
-      elseif (isa (a, 'mpfr') && isa (b, 'mpfr'))
+      elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         prec = max (max (mpfr_ ('get_prec', a)), max (mpfr_ ('get_prec', b)));
         if (isequal (a.dims, b.dims) || isequal (b.dims, [1 1]))
-          cc = mpfr (zeros (a.dims), prec);
+          cc = mpfr_t (zeros (a.dims), prec);
         elseif (isequal (a.dims, [1 1]))
-          cc = mpfr (zeros (b.dims), prec);
+          cc = mpfr_t (zeros (b.dims), prec);
         else
-          error ('mpfr:times', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:times', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('mul', cc, a, b, mpfr.get_default_rounding_mode ());
+        mpfr_ ('mul', cc, a, b, mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
       else
-        error ('mpfr:times', 'Invalid operands a and b.');
+        error ('mpfr_t:times', 'Invalid operands a and b.');
       end
     end
 
@@ -230,39 +225,39 @@ classdef mpfr
       % Right element-wise division `a ./ b`
       % Precision of result is the maximum precision of a and b.
       % Using default rounding mode.
-      if (isnumeric (a) && isa (b, 'mpfr'))
+      if (isnumeric (a) && isa (b, 'mpfr_t'))
         if (isscalar (a) || isequal (size (a), b.dims))
           prec = max (mpfr_ ('get_prec', b));
-          cc = mpfr (zeros (b.dims), prec);
+          cc = mpfr_t (zeros (b.dims), prec);
         else
-          error ('mpfr:rdivide', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:rdivide', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('d_div', cc, double (a(:)), b,
-               mpfr.get_default_rounding_mode ());
+        mpfr_ ('d_div', cc, double (a(:)), b, ...
+               mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
-      elseif (isa (a, 'mpfr') && isnumeric (b))
+      elseif (isa (a, 'mpfr_t') && isnumeric (b))
         if (isscalar (b) || isequal (a.dims, size (b)))
           prec = max (mpfr_ ('get_prec', a));
-          cc = mpfr (zeros (a.dims), prec);
+          cc = mpfr_t (zeros (a.dims), prec);
         else
-          error ('mpfr:rdivide', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:rdivide', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('div_d', cc, a, double (b(:)),
-               mpfr.get_default_rounding_mode ());
+        mpfr_ ('div_d', cc, a, double (b(:)), ...
+               mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
-      elseif (isa (a, 'mpfr') && isa (b, 'mpfr'))
+      elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         prec = max (max (mpfr_ ('get_prec', a)), max (mpfr_ ('get_prec', b)));
         if (isequal (a.dims, b.dims) || isequal (b.dims, [1 1]))
-          cc = mpfr (zeros (a.dims), prec);
+          cc = mpfr_t (zeros (a.dims), prec);
         elseif (isequal (a.dims, [1 1]))
-          cc = mpfr (zeros (b.dims), prec);
+          cc = mpfr_t (zeros (b.dims), prec);
         else
-          error ('mpfr:rdivide', 'Incompatible dimensions of a and b.');
+          error ('mpfr_t:rdivide', 'Incompatible dimensions of a and b.');
         end
-        mpfr_ ('div', cc, a, b, mpfr.get_default_rounding_mode ());
+        mpfr_ ('div', cc, a, b, mpfr_t.get_default_rounding_mode ());
         c = cc;  % Do not assign c before calculation succeeded!
       else
-        error ('mpfr:rdivide', 'Invalid operands a and b.');
+        error ('mpfr_t:rdivide', 'Invalid operands a and b.');
       end
     end
 
