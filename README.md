@@ -57,9 +57,9 @@ double (rop)  % Note rop vs. ret!
 
 Another benefit of using the low-level MPFR interface is that **in-place**
 operations are permitted:
-
-    ret = mpfr_('add', op1, op1, op1, rnd);  op1 = op1 + op1
-
+```octave
+ret = mpfr_('add', op1, op1, op1, rnd);  % op1 = op1 + op1
+```
 
 ### Initialization Functions
 
