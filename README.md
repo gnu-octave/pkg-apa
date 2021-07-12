@@ -51,14 +51,14 @@ double (rop)  % Note rop vs. ret!
 ```
 
     ans =
-         5     1     1
-         1     5     1
-         1     1     5
+      5     1     1
+      1     5     1
+      1     1     5
 
 Another benefit of using the low-level MPFR interface is that **in-place**
 operations are permitted:
 ```octave
-ret = mpfr_('add', op1, op1, op1, rnd);  % op1 = op1 + op1
+ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 ```
 
 ### Initialization Functions
