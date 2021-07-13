@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 11% of MPFR 4.1.0 functions are supported.
+> Implementation status: 26% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -322,8 +322,8 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 ### Rounding-Related Functions
 
-- [ ] `void mpfr_set_default_rounding_mode (mpfr_rnd_t rnd)`
-- [ ] `mpfr_rnd_t mpfr_get_default_rounding_mode (void)`
+- [x] `void mpfr_set_default_rounding_mode (mpfr_rnd_t rnd)`
+- [x] `mpfr_rnd_t mpfr_get_default_rounding_mode (void)`
 
 - [ ] `int mpfr_prec_round (mpfr_t x, mpfr_prec_t prec, mpfr_rnd_t rnd)`
 
@@ -360,52 +360,52 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_copysign (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
 
-- [ ] `const char * mpfr_get_version (void)`
+- [x] `const char * mpfr_get_version (void)`
 
-- [ ] `int mpfr_buildopt_tls_p (void)`
-- [ ] `int mpfr_buildopt_float128_p (void)`
-- [ ] `int mpfr_buildopt_decimal_p (void)`
-- [ ] `int mpfr_buildopt_gmpinternals_p (void)`
-- [ ] `int mpfr_buildopt_sharedcache_p (void)`
+- [x] `int mpfr_buildopt_tls_p (void)`
+- [x] `int mpfr_buildopt_float128_p (void)`
+- [x] `int mpfr_buildopt_decimal_p (void)`
+- [x] `int mpfr_buildopt_gmpinternals_p (void)`
+- [x] `int mpfr_buildopt_sharedcache_p (void)`
 
-- [ ] `const char * mpfr_buildopt_tune_case (void)`
+- [x] `const char * mpfr_buildopt_tune_case (void)`
 
 
 ### Exception Related Functions
 
-- [ ] `mpfr_exp_t mpfr_get_emin (void)`
-- [ ] `mpfr_exp_t mpfr_get_emax (void)`
+- [x] `mpfr_exp_t mpfr_get_emin (void)`
+- [x] `mpfr_exp_t mpfr_get_emax (void)`
 
 - [ ] `int mpfr_set_emin (mpfr_exp_t exp)`
 - [ ] `int mpfr_set_emax (mpfr_exp_t exp)`
 
-- [ ] `mpfr_exp_t mpfr_get_emin_min (void)`
-- [ ] `mpfr_exp_t mpfr_get_emin_max (void)`
-- [ ] `mpfr_exp_t mpfr_get_emax_min (void)`
-- [ ] `mpfr_exp_t mpfr_get_emax_max (void)`
+- [x] `mpfr_exp_t mpfr_get_emin_min (void)`
+- [x] `mpfr_exp_t mpfr_get_emin_max (void)`
+- [x] `mpfr_exp_t mpfr_get_emax_min (void)`
+- [x] `mpfr_exp_t mpfr_get_emax_max (void)`
 
 - [ ] `int mpfr_check_range (mpfr_t x, int t, mpfr_rnd_t rnd)`
 
 - [ ] `int mpfr_subnormalize (mpfr_t x, int t, mpfr_rnd_t rnd)`
 
-- [ ] `void mpfr_clear_underflow (void)`
-- [ ] `void mpfr_clear_overflow (void)`
-- [ ] `void mpfr_clear_divby0 (void)`
-- [ ] `void mpfr_clear_nanflag (void)`
-- [ ] `void mpfr_clear_inexflag (void)`
-- [ ] `void mpfr_clear_erangeflag (void)`
-- [ ] `void mpfr_clear_flags (void)`
+- [x] `void mpfr_clear_underflow (void)`
+- [x] `void mpfr_clear_overflow (void)`
+- [x] `void mpfr_clear_divby0 (void)`
+- [x] `void mpfr_clear_nanflag (void)`
+- [x] `void mpfr_clear_inexflag (void)`
+- [x] `void mpfr_clear_erangeflag (void)`
+- [x] `void mpfr_clear_flags (void)`
 
-- [ ] `void mpfr_set_underflow (void)`
-- [ ] `void mpfr_set_overflow (void)`
-- [ ] `void mpfr_set_divby0 (void)`
-- [ ] `void mpfr_set_nanflag (void)`
-- [ ] `void mpfr_set_inexflag (void)`
-- [ ] `void mpfr_set_erangeflag (void)`
+- [x] `void mpfr_set_underflow (void)`
+- [x] `void mpfr_set_overflow (void)`
+- [x] `void mpfr_set_divby0 (void)`
+- [x] `void mpfr_set_nanflag (void)`
+- [x] `void mpfr_set_inexflag (void)`
+- [x] `void mpfr_set_erangeflag (void)`
 
-- [ ] `int mpfr_underflow_p (void)`
-- [ ] `int mpfr_overflow_p (void)`
-- [ ] `int mpfr_divby0_p (void)`
-- [ ] `int mpfr_nanflag_p (void)`
-- [ ] `int mpfr_inexflag_p (void)`
-- [ ] `int mpfr_erangeflag_p (void)`
+- [x] `int mpfr_underflow_p (void)`
+- [x] `int mpfr_overflow_p (void)`
+- [x] `int mpfr_divby0_p (void)`
+- [x] `int mpfr_nanflag_p (void)`
+- [x] `int mpfr_inexflag_p (void)`
+- [x] `int mpfr_erangeflag_p (void)`

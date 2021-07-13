@@ -135,15 +135,168 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * mpfr_prec_t mpfr_get_default_prec (void)
+       * mpfr_rnd_t mpfr_get_default_rounding_mode (void)
+       * int mpfr_buildopt_tls_p (void)
+       * int mpfr_buildopt_float128_p (void)
+       * int mpfr_buildopt_decimal_p (void)
+       * int mpfr_buildopt_gmpinternals_p (void)
+       * int mpfr_buildopt_sharedcache_p (void)
+       * mpfr_exp_t mpfr_get_emin (void)
+       * mpfr_exp_t mpfr_get_emax (void)
+       * mpfr_exp_t mpfr_get_emin_min
+       * mpfr_exp_t mpfr_get_emin_max
+       * mpfr_exp_t mpfr_get_emax_min
+       * mpfr_exp_t mpfr_get_emax_max
+       * void mpfr_clear_underflow (void)
+       * void mpfr_clear_overflow (void)
+       * void mpfr_clear_divby0 (void)
+       * void mpfr_clear_nanflag (void)
+       * void mpfr_clear_inexflag (void)
+       * void mpfr_clear_erangeflag (void)
+       * void mpfr_clear_flags (void)
+       * void mpfr_set_underflow (void)
+       * void mpfr_set_overflow (void)
+       * void mpfr_set_divby0 (void)
+       * void mpfr_set_nanflag (void)
+       * void mpfr_set_inexflag (void)
+       * void mpfr_set_erangeflag (void)
+       * int mpfr_underflow_p (void)
+       * int mpfr_overflow_p (void)
+       * int mpfr_divby0_p (void)
+       * int mpfr_nanflag_p (void)
+       * int mpfr_inexflag_p (void)
+       * int mpfr_erangeflag_p (void)
+       * const char * mpfr_get_version (void)
+       * const char * mpfr_buildopt_tune_case (void)
        */
-      else if (strcmp (cmd_buf, "get_default_prec") == 0)
+      else if ((strcmp (cmd_buf, "get_default_prec") == 0)
+               || (strcmp (cmd_buf, "get_default_rounding_mode") == 0)
+               || (strcmp (cmd_buf, "buildopt_tls_p") == 0)
+               || (strcmp (cmd_buf, "buildopt_float128_p") == 0)
+               || (strcmp (cmd_buf, "buildopt_decimal_p") == 0)
+               || (strcmp (cmd_buf, "buildopt_gmpinternals_p") == 0)
+               || (strcmp (cmd_buf, "buildopt_sharedcache_p") == 0)
+               || (strcmp (cmd_buf, "get_emin") == 0)
+               || (strcmp (cmd_buf, "get_emax") == 0)
+               || (strcmp (cmd_buf, "get_emin_min") == 0)
+               || (strcmp (cmd_buf, "get_emin_max") == 0)
+               || (strcmp (cmd_buf, "get_emax_min") == 0)
+               || (strcmp (cmd_buf, "get_emax_max") == 0)
+               || (strcmp (cmd_buf, "clear_underflow") == 0)
+               || (strcmp (cmd_buf, "clear_overflow") == 0)
+               || (strcmp (cmd_buf, "clear_divby0") == 0)
+               || (strcmp (cmd_buf, "clear_nanflag") == 0)
+               || (strcmp (cmd_buf, "clear_inexflag") == 0)
+               || (strcmp (cmd_buf, "clear_erangeflag") == 0)
+               || (strcmp (cmd_buf, "clear_flags") == 0)
+               || (strcmp (cmd_buf, "set_underflow") == 0)
+               || (strcmp (cmd_buf, "set_overflow") == 0)
+               || (strcmp (cmd_buf, "set_divby0") == 0)
+               || (strcmp (cmd_buf, "set_nanflag") == 0)
+               || (strcmp (cmd_buf, "set_inexflag") == 0)
+               || (strcmp (cmd_buf, "set_erangeflag") == 0)
+               || (strcmp (cmd_buf, "underflow_p") == 0)
+               || (strcmp (cmd_buf, "overflow_p") == 0)
+               || (strcmp (cmd_buf, "divby0_p") == 0)
+               || (strcmp (cmd_buf, "nanflag_p") == 0)
+               || (strcmp (cmd_buf, "inexflag_p") == 0)
+               || (strcmp (cmd_buf, "erangeflag_p") == 0)
+               || (strcmp (cmd_buf, "get_version") == 0)
+               || (strcmp (cmd_buf, "buildopt_tune_case") == 0))
         {
           if (nrhs != 1)
             {
               MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
               break;
             }
-          plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_default_prec ());
+          if (strcmp (cmd_buf, "get_default_prec") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_default_prec ());
+          else if (strcmp (cmd_buf, "get_default_rounding_mode") == 0)
+            plhs[0] = mxCreateDoubleScalar (export_rounding_mode (
+              mpfr_get_default_rounding_mode ()));
+          else if (strcmp (cmd_buf, "buildopt_tls_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_buildopt_tls_p ());
+          else if (strcmp (cmd_buf, "buildopt_float128_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double)
+                                            mpfr_buildopt_float128_p ());
+          else if (strcmp (cmd_buf, "buildopt_decimal_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double)
+                                            mpfr_buildopt_decimal_p ());
+          else if (strcmp (cmd_buf, "buildopt_gmpinternals_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double)
+                                            mpfr_buildopt_gmpinternals_p ());
+          else if (strcmp (cmd_buf, "buildopt_sharedcache_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double)
+                                            mpfr_buildopt_sharedcache_p ());
+          else if (strcmp (cmd_buf, "get_emin") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_emin ());
+          else if (strcmp (cmd_buf, "get_emax") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_emax ());
+          else if (strcmp (cmd_buf, "get_emin_min") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_emin_min ());
+          else if (strcmp (cmd_buf, "get_emin_max") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_emin_max ());
+          else if (strcmp (cmd_buf, "get_emax_min") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_emax_min ());
+          else if (strcmp (cmd_buf, "get_emax_max") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_emax_max ());
+          else if (strcmp (cmd_buf, "clear_underflow") == 0)
+            mpfr_clear_underflow ();
+          else if (strcmp (cmd_buf, "clear_overflow") == 0)
+            mpfr_clear_overflow ();
+          else if (strcmp (cmd_buf, "clear_divby0") == 0)
+            mpfr_clear_divby0 ();
+          else if (strcmp (cmd_buf, "clear_nanflag") == 0)
+            mpfr_clear_nanflag ();
+          else if (strcmp (cmd_buf, "clear_inexflag") == 0)
+            mpfr_clear_inexflag ();
+          else if (strcmp (cmd_buf, "clear_erangeflag") == 0)
+            mpfr_clear_erangeflag ();
+          else if (strcmp (cmd_buf, "clear_flags") == 0)
+            mpfr_clear_flags ();
+          else if (strcmp (cmd_buf, "set_underflow") == 0)
+            mpfr_set_underflow ();
+          else if (strcmp (cmd_buf, "set_overflow") == 0)
+            mpfr_set_overflow ();
+          else if (strcmp (cmd_buf, "set_divby0") == 0)
+            mpfr_set_divby0 ();
+          else if (strcmp (cmd_buf, "set_nanflag") == 0)
+            mpfr_set_nanflag ();
+          else if (strcmp (cmd_buf, "set_inexflag") == 0)
+            mpfr_set_inexflag ();
+          else if (strcmp (cmd_buf, "set_erangeflag") == 0)
+            mpfr_set_erangeflag ();
+          else if (strcmp (cmd_buf, "underflow_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_underflow_p ());
+          else if (strcmp (cmd_buf, "overflow_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_overflow_p ());
+          else if (strcmp (cmd_buf, "divby0_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_divby0_p ());
+          else if (strcmp (cmd_buf, "nanflag_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_nanflag_p ());
+          else if (strcmp (cmd_buf, "inexflag_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_inexflag_p ());
+          else if (strcmp (cmd_buf, "erangeflag_p") == 0)
+            plhs[0] = mxCreateDoubleScalar ((double) mpfr_erangeflag_p ());
+          else if (strcmp (cmd_buf, "get_version") == 0)
+            {
+              char* output_buf = (char*) mxCalloc (
+                strlen (mpfr_get_version ()), sizeof(char));
+              strcpy (output_buf, mpfr_get_version ());
+              plhs[0] = mxCreateString (output_buf);
+            }
+          else if (strcmp (cmd_buf, "buildopt_tune_case") == 0)
+            {
+              char* output_buf = (char*) mxCalloc (
+                strlen (mpfr_buildopt_tune_case ()), sizeof(char));
+              strcpy (output_buf, mpfr_buildopt_tune_case ());
+              plhs[0] = mxCreateString (output_buf);
+            }
+          else
+            {
+              MEX_FCN_ERR ("%s: Bad operator.\n", cmd_buf);
+              break;
+            }
         }
 
       /**
@@ -163,20 +316,6 @@ mexFunction (int nlhs, mxArray *plhs[],
             MEX_FCN_ERR ("%s: Precision must be a numeric scalar between "
                          "%ld and %ld.\n", cmd_buf, MPFR_PREC_MIN,
                          MPFR_PREC_MAX);
-        }
-
-      /**
-       * mpfr_rnd_t mpfr_get_default_rounding_mode (void)
-       */
-      else if (strcmp (cmd_buf, "get_default_rounding_mode") == 0)
-        {
-          if (nrhs != 1)
-            {
-              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
-              break;
-            }
-          plhs[0] = mxCreateDoubleScalar (export_rounding_mode (
-            mpfr_get_default_rounding_mode ()));
         }
 
       /**
