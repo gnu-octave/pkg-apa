@@ -338,8 +338,10 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       /**
        * mpfr_prec_t mpfr_get_prec (mpfr_t x)
+       * mpfr_prec_t mpfr_min_prec (mpfr_t x)
        */
-      else if (strcmp (cmd_buf, "get_prec") == 0)
+      else if ((strcmp (cmd_buf, "get_prec") == 0)
+               || (strcmp (cmd_buf, "min_prec") == 0))
         {
           if (nrhs != 2)
             {
@@ -353,12 +355,153 @@ mexFunction (int nlhs, mxArray *plhs[],
               break;
             }
 
-          DBG_PRINTF ("get_prec [%d:%d]\n", idx.start, idx.end);
+          DBG_PRINTF ("%s [%d:%d]\n", cmd_buf, idx.start, idx.end);
           plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
                                            mxREAL);
           double* plhs_0_pr = mxGetPr (plhs[0]);
+
+          mpfr_prec_t (*fcn)(const mpfr_t);
+          if (strcmp (cmd_buf, "get_prec") == 0)
+            fcn = mpfr_get_prec;
+          else if (strcmp (cmd_buf, "min_prec") == 0)
+            fcn = mpfr_min_prec;
+          else
+            {
+              MEX_FCN_ERR ("%s: Bad operator.\n", cmd_buf);
+              break;
+            }
+
           for (size_t i = 0; i < length (&idx); i++)
-            plhs_0_pr[i] = (double) mpfr_get_prec (&data[(idx.start - 1) + i]);
+            plhs_0_pr[i] = (double) fcn (&data[(idx.start - 1) + i]);
+        }
+
+      /**
+       * mpfr_exp_t mpfr_get_exp (mpfr_t x)
+       */
+      else if (strcmp (cmd_buf, "get_exp") == 0)
+        {
+          if (nrhs != 2)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          idx_t idx;
+          if (! extract_idx (1, nrhs, prhs, &idx))
+            {
+              MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+
+          DBG_PRINTF ("%s [%d:%d]\n", cmd_buf, idx.start, idx.end);
+          plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
+                                           mxREAL);
+          double* plhs_0_pr = mxGetPr (plhs[0]);
+
+          for (size_t i = 0; i < length (&idx); i++)
+            plhs_0_pr[i] = (double) mpfr_get_exp (&data[(idx.start - 1) + i]);
+        }
+
+      /**
+       * int mpfr_nan_p (mpfr_t op)
+       * int mpfr_inf_p (mpfr_t op)
+       * int mpfr_number_p (mpfr_t op)
+       * int mpfr_zero_p (mpfr_t op)
+       * int mpfr_regular_p (mpfr_t op)
+       * int mpfr_sgn (mpfr_t op)
+       * int mpfr_integer_p (mpfr_t op)
+       * int mpfr_signbit (mpfr_t op)
+       */
+      else if ((strcmp (cmd_buf, "nan_p") == 0)
+               || (strcmp (cmd_buf, "inf_p") == 0)
+               || (strcmp (cmd_buf, "number_p") == 0)
+               || (strcmp (cmd_buf, "zero_p") == 0)
+               || (strcmp (cmd_buf, "regular_p") == 0)
+               || (strcmp (cmd_buf, "sgn") == 0)
+               || (strcmp (cmd_buf, "integer_p") == 0)
+               || (strcmp (cmd_buf, "signbit") == 0))
+        {
+          if (nrhs != 2)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          idx_t idx;
+          if (! extract_idx (1, nrhs, prhs, &idx))
+            {
+              MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+
+          DBG_PRINTF ("%s [%d:%d]\n", cmd_buf, idx.start, idx.end);
+          plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
+                                           mxREAL);
+          double* plhs_0_pr = mxGetPr (plhs[0]);
+
+          int (*fcn)(const mpfr_t);
+          if (strcmp (cmd_buf, "nan_p") == 0)
+            fcn = mpfr_nan_p;
+          else if (strcmp (cmd_buf, "inf_p") == 0)
+            fcn = mpfr_inf_p;
+          else if (strcmp (cmd_buf, "number_p") == 0)
+            fcn = mpfr_number_p;
+          else if (strcmp (cmd_buf, "zero_p") == 0)
+            fcn = mpfr_zero_p;
+          else if (strcmp (cmd_buf, "regular_p") == 0)
+            fcn = mpfr_regular_p;
+          else if (strcmp (cmd_buf, "sgn") == 0)
+            fcn = mpfr_sgn;
+          else if (strcmp (cmd_buf, "integer_p") == 0)
+            fcn = mpfr_integer_p;
+          else if (strcmp (cmd_buf, "signbit") == 0)
+            fcn = mpfr_signbit;
+          else
+            {
+              MEX_FCN_ERR ("%s: Bad operator.\n", cmd_buf);
+              break;
+            }
+
+          for (size_t i = 0; i < length (&idx); i++)
+            plhs_0_pr[i] = (double) fcn (&data[(idx.start - 1) + i]);
+        }
+
+      /**
+       * void mpfr_set_nan (mpfr_t x)
+       * void mpfr_nextabove (mpfr_t x)
+       * void mpfr_nextbelow (mpfr_t x)
+       */
+      else if ((strcmp (cmd_buf, "set_nan") == 0)
+               || (strcmp (cmd_buf, "nextabove") == 0)
+               || (strcmp (cmd_buf, "nextbelow") == 0))
+        {
+          if (nrhs != 2)
+            {
+              MEX_FCN_ERR ("%s: Invalid number of arguments.\n", cmd_buf);
+              break;
+            }
+          idx_t idx;
+          if (! extract_idx (1, nrhs, prhs, &idx))
+            {
+              MEX_FCN_ERR ("%s: Invalid MPFR variable indices.\n", cmd_buf);
+              break;
+            }
+
+          DBG_PRINTF ("%s [%d:%d]\n", cmd_buf, idx.start, idx.end);
+
+          void (*fcn)(mpfr_t);
+          if (strcmp (cmd_buf, "set_nan") == 0)
+            fcn = mpfr_set_nan;
+          else if (strcmp (cmd_buf, "nextabove") == 0)
+            fcn = mpfr_nextabove;
+          else if (strcmp (cmd_buf, "nextbelow") == 0)
+            fcn = mpfr_nextbelow;
+          else
+            {
+              MEX_FCN_ERR ("%s: Bad operator.\n", cmd_buf);
+              break;
+            }
+
+          for (size_t i = 0; i < length (&idx); i++)
+            fcn (&data[(idx.start - 1) + i]);
         }
 
       /**

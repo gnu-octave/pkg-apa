@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 26% of MPFR 4.1.0 functions are supported.
+> Implementation status: 32% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -82,7 +82,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [ ] `int mpfr_set_str (mpfr_t rop, const char *s, int base, mpfr_rnd_t rnd)`
 
-- [ ] `void mpfr_set_nan (mpfr_t x)`
+- [x] `void mpfr_set_nan (mpfr_t x)`
 - [ ] `void mpfr_set_inf (mpfr_t x, int sign)`
 - [ ] `void mpfr_set_zero (mpfr_t x, int sign)`
 
@@ -181,13 +181,13 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [ ] `int mpfr_cmpabs (mpfr_t op1, mpfr_t op2)`
 - [ ] `int mpfr_cmpabs_ui (mpfr_t op1, unsigned long op2)`
 
-- [ ] `int mpfr_nan_p (mpfr_t op)`
-- [ ] `int mpfr_inf_p (mpfr_t op)`
-- [ ] `int mpfr_number_p (mpfr_t op)`
-- [ ] `int mpfr_zero_p (mpfr_t op)`
-- [ ] `int mpfr_regular_p (mpfr_t op)`
+- [x] `int mpfr_nan_p (mpfr_t op)`
+- [x] `int mpfr_inf_p (mpfr_t op)`
+- [x] `int mpfr_number_p (mpfr_t op)`
+- [x] `int mpfr_zero_p (mpfr_t op)`
+- [x] `int mpfr_regular_p (mpfr_t op)`
 
-- [ ] `int mpfr_sgn (mpfr_t op)`
+- [x] `int mpfr_sgn (mpfr_t op)`
 
 - [ ] `int mpfr_greater_p (mpfr_t op1, mpfr_t op2)`
 - [ ] `int mpfr_greaterequal_p (mpfr_t op1, mpfr_t op2)`
@@ -317,7 +317,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [ ] `int mpfr_remainder (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_remquo (mpfr_t r, long* q, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_integer_p (mpfr_t op)`
+- [x] `int mpfr_integer_p (mpfr_t op)`
 
 
 ### Rounding-Related Functions
@@ -329,15 +329,15 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [ ] `int mpfr_can_round (mpfr_t b, mpfr_exp_t err, mpfr_rnd_t rnd1, mpfr_rnd_t rnd2, mpfr_prec_t prec)`
 
-- [ ] `mpfr_prec_t mpfr_min_prec (mpfr_t x)`
+- [x] `mpfr_prec_t mpfr_min_prec (mpfr_t x)`
 
 
 ### Miscellaneous Functions
 
 - [ ] `void mpfr_nexttoward (mpfr_t x, mpfr_t y)`
 
-- [ ] `void mpfr_nextabove (mpfr_t x)`
-- [ ] `void mpfr_nextbelow (mpfr_t x)`
+- [x] `void mpfr_nextabove (mpfr_t x)`
+- [x] `void mpfr_nextbelow (mpfr_t x)`
 
 - [x] `int mpfr_min (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
 - [x] `int mpfr_max (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
@@ -351,10 +351,10 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [ ] `int mpfr_erandom (mpfr_t rop1, gmp_randstate_t state, mpfr_rnd_t rnd)`
 
-- [ ] `mpfr_exp_t mpfr_get_exp (mpfr_t x)`
+- [x] `mpfr_exp_t mpfr_get_exp (mpfr_t x)`
 - [ ] `int mpfr_set_exp (mpfr_t x, mpfr_exp_t e)`
 
-- [ ] `int mpfr_signbit (mpfr_t op)`
+- [x] `int mpfr_signbit (mpfr_t op)`
 
 - [ ] `int mpfr_setsign (mpfr_t rop, mpfr_t op, int s, mpfr_rnd_t rnd)`
 
