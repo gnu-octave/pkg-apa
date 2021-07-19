@@ -29,6 +29,12 @@ static int VERBOSE = 1;
                                      __func__, __VA_ARGS__); throw_error = 1; \
            } while (0)
 
+#define MEX_NARGINCHK(num, cmd_code)
+        if (nrhs != (num)) {
+          MEX_FCN_ERR ("cmd[%d]: Invalid number of arguments.\n", (cmd_code));
+          break;
+        }
+
 // MPFR memory management
 // ======================
 //
