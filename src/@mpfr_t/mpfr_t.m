@@ -75,7 +75,7 @@ classdef mpfr_t
       end
 
       if (isnumeric (x))
-        obj.idx = mpfr_ ('allocate', prod (obj.dims))';
+        obj.idx = mpfr_ ('mex_mpfr_allocate', prod (obj.dims))';
         mpfr_ ('set_prec', obj.idx, prec);
         mpfr_ ('set_d', obj.idx, x(:), rnd);
       elseif (ischar (x))
