@@ -29,11 +29,71 @@ static int VERBOSE = 1;
                                      __func__, __VA_ARGS__); throw_error = 1; \
            } while (0)
 
-#define MEX_NARGINCHK(num, cmd_code) \
-        if (nrhs != (num)) { \
-          MEX_FCN_ERR ("cmd[%d]: Invalid number of arguments.\n", (cmd_code)); \
-          break; \
-        }
+/**
+ * Check number or input arguments.
+ *
+ * @param num Desired number of MEX `nrhs`.
+ */
+
+#define MEX_NARGINCHK(num) \
+        if (nrhs != (num)) \
+          { \
+            MEX_FCN_ERR ("cmd[%d]: Invalid number of arguments.\n", cmd_code); \
+            break; \
+          }
+
+
+/**
+ * Safely declare and read MPFR_T variable(-arrays) from MEX interface.
+ *
+ * @param mex_rhs Position (0-based) in MEX input.
+ * @param name    Desired variable name.
+ */
+
+#define MEX_MPFR_T(mex_rhs, name) \
+        idx_t name; \
+        if (! extract_idx ((mex_rhs), nrhs, prhs, &name)) \
+          { \
+            MEX_FCN_ERR ("cmd[%d]:"#name" Invalid MPFR variable indices.\n", \
+                         cmd_code); \
+            break; \
+          }
+
+
+/**
+ * Safely declare and read MPFR_RND_T variable from MEX interface.
+ *
+ * @param mex_rhs Position (0-based) in MEX input.
+ * @param name    Desired variable name.
+ */
+
+#define MEX_MPFR_RND_T(mex_rhs, name) \
+        mpfr_rnd_t name = mpfr_get_default_rounding_mode (); \
+        if (! extract_rounding_mode ((mex_rhs), nrhs, prhs, &name)) \
+          { \
+            MEX_FCN_ERR ("cmd[%d]:"#name" Rounding must be a numeric scalar " \
+                         "between -1 and 3.\n", cmd_code); \
+            break; \
+          }
+
+
+/**
+ * Safely declare and read MPFR_PREC_T variable from MEX interface.
+ *
+ * @param mex_rhs Position (0-based) in MEX input.
+ * @param name    Desired variable name.
+ */
+
+#define MEX_MPFR_PREC_T(mex_rhs, name) \
+        mpfr_prec_t name = mpfr_get_default_prec (); \
+        if (! extract_prec ((mex_rhs), nrhs, prhs, &name)) \
+          { \
+            MEX_FCN_ERR ("cmd[%d]:"#name" Precision must be a numeric " \
+                         "scalar between %ld and %ld.\n", cmd_code, \
+                         MPFR_PREC_MIN, MPFR_PREC_MAX); \
+            break; \
+          }
+
 
 // MPFR memory management
 // ======================
