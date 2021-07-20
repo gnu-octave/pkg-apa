@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 56% of MPFR 4.1.0 functions are supported.
+> Implementation status: 62% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -86,7 +86,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [ ] `void mpfr_set_inf (mpfr_t x, int sign)`
 - [ ] `void mpfr_set_zero (mpfr_t x, int sign)`
 
-- [ ] `void mpfr_swap (mpfr_t x, mpfr_t y)`
+- [x] `void mpfr_swap (mpfr_t x, mpfr_t y)`
 
 
 ### Combined Initialization and Assignment Functions
@@ -172,13 +172,13 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 ### Comparison Functions
 
-- [ ] `int mpfr_cmp (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_cmp (mpfr_t op1, mpfr_t op2)`
 - [ ] `int mpfr_cmp_d (mpfr_t op1, double op2)`
 
 - [ ] `int mpfr_cmp_ui_2exp (mpfr_t op1, unsigned long int op2, mpfr_exp_t e)`
 - [ ] `int mpfr_cmp_si_2exp (mpfr_t op1, long int op2, mpfr_exp_t e)`
 
-- [ ] `int mpfr_cmpabs (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_cmpabs (mpfr_t op1, mpfr_t op2)`
 - [ ] `int mpfr_cmpabs_ui (mpfr_t op1, unsigned long op2)`
 
 - [x] `int mpfr_nan_p (mpfr_t op)`
@@ -189,17 +189,17 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_sgn (mpfr_t op)`
 
-- [ ] `int mpfr_greater_p (mpfr_t op1, mpfr_t op2)`
-- [ ] `int mpfr_greaterequal_p (mpfr_t op1, mpfr_t op2)`
-- [ ] `int mpfr_less_p (mpfr_t op1, mpfr_t op2)`
-- [ ] `int mpfr_lessequal_p (mpfr_t op1, mpfr_t op2)`
-- [ ] `int mpfr_equal_p (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_greater_p (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_greaterequal_p (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_less_p (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_lessequal_p (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_equal_p (mpfr_t op1, mpfr_t op2)`
 
-- [ ] `int mpfr_lessgreater_p (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_lessgreater_p (mpfr_t op1, mpfr_t op2)`
 
-- [ ] `int mpfr_unordered_p (mpfr_t op1, mpfr_t op2)`
+- [x] `int mpfr_unordered_p (mpfr_t op1, mpfr_t op2)`
 
-- [ ] `int mpfr_total_order_p (mpfr_t x, mpfr_t y)`
+- [x] `int mpfr_total_order_p (mpfr_t x, mpfr_t y)`
 
 
 ### Transcendental Functions
@@ -334,7 +334,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 ### Miscellaneous Functions
 
-- [ ] `void mpfr_nexttoward (mpfr_t x, mpfr_t y)`
+- [x] `void mpfr_nexttoward (mpfr_t x, mpfr_t y)`
 
 - [x] `void mpfr_nextabove (mpfr_t x)`
 - [x] `void mpfr_nextbelow (mpfr_t x)`

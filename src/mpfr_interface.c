@@ -12,6 +12,10 @@ void
 mexFunction (int nlhs, mxArray *plhs[],
              int nrhs, const mxArray *prhs[])
 {
+  #if (! defined(MPFR_VERSION) || (MPFR_VERSION < MPFR_VERSION_NUM(4,0,0)))
+  # error "Oldest supported MPFR version is 4.0.0."
+  #endif
+
   // Check code
   uint64_t cmd_code = 0;
   if (! extract_ui (0, nrhs, prhs, &cmd_code))
@@ -470,6 +474,24 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
+      case 13:  // void mpfr_swap (mpfr_t x, mpfr_t y)
+      {
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, op1);
+        MEX_MPFR_T(2, op2);
+        if (length (&op1) != length (&op2))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op2 Invalid size.\n", cmd_code);
+            break;
+          }
+        DBG_PRINTF ("cmd[%d]: op1 = [%d:%d], op2 = [%d:%d]\n",
+                    cmd_code, op1.start, op1.end, op2.start, op2.end);
+
+        for (size_t i = 0; i < length (&op1); i++)
+          mpfr_swap (&data[op1.start - 1 + i], &data[op2.start - 1 + i]);
+        break;
+      }
+
       case 14:  // int mpfr_init_set (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       {
         MEX_NARGINCHK(4);
@@ -899,6 +921,93 @@ mexFunction (int nlhs, mxArray *plhs[],
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) operator (rop_ptr + i,
                                                        op_ptr + i, rnd);
+        break;
+      }
+
+      case 63:  // int mpfr_cmp (mpfr_t op1, mpfr_t op2)
+      case 67:  // int mpfr_cmpabs (mpfr_t op1, mpfr_t op2)
+      case 75:  // int mpfr_greater_p (mpfr_t op1, mpfr_t op2)
+      case 76:  // int mpfr_greaterequal_p (mpfr_t op1, mpfr_t op2)
+      case 77:  // int mpfr_less_p (mpfr_t op1, mpfr_t op2)
+      case 78:  // int mpfr_lessequal_p (mpfr_t op1, mpfr_t op2)
+      case 79:  // int mpfr_equal_p (mpfr_t op1, mpfr_t op2)
+      case 80:  // int mpfr_lessgreater_p (mpfr_t op1, mpfr_t op2)
+      case 81:  // int mpfr_unordered_p (mpfr_t op1, mpfr_t op2)
+      case 82:  // int mpfr_total_order_p (mpfr_t x, mpfr_t y)
+      {
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, op1);
+        MEX_MPFR_T(2, op2);
+        if (length (&op1) != length (&op2))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op2 Invalid size.\n", cmd_code);
+            break;
+          }
+        DBG_PRINTF ("cmd[%d]: op1 = [%d:%d], op2 = [%d:%d]\n",
+                    cmd_code, op1.start, op1.end, op2.start, op2.end);
+
+        int (*operator) (const mpfr_t, const mpfr_t);
+        if (cmd_code == 63)
+          operator = mpfr_cmp;
+        else if (cmd_code == 67)
+          operator = mpfr_cmpabs;
+        else if (cmd_code == 75)
+          operator = mpfr_greater_p;
+        else if (cmd_code == 76)
+          operator = mpfr_greaterequal_p;
+        else if (cmd_code == 77)
+          operator = mpfr_less_p;
+        else if (cmd_code == 78)
+          operator = mpfr_lessequal_p;
+        else if (cmd_code == 79)
+          operator = mpfr_equal_p;
+        else if (cmd_code == 80)
+          operator = mpfr_lessgreater_p;
+        else if (cmd_code == 81)
+          operator = mpfr_unordered_p;
+        else if (cmd_code == 82)
+          {
+            #if (MPFR_VERSION < MPFR_VERSION_NUM(4,1,0))
+              MEX_FCN_ERR ("cmd[%d]: Not supported in MPFR %s.\n",
+                           cmd_code, MPFR_VERSION_STRING);
+              break;
+            #else
+              operator = mpfr_total_order_p;
+            #endif
+          }
+        else
+          {
+            MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
+            break;
+          }
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&op1): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double*  ret_ptr = mxGetPr (plhs[0]);
+        mpfr_ptr op1_ptr = &data[op1.start - 1];
+        mpfr_ptr op2_ptr = &data[op2.start - 1];
+        size_t ret_stride = (nlhs) ? 1 : 0;
+        for (size_t i = 0; i < length (&op1); i++)
+          ret_ptr[i * ret_stride] = (double) operator (op1_ptr + i,
+                                                       op2_ptr + i);
+        break;
+      }
+
+      case 166:  // void mpfr_nexttoward (mpfr_t x, mpfr_t y)
+      {
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, op1);
+        MEX_MPFR_T(2, op2);
+        if (length (&op1) != length (&op2))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op2 Invalid size.\n", cmd_code);
+            break;
+          }
+        DBG_PRINTF ("cmd[%d]: op1 = [%d:%d], op2 = [%d:%d]\n",
+                    cmd_code, op1.start, op1.end, op2.start, op2.end);
+
+        for (size_t i = 0; i < length (&op1); i++)
+          mpfr_nexttoward (&data[op1.start - 1 + i], &data[op2.start - 1 + i]);
         break;
       }
 
