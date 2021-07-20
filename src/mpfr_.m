@@ -24,7 +24,9 @@ end
 
 
 function result = code_lookup (item)
-  persistent conversion = { ...
+  persistent conversion; 
+  if (isempty (conversion))
+    conversion = { ...
       0, 'init2'; ...
       1, 'set_default_prec'; ...
       2, 'get_default_prec'; ...
@@ -246,7 +248,8 @@ function result = code_lookup (item)
     9001, 'get_data_size'; ...
     9002, 'set_verbose'; ...
     9003, 'mex_mpfr_allocate'; ...
-  };
+    };
+  end
   if (ischar (item))
     if (strncmp (item, 'mpfr_', 5))
       sitem = item (6:end);
@@ -266,6 +269,6 @@ function result = code_lookup (item)
       error ('mpfr_:unknownCmd', 'mpfr_: Invalid code "%d".\n', item);
     end
   else
-    error ('mpfr_:badCmd', 'mpfr_: Bad lookup input.', item);
+    error ('mpfr_:badCmd', 'mpfr_: Bad lookup input.');
   end
 end
