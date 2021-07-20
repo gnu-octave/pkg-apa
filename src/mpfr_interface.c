@@ -470,6 +470,34 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
+      case 14:  // int mpfr_init_set (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK(4);
+        MEX_MPFR_T(1, rop);
+        MEX_MPFR_T(2, op);
+        if (length (&rop) != length (&op))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op Invalid size.\n", cmd_code);
+            break;
+          }
+        MEX_MPFR_RND_T(3, rnd);
+        DBG_PRINTF ("cmd[%d]: rop = [%d:%d], op = [%d:%d] (rnd = %d)\n",
+                    cmd_code, rop.start, rop.end, op.start, op.end, (int) rnd);
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double*  ret_ptr = mxGetPr (plhs[0]);
+        size_t ret_stride = (nlhs) ? 1 : 0;
+
+        for (size_t i = 0; i < length (&rop); i++)
+          {
+            mpfr_clear (&data[(rop.start - 1) + i]);
+            ret_ptr[i * ret_stride] = mpfr_init_set (
+              &data[(rop.start - 1) + i], &data[(op.start - 1) + i], rnd);
+          }
+        break;
+      }
+
       case 17:  // double mpfr_get_d (mpfr_t op, mpfr_rnd_t rnd)
       {
         MEX_NARGINCHK(3);
@@ -673,7 +701,7 @@ mexFunction (int nlhs, mxArray *plhs[],
           ((cmd_code == 34) ? mpfr_d_sub : mpfr_d_div);
 
         plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
-                                          mxDOUBLE_CLASS, mxREAL);
+                                         mxDOUBLE_CLASS, mxREAL);
         double*  ret_ptr = mxGetPr (plhs[0]);
         mpfr_ptr rop_ptr = &data[rop.start - 1];
         double*  op1_ptr = mxGetPr (prhs[2]);
@@ -686,6 +714,191 @@ mexFunction (int nlhs, mxArray *plhs[],
               (double) operator (rop_ptr + i, op1_ptr[i * op1_stride],
                                  op2_ptr + i, rnd);
           }
+        break;
+      }
+
+      case 5:    // int mpfr_set (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 38:   // int mpfr_sqr (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 42:   // int mpfr_sqrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 44:   // int mpfr_rec_sqrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 48:   // int mpfr_neg (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 49:   // int mpfr_abs (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 83:   // int mpfr_log (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 85:   // int mpfr_log2 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 86:   // int mpfr_log10 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 87:   // int mpfr_log1p (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 88:   // int mpfr_exp (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 89:   // int mpfr_exp2 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 90:   // int mpfr_exp10 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 91:   // int mpfr_expm1 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 98:   // int mpfr_cos (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 99:   // int mpfr_sin (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 100:  // int mpfr_tan (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 102:  // int mpfr_sec (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 103:  // int mpfr_csc (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 104:  // int mpfr_cot (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 105:  // int mpfr_acos (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 106:  // int mpfr_asin (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 107:  // int mpfr_atan (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 109:  // int mpfr_cosh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 110:  // int mpfr_sinh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 111:  // int mpfr_tanh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 113:  // int mpfr_sech (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 114:  // int mpfr_csch (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 115:  // int mpfr_coth (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 116:  // int mpfr_acosh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 117:  // int mpfr_asinh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 118:  // int mpfr_atanh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 119:  // int mpfr_eint (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 120:  // int mpfr_li2 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 121:  // int mpfr_gamma (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 123:  // int mpfr_lngamma (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 125:  // int mpfr_digamma (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 127:  // int mpfr_zeta (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 129:  // int mpfr_erf (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 130:  // int mpfr_erfc (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 131:  // int mpfr_j0 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 132:  // int mpfr_j1 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 134:  // int mpfr_y0 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 135:  // int mpfr_y1 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 143:  // int mpfr_rint (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 149:  // int mpfr_rint_ceil (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 150:  // int mpfr_rint_floor (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 151:  // int mpfr_rint_round (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 152:  // int mpfr_rint_roundeven (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 153:  // int mpfr_rint_trunc (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 154:  // int mpfr_frac (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK(4);
+        MEX_MPFR_T(1, rop);
+        MEX_MPFR_T(2, op);
+        if (length (&rop) != length (&op))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op Invalid size.\n", cmd_code);
+            break;
+          }
+        MEX_MPFR_RND_T(3, rnd);
+        DBG_PRINTF ("cmd[%d]: rop = [%d:%d], op = [%d:%d] (rnd = %d)\n",
+                    cmd_code, rop.start, rop.end, op.start, op.end, (int) rnd);
+
+        int (*operator) (mpfr_t, const mpfr_t, mpfr_rnd_t);
+        if (cmd_code == 5)
+          operator = mpfr_set;
+        else if (cmd_code == 38)
+          operator = mpfr_sqr;
+        else if (cmd_code == 42)
+          operator = mpfr_sqrt;
+        else if (cmd_code == 44)
+          operator = mpfr_rec_sqrt;
+        else if (cmd_code == 48)
+          operator = mpfr_neg;
+        else if (cmd_code == 49)
+          operator = mpfr_abs;
+        else if (cmd_code == 83)
+          operator = mpfr_log;
+        else if (cmd_code == 85)
+          operator = mpfr_log2;
+        else if (cmd_code == 86)
+          operator = mpfr_log10;
+        else if (cmd_code == 87)
+          operator = mpfr_log1p;
+        else if (cmd_code == 88)
+          operator = mpfr_exp;
+        else if (cmd_code == 89)
+          operator = mpfr_exp2;
+        else if (cmd_code == 90)
+          operator = mpfr_exp10;
+        else if (cmd_code == 91)
+          operator = mpfr_expm1;
+        else if (cmd_code == 98)
+          operator = mpfr_cos;
+        else if (cmd_code == 99)
+          operator = mpfr_sin;
+        else if (cmd_code == 100)
+          operator = mpfr_tan;
+        else if (cmd_code == 102)
+          operator = mpfr_sec;
+        else if (cmd_code == 103)
+          operator = mpfr_csc;
+        else if (cmd_code == 104)
+          operator = mpfr_cot;
+        else if (cmd_code == 105)
+          operator = mpfr_acos;
+        else if (cmd_code == 106)
+          operator = mpfr_asin;
+        else if (cmd_code == 107)
+          operator = mpfr_atan;
+        else if (cmd_code == 109)
+          operator = mpfr_cosh;
+        else if (cmd_code == 110)
+          operator = mpfr_sinh;
+        else if (cmd_code == 111)
+          operator = mpfr_tanh;
+        else if (cmd_code == 113)
+          operator = mpfr_sech;
+        else if (cmd_code == 114)
+          operator = mpfr_csch;
+        else if (cmd_code == 115)
+          operator = mpfr_coth;
+        else if (cmd_code == 116)
+          operator = mpfr_acosh;
+        else if (cmd_code == 117)
+          operator = mpfr_asinh;
+        else if (cmd_code == 118)
+          operator = mpfr_atanh;
+        else if (cmd_code == 119)
+          operator = mpfr_eint;
+        else if (cmd_code == 120)
+          operator = mpfr_li2;
+        else if (cmd_code == 121)
+          operator = mpfr_gamma;
+        else if (cmd_code == 123)
+          operator = mpfr_lngamma;
+        else if (cmd_code == 125)
+          operator = mpfr_digamma;
+        else if (cmd_code == 127)
+          operator = mpfr_zeta;
+        else if (cmd_code == 129)
+          operator = mpfr_erf;
+        else if (cmd_code == 130)
+          operator = mpfr_erfc;
+        else if (cmd_code == 131)
+          operator = mpfr_j0;
+        else if (cmd_code == 132)
+          operator = mpfr_j1;
+        else if (cmd_code == 134)
+          operator = mpfr_y0;
+        else if (cmd_code == 135)
+          operator = mpfr_y1;
+        else if (cmd_code == 143)
+          operator = mpfr_rint;
+        else if (cmd_code == 149)
+          operator = mpfr_rint_ceil;
+        else if (cmd_code == 150)
+          operator = mpfr_rint_floor;
+        else if (cmd_code == 151)
+          operator = mpfr_rint_round;
+        else if (cmd_code == 152)
+          operator = mpfr_rint_roundeven;
+        else if (cmd_code == 153)
+          operator = mpfr_rint_trunc;
+        else if (cmd_code == 154)
+          operator = mpfr_frac;
+        else
+          {
+            MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
+            break;
+          }
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double*  ret_ptr = mxGetPr (plhs[0]);
+        mpfr_ptr rop_ptr = &data[rop.start - 1];
+        mpfr_ptr op_ptr = &data[op.start - 1];
+        size_t ret_stride = (nlhs) ? 1 : 0;
+        for (size_t i = 0; i < length (&rop); i++)
+          ret_ptr[i * ret_stride] = (double) operator (rop_ptr + i,
+                                                       op_ptr + i, rnd);
         break;
       }
 
