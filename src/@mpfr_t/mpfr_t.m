@@ -65,7 +65,6 @@ classdef mpfr_t
         error ('mpfr_t:mpfr_t', ...
           'Only two dimensional matrix input is supported.');
       end
-      obj.dims = size (x);
 
       if (nargin < 2)
         prec = mpfr_ ('get_default_prec');
@@ -74,17 +73,39 @@ classdef mpfr_t
         rnd = mpfr_ ('get_default_rounding_mode');
       end
 
-      if (isnumeric (x))
+      if (ischar (x))
+        obj = mpfr_t ({x}, prec, rnd);
+      elseif (isnumeric (x))
+        obj.dims = size (x);
         obj.idx = mpfr_ ('mex_mpfr_allocate', prod (obj.dims))';
         mpfr_ ('set_prec', obj.idx, prec);
         mpfr_ ('set_d', obj.idx, x(:), rnd);
-      elseif (ischar (x))
-        error ('mpfr_t:mpfr_t', 'TODO');
+      elseif (iscellstr (x))
+        obj.dims = size (x);
+        obj.idx = mpfr_ ('mex_mpfr_allocate', prod (obj.dims))';
+        mpfr_ ('set_prec', obj.idx, prec);
+        [ret, strpos] = mpfr_ ('strtofr', obj.idx, x(:), 0, rnd);
+        if (any (ret))
+          warning ('mpfr_t:inexact_conversion',
+                   'Conversion of %d value(s) was inexact.', sum (ret ~= 0));
+        end
+        bad_strs = (cellfun (@numel, x(:)) >= strpos);
+        if (any (bad_strs))
+          warning ('mpfr_t:bad_conversion',
+                   'Conversion of %d value(s) failed due to bad input.',
+                   sum (bad_strs));
+        end
       elseif (isa (x, 'mpfr_t'))
         error ('mpfr_t:mpfr_t', 'TODO');
       else
         error ('mpfr_t:mpfr_t', 'Input must be numeric, string, or mpfr_t.');
       end
+    end
+
+    function prec = prec (obj)
+      % Return the precision of obj, i.e., the number of bits used to store
+      % its significand.
+      prec = mpfr_ ('get_prec', obj.idx);
     end
 
     function d = double (obj, rnd)
@@ -101,8 +122,12 @@ classdef mpfr_t
 
     function disp (obj)
       % Object display
-      fprintf (1, '  %dx%d MPFR matrix\n', obj.dims(1), obj.dims(2));
-      fprintf (1, '\n');
+      if (prod (obj.dims) == 1)
+        fprintf (1, '  MPFR scalar (precision %d binary digits)\n\n', obj.prec);
+        fprintf (1, '    double approximation: %f\n', double (obj));
+      else
+        fprintf (1, '  %dx%d MPFR matrix\n\n', obj.dims(1), obj.dims(2));
+      end
     end
 
     function c = plus (a, b)
