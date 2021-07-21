@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 66% of MPFR 4.1.0 functions are supported.
+> Implementation status: 70% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -121,14 +121,14 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `void mpfr_free_str (char *str)`
 
-- [ ] `int mpfr_fits_ulong_p (mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fits_slong_p (mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fits_uint_p (mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fits_sint_p (mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fits_ushort_p (mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fits_sshort_p (mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fits_uintmax_p (mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fits_intmax_p (mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fits_ulong_p (mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fits_slong_p (mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fits_uint_p (mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fits_sint_p (mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fits_ushort_p (mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fits_sshort_p (mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fits_uintmax_p (mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fits_intmax_p (mpfr_t op, mpfr_rnd_t rnd)`
 
 
 ### Arithmetic Functions

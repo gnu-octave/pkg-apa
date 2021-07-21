@@ -696,14 +696,16 @@ mexFunction (int nlhs, mxArray *plhs[],
       case 17:  // double mpfr_get_d (mpfr_t op, mpfr_rnd_t rnd)
       {
         MEX_NARGINCHK(3);
-        MEX_MPFR_T(1, idx);
+        MEX_MPFR_T(1, op);
         MEX_MPFR_RND_T(2, rnd);
-        DBG_PRINTF ("cmd[%d]: [%d:%d]\n", cmd_code, idx.start, idx.end);
-        plhs[0] = mxCreateNumericMatrix (length (&idx), 1, mxDOUBLE_CLASS,
+        DBG_PRINTF ("cmd[%d]: [%d:%d] (rnd = %d)\n", cmd_code, op.start,
+                    op.end, (int) rnd);
+
+        plhs[0] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
                                          mxREAL);
-        double* plhs_0_pr = mxGetPr (plhs[0]);
-        for (size_t i = 0; i < length (&idx); i++)
-          plhs_0_pr[i] = mpfr_get_d (&data[(idx.start - 1) + i], rnd);
+        double* ret_ptr = mxGetPr (plhs[0]);
+        for (size_t i = 0; i < length (&op); i++)
+          ret_ptr[i] = mpfr_get_d (&data[(op.start - 1) + i], rnd);
         break;
       }
 
@@ -793,6 +795,52 @@ mexFunction (int nlhs, mxArray *plhs[],
               }
             exp_ptr[i] = (double) expptr;
           }
+        break;
+      }
+
+      case 23:  // int mpfr_fits_ulong_p (mpfr_t op, mpfr_rnd_t rnd)
+      case 24:  // int mpfr_fits_slong_p (mpfr_t op, mpfr_rnd_t rnd)
+      case 25:  // int mpfr_fits_uint_p (mpfr_t op, mpfr_rnd_t rnd)
+      case 26:  // int mpfr_fits_sint_p (mpfr_t op, mpfr_rnd_t rnd)
+      case 27:  // int mpfr_fits_ushort_p (mpfr_t op, mpfr_rnd_t rnd)
+      case 28:  // int mpfr_fits_sshort_p (mpfr_t op, mpfr_rnd_t rnd)
+      case 29:  // int mpfr_fits_uintmax_p (mpfr_t op, mpfr_rnd_t rnd)
+      case 30:  // int mpfr_fits_intmax_p (mpfr_t op, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, op);
+        MEX_MPFR_RND_T(2, rnd);
+        DBG_PRINTF ("cmd[%d]: [%d:%d] (rnd = %d)\n", cmd_code, op.start,
+                    op.end, (int) rnd);
+
+        int (*fcn)(const mpfr_t, mpfr_rnd_t);
+        if (cmd_code == 23)
+          fcn = mpfr_fits_ulong_p;
+        else if (cmd_code == 24)
+          fcn = mpfr_fits_slong_p;
+        else if (cmd_code == 25)
+          fcn = mpfr_fits_uint_p;
+        else if (cmd_code == 26)
+          fcn = mpfr_fits_sint_p;
+        else if (cmd_code == 27)
+          fcn = mpfr_fits_ushort_p;
+        else if (cmd_code == 28)
+          fcn = mpfr_fits_sshort_p;
+        else if (cmd_code == 29)
+          fcn = mpfr_fits_uintmax_p;
+        else if (cmd_code == 20)
+          fcn = mpfr_fits_intmax_p;
+        else
+          {
+            MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
+            break;
+          }
+
+        plhs[0] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
+                                         mxREAL);
+        double* ret_ptr = mxGetPr (plhs[0]);
+        for (size_t i = 0; i < length (&op); i++)
+          ret_ptr[i] = (double) fcn(&data[(op.start - 1) + i], rnd);
         break;
       }
 
