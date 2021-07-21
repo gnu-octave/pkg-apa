@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 63% of MPFR 4.1.0 functions are supported.
+> Implementation status: 66% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -77,17 +77,18 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [x] `int mpfr_set (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_set_ui_2exp (mpfr_t rop, unsigned long int op, mpfr_exp_t e, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_set_si_2exp (mpfr_t rop, long int op, mpfr_exp_t e, mpfr_rnd_t rnd)`
+- [x] `int mpfr_set_ui_2exp (mpfr_t rop, unsigned long int op, mpfr_exp_t e, mpfr_rnd_t rnd)`
+- [x] `int mpfr_set_si_2exp (mpfr_t rop, long int op, mpfr_exp_t e, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_set_str (mpfr_t rop, const char *s, int base, mpfr_rnd_t rnd)`
 - [x] `int mpfr_strtofr (mpfr_t rop, const char *nptr, char **endptr, int base, mpfr_rnd_t rnd)`
-> Note: The interface is changed to
-> `[returned_int_value, endptr] = mpfr_('strtofr', rop, nptr, base, rnd);`,
-> where `endptr` is the numerical index in the `nptr` input cell array of
-> strings that points to the character just after the valid data (if `endptr`
-> is not `-1`).  This means, if `endptr > numel (nptr)`, then all input was
-> valid and processed.
+
+  > Note: The interface is changed to
+  > `[returned_int_value, endptr] = mpfr_('strtofr', rop, nptr, base, rnd);`,
+  > where `endptr` is the numerical index in the `nptr` input cell array of
+  > strings that points to the character just after the valid data (if `endptr`
+  > is not `-1`).  This means, if `endptr > numel (nptr)`, then all input was
+  > valid and processed.
 
 - [x] `void mpfr_set_nan (mpfr_t x)`
 - [x] `void mpfr_set_inf (mpfr_t x, int sign)`
@@ -99,8 +100,8 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 ### Combined Initialization and Assignment Functions
 
 - [x] `int mpfr_init_set (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_init_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_init_set_str (mpfr_t x, const char *s, int base, mpfr_rnd_t rnd)`
+- [x] `int mpfr_init_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_init_set_str (mpfr_t x, const char *s, int base, mpfr_rnd_t rnd)`
 
 
 ### Conversion Functions
@@ -111,8 +112,14 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [ ] `int mpfr_frexp (mpfr_exp_t *exp, mpfr_t y, mpfr_t x, mpfr_rnd_t rnd)`
 
 - [ ] `size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)`
-- [ ] `char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base, size_t n, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `void mpfr_free_str (char *str)`
+- [x] `char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base, size_t n, mpfr_t op, mpfr_rnd_t rnd)`
+
+  > Note: The interface is changed to
+  > `[significant, expptr] = mpfr_('get_str', base, n, op, rnd);`,
+  >
+  > A call to `mpfr_free_str` is not necessary.
+
+- [x] `void mpfr_free_str (char *str)`
 
 - [ ] `int mpfr_fits_ulong_p (mpfr_t op, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_fits_slong_p (mpfr_t op, mpfr_rnd_t rnd)`
