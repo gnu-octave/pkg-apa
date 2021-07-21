@@ -86,13 +86,13 @@ classdef mpfr_t
         mpfr_ ('set_prec', obj.idx, prec);
         [ret, strpos] = mpfr_ ('strtofr', obj.idx, x(:), 0, rnd);
         if (any (ret))
-          warning ('mpfr_t:inexact_conversion',
+          warning ('mpfr_t:inexact_conversion', ...
                    'Conversion of %d value(s) was inexact.', sum (ret ~= 0));
         end
         bad_strs = (cellfun (@numel, x(:)) >= strpos);
         if (any (bad_strs))
-          warning ('mpfr_t:bad_conversion',
-                   'Conversion of %d value(s) failed due to bad input.',
+          warning ('mpfr_t:bad_conversion', ...
+                   'Conversion of %d value(s) failed due to bad input.', ...
                    sum (bad_strs));
         end
       elseif (isa (x, 'mpfr_t'))
