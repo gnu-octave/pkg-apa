@@ -459,6 +459,107 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
+      case 9:  // int mpfr_set_str (mpfr_t rop, const char *s, int base, mpfr_rnd_t rnd)
+      case 217:  // int mpfr_strtofr (mpfr_t rop, const char *nptr, char **endptr, int base, mpfr_rnd_t rnd)
+      {
+        // Note: In `mpfr_strtofr`, the parameter `char **endptr` is treated
+        // as output variable and activated, if two output variables are
+        // requested.
+        MEX_NARGINCHK(5);
+        MEX_MPFR_T(1, idx);
+        size_t strM = mxGetM (prhs[2]);
+        size_t strN = mxGetN (prhs[2]);
+        if (! mxIsCell (prhs[2])
+            || (((strM * strN) != length (&idx)) && ((strM * strN) != 1)))
+          {
+            MEX_FCN_ERR ("cmd[%d]:s must be a cell vector of strings "
+                         "of length 1 or %d\n.", cmd_code, length (&idx));
+            break;
+          }
+        size_t baseM = mxGetM (prhs[3]);
+        size_t baseN = mxGetN (prhs[3]);
+        if (! mxIsDouble (prhs[3])
+            || (((baseM * baseN) != length (&idx)) && ((baseM * baseN) != 1)))
+          {
+            MEX_FCN_ERR ("cmd[%d]:base must be a numeric vector "
+                         "of length 1 or %d\n.", cmd_code, length (&idx));
+            break;
+          }
+        MEX_MPFR_RND_T(4, rnd);
+        DBG_PRINTF ("cmd[%d]: [%d:%d] (rnd: %d)\n", cmd_code, idx.start,
+                    idx.end, (int) rnd);
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&idx): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double*  ret_ptr = mxGetPr (plhs[0]);
+        double* base_ptr = mxGetPr (prhs[3]);
+        size_t  ret_stride = (nlhs) ? 1 : 0;
+        size_t  str_stride = (( strM *  strN) == 1) ? 0 : 1;
+        size_t base_stride = ((baseM * baseN) == 1) ? 0 : 1;
+
+        char* str = mxArrayToString(mxGetCell(prhs[2], 0));
+        if (cmd_code == 9)
+          {
+            for (size_t i = 0; i < length (&idx); i++)
+              {
+                if (str_stride && (i > 0))
+                  {
+                    mxFree(str);
+                    str = mxArrayToString(mxGetCell(prhs[2], i * str_stride));
+                  }
+                ret_ptr[i * ret_stride] =
+                  mpfr_set_str (&data[(idx.start - 1) + i], str,
+                                (int) base_ptr[i * base_stride], rnd);
+              }
+          }
+        else  // mpfr_strtofr
+          {
+            plhs[1] = mxCreateNumericMatrix ((nlhs == 2) ? length (&idx): 1, 1,
+                                             mxDOUBLE_CLASS, mxREAL);
+            double* end_ptr = mxGetPr (plhs[1]);
+            size_t end_ptr_stride = (nlhs == 2) ? 1 : 0;
+            for (size_t i = 0; i < length (&idx); i++)
+              {
+                if (str_stride && (i > 0))
+                  {
+                    mxFree(str);
+                    str = mxArrayToString(mxGetCell(prhs[2], i * str_stride));
+                  }
+                char *endptr = NULL;
+                ret_ptr[i * ret_stride] =
+                  mpfr_strtofr (&data[(idx.start - 1) + i], str, &endptr,
+                                (int) base_ptr[i * base_stride], rnd);
+                end_ptr[i * end_ptr_stride] = (endptr == NULL)
+                                            ? -1.0
+                                            : (double) (endptr - str + 1);
+              }
+          }
+        mxFree(str);
+        break;
+      }
+
+      case 11:  // void mpfr_set_inf (mpfr_t x, int sign)
+      case 12:  // void mpfr_set_zero (mpfr_t x, int sign)
+      {
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, idx);
+        int64_t sign = 0;
+        if (! extract_si (2, nrhs, prhs, &sign))
+          {
+            MEX_FCN_ERR ("cmd[%d]: Sign must be a numeric scalar.\n", cmd_code);
+            break;
+          }
+        DBG_PRINTF ("cmd[%d]: [%d:%d] (sign: %d)\n", cmd_code, idx.start,
+                    idx.end, (int) sign);
+
+        void (*fcn)(mpfr_t, int) = ((cmd_code == 11) ? mpfr_set_inf
+                                                     : mpfr_set_zero);
+
+        for (size_t i = 0; i < length (&idx); i++)
+          fcn (&data[(idx.start - 1) + i], (int) sign);
+        break;
+      }
+
       case 0:  // void mpfr_init2 (mpfr_t x, mpfr_prec_t prec)
       case 3:  // void mpfr_set_prec (mpfr_t x, mpfr_prec_t prec)
       {
