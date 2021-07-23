@@ -8,6 +8,10 @@
  * See mpfr_interface.m for documentation.
  */
 
+#define MAX(a,b) \
+        ({ __typeof__ (a) _a = (a); __typeof__ (b) _b = (b); \
+         _a > _b ? _a : _b; })
+
 void
 mexFunction (int nlhs, mxArray *plhs[],
              int nrhs, const mxArray *prhs[])
@@ -706,6 +710,100 @@ mexFunction (int nlhs, mxArray *plhs[],
         double* ret_ptr = mxGetPr (plhs[0]);
         for (size_t i = 0; i < length (&op); i++)
           ret_ptr[i] = mpfr_get_d (&data[(op.start - 1) + i], rnd);
+        break;
+      }
+
+      case 18:  // double mpfr_get_d_2exp (long *exp, mpfr_t op, mpfr_rnd_t rnd)
+      {
+        // Note `long *exp` is return parameter.
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, op);
+        MEX_MPFR_RND_T(2, rnd);
+        DBG_PRINTF ("cmd[%d]: [%d:%d] (rnd = %d)\n", cmd_code, op.start,
+                    op.end, (int) rnd);
+
+        plhs[0] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
+                                         mxREAL);
+        plhs[1] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
+                                         mxREAL);
+        double* ret_ptr = mxGetPr (plhs[0]);
+        double* exp_ptr = mxGetPr (plhs[1]);
+        for (size_t i = 0; i < length (&op); i++)
+          {
+            long exp = 0;
+            ret_ptr[i] = mpfr_get_d_2exp (&exp, &data[(op.start - 1) + i], rnd);
+            exp_ptr[i] = (double) exp;
+          }
+        break;
+      }
+
+      case 19:  // int mpfr_frexp (mpfr_exp_t *exp, mpfr_t y, mpfr_t x, mpfr_rnd_t rnd)
+      {
+        // Note `mpfr_exp_t *exp` is return parameter.
+        MEX_NARGINCHK(4);
+        MEX_MPFR_T(1, y);
+        MEX_MPFR_T(2, x);
+        if (length (&y) != length (&x))
+          {
+            MEX_FCN_ERR ("cmd[%d]:x and y must have the same size.\n",
+                         cmd_code);
+            break;
+          }
+        MEX_MPFR_RND_T(3, rnd);
+        DBG_PRINTF ("cmd[%d]: [%d:%d] [%d:%d] (rnd = %d)\n", cmd_code,
+                    y.start, y.end, x.start, x.end, (int) rnd);
+
+        plhs[0] = mxCreateNumericMatrix (length (&y), 1, mxDOUBLE_CLASS,
+                                         mxREAL);
+        plhs[1] = mxCreateNumericMatrix (length (&y), 1, mxDOUBLE_CLASS,
+                                         mxREAL);
+        double* ret_ptr = mxGetPr (plhs[0]);
+        double* exp_ptr = mxGetPr (plhs[1]);
+        for (size_t i = 0; i < length (&y); i++)
+          {
+            mpfr_exp_t exp = 0;
+            ret_ptr[i] = mpfr_frexp (&exp, &data[(y.start - 1) + i],
+                                     &data[(x.start - 1) + i], rnd);
+            exp_ptr[i] = (double) exp;
+          }
+        break;
+      }
+
+      case 20:  // size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)
+      {
+      #if (MPFR_VERSION < MPFR_VERSION_NUM(4,1,0))
+        MEX_FCN_ERR ("cmd[%d]: Not supported in MPFR %s.\n",
+                      cmd_code, MPFR_VERSION_STRING);
+      #else
+        MEX_NARGINCHK(3);
+        if (! mxIsDouble (prhs[1]) || ! mxIsDouble (prhs[2]))
+          {
+            MEX_FCN_ERR ("cmd[%d]:b and p must be a numeric vectors\n.",
+                         cmd_code);
+            break;
+          }
+        size_t op1Dim = mxGetM (prhs[1]) * mxGetN (prhs[1]);
+        size_t op2Dim = mxGetM (prhs[2]) * mxGetN (prhs[2]);
+        if ((op1Dim != 1) && (op2Dim != 1) && (op1Dim != op2Dim))
+          {
+            MEX_FCN_ERR ("cmd[%d]:b and p must be scalar or their dimensions "
+                         "must agree\n.",cmd_code);
+            break;
+          }
+        DBG_PRINTF ("cmd[%d]: dim(b) = %d, dim(p) = %d\n", op1Dim, op2Dim);
+
+        plhs[0] = mxCreateNumericMatrix (MAX(op1Dim, op2Dim), 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double* ret_ptr = mxGetPr (plhs[0]);
+        double* op1_ptr = mxGetPr (prhs[1]);
+        double* op2_ptr = mxGetPr (prhs[2]);
+        size_t op1_stride = (op1Dim == 1) ? 0 : 1;
+        size_t op2_stride = (op2Dim == 1) ? 0 : 1;
+
+        for (size_t i = 0; i < MAX(op1Dim, op2Dim); i++)
+          ret_ptr[i] = mpfr_get_str_ndigits ((int) op1_ptr[i * op1_stride],
+                                     (mpfr_prec_t) op2_ptr[i * op2_stride]);
+      #endif
         break;
       }
 

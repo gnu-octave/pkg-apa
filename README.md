@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 70% of MPFR 4.1.0 functions are supported.
+> Implementation status: 71% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -107,11 +107,11 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 ### Conversion Functions
 
 - [x] `double mpfr_get_d (mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `double mpfr_get_d_2exp (long *exp, mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `double mpfr_get_d_2exp (long *exp, mpfr_t op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_frexp (mpfr_exp_t *exp, mpfr_t y, mpfr_t x, mpfr_rnd_t rnd)`
+- [x] `int mpfr_frexp (mpfr_exp_t *exp, mpfr_t y, mpfr_t x, mpfr_rnd_t rnd)`
 
-- [ ] `size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)`
+- [x] `size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)`
 - [x] `char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base, size_t n, mpfr_t op, mpfr_rnd_t rnd)`
 
   > Note: The interface is changed to
