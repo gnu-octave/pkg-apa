@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 90% of MPFR 4.1.0 functions are supported.
+> Implementation status: 93% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -234,8 +234,8 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [x] `int mpfr_pow (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
 - [x] `int mpfr_pow_ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)`
 - [x] `int mpfr_pow_si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_ui_pow_ui (mpfr_t rop, unsigned long int op1, unsigned long int op2, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_ui_pow (mpfr_t rop, unsigned long int op1, mpfr_t op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_ui_pow_ui (mpfr_t rop, unsigned long int op1, unsigned long int op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_ui_pow (mpfr_t rop, unsigned long int op1, mpfr_t op2, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_cos (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_sin (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
@@ -276,7 +276,10 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_lngamma (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_lgamma (mpfr_t rop, int *signp, mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_lgamma (mpfr_t rop, int *signp, mpfr_t op, mpfr_rnd_t rnd)`
+
+  > Note: The interface is changed to
+  > `[returned_int_value, signp] = mpfr_('lgamma', rop, op, rnd);`
 
 - [x] `int mpfr_digamma (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
@@ -290,11 +293,11 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_j0 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_j1 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_jn (mpfr_t rop, long n, mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_jn (mpfr_t rop, long n, mpfr_t op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_y0 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_y1 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_yn (mpfr_t rop, long n, mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_yn (mpfr_t rop, long n, mpfr_t op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_agm (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
 

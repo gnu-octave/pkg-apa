@@ -1169,6 +1169,9 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       case 34:  // int mpfr_d_sub (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
       case 40:  // int mpfr_d_div (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 97:  // int mpfr_ui_pow (mpfr_t rop, unsigned long int op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 133:  // int mpfr_jn (mpfr_t rop, long n, mpfr_t op, mpfr_rnd_t rnd)
+      case 136:  // int mpfr_yn (mpfr_t rop, long n, mpfr_t op, mpfr_rnd_t rnd)
       {
         MEX_NARGINCHK(5);
         MEX_MPFR_T(1, rop);
@@ -1181,18 +1184,15 @@ mexFunction (int nlhs, mxArray *plhs[],
             break;
           }
         MEX_MPFR_T(3, op2);
-        if (length (&rop) != length (&op2))
+        if ((length (&op2) != length (&rop)) && (length (&op2) != 1))
           {
             MEX_FCN_ERR ("cmd[%d]:op2 Invalid size.\n", cmd_code);
             break;
           }
         MEX_MPFR_RND_T(4, rnd);
-        DBG_PRINTF ("cmd[%d]: [%d:%d] = [%d:%d] + [%d:%d] (rnd = %d)\n",
-                    cmd_code, rop.start, rop.end, op1M, op1N,
+        DBG_PRINTF ("cmd[%d]: rop = [%d:%d], op1 = [%d x %d], op2 = [%d:%d] "
+                    "(rnd = %d)\n", cmd_code, rop.start, rop.end, op1M, op1N,
                     op2.start, op2.end, (int) rnd);
-
-        int (*fcn) (mpfr_t, const double, const mpfr_t, mpfr_rnd_t) =
-          ((cmd_code == 34) ? mpfr_d_sub : mpfr_d_div);
 
         plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
                                          mxDOUBLE_CLASS, mxREAL);
@@ -1202,12 +1202,74 @@ mexFunction (int nlhs, mxArray *plhs[],
         mpfr_ptr op2_ptr = &data[op2.start - 1];
         size_t ret_stride = (nlhs) ? 1 : 0;
         size_t op1_stride = ((op1M * op1N) == 1) ? 0 : 1;
-        for (size_t i = 0; i < length (&rop); i++)
+        size_t op2_stride = (length (&op2) == 1) ? 0 : 1;
+        if (cmd_code == 34)
+          for (size_t i = 0; i < length (&rop); i++)
+            ret_ptr[i * ret_stride] = (double) mpfr_d_sub (rop_ptr + i,
+              op1_ptr[i * op1_stride], op2_ptr + (i * op2_stride), rnd);
+        else if (cmd_code == 40)
+          for (size_t i = 0; i < length (&rop); i++)
+            ret_ptr[i * ret_stride] = (double) mpfr_d_div (rop_ptr + i,
+              op1_ptr[i * op1_stride], op2_ptr + (i * op2_stride), rnd);
+        else if (cmd_code == 97)
+          for (size_t i = 0; i < length (&rop); i++)
+            ret_ptr[i * ret_stride] = (double) mpfr_ui_pow (rop_ptr + i,
+              (unsigned long int) op1_ptr[i * op1_stride],
+              op2_ptr + (i * op2_stride), rnd);
+        else if (cmd_code == 133)
+          for (size_t i = 0; i < length (&rop); i++)
+            ret_ptr[i * ret_stride] = (double) mpfr_jn (rop_ptr + i,
+              (long) op1_ptr[i * op1_stride], op2_ptr + (i * op2_stride), rnd);
+        else if (cmd_code == 136)
+          for (size_t i = 0; i < length (&rop); i++)
+            ret_ptr[i * ret_stride] = (double) mpfr_yn (rop_ptr + i,
+              (long) op1_ptr[i * op1_stride], op2_ptr + (i * op2_stride), rnd);
+        else
           {
-            ret_ptr[i * ret_stride] =
-              (double) fcn (rop_ptr + i, op1_ptr[i * op1_stride],
-                            op2_ptr + i, rnd);
+            mxFree(plhs[0]);
+            MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
           }
+        break;
+      }
+
+      case 96:  // int mpfr_ui_pow_ui (mpfr_t rop, unsigned long int op1, unsigned long int op2, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK(5);
+        MEX_MPFR_T(1, rop);
+        size_t op1M = mxGetM (prhs[2]);
+        size_t op1N = mxGetN (prhs[2]);
+        if (! mxIsDouble (prhs[2])
+            || (((op1M * op1N) != length (&rop)) && ((op1M * op1N) != 1)))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op1 Invalid.\n", cmd_code);
+            break;
+          }
+        size_t op2M = mxGetM (prhs[3]);
+        size_t op2N = mxGetN (prhs[3]);
+        if (! mxIsDouble (prhs[3])
+            || (((op2M * op2N) != length (&rop)) && ((op2M * op2N) != 1)))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op2 Invalid.\n", cmd_code);
+            break;
+          }
+        MEX_MPFR_RND_T(4, rnd);
+        DBG_PRINTF ("cmd[%d]: rop = [%d:%d], op1 = [%d x %d], op2 = [%d x %d] "
+                    "(rnd = %d)\n", cmd_code, rop.start, rop.end, op1M, op1N,
+                    op2M, op2N, (int) rnd);
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double*  ret_ptr = mxGetPr (plhs[0]);
+        mpfr_ptr rop_ptr = &data[rop.start - 1];
+        double*  op1_ptr = mxGetPr (prhs[2]);
+        double*  op2_ptr = mxGetPr (prhs[3]);
+        size_t ret_stride = (nlhs) ? 1 : 0;
+        size_t op1_stride = ((op1M * op1N) == 1) ? 0 : 1;
+        size_t op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
+        for (size_t i = 0; i < length (&rop); i++)
+          ret_ptr[i * ret_stride] = (double) mpfr_ui_pow_ui (rop_ptr + i,
+            (unsigned long int) op1_ptr[i * op1_stride],
+            (unsigned long int) op2_ptr[i * op2_stride], rnd);
         break;
       }
 
@@ -1961,6 +2023,39 @@ mexFunction (int nlhs, mxArray *plhs[],
             ret_ptr[i * ret_stride] = (double) mpfr_cmp_si_2exp (
               op1_ptr + (i * op1_stride), (long int) op2_ptr[i * op2_stride],
               e);
+        break;
+      }
+
+      case 124:  // int mpfr_lgamma (mpfr_t rop, int *signp, mpfr_t op, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK(4);
+        MEX_MPFR_T(1, rop);
+        MEX_MPFR_T(2, op);
+        if ((length (&op) != length (&rop)) && (length (&op) != 1))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op Invalid.\n", cmd_code);
+            break;
+          }
+        MEX_MPFR_RND_T(3, rnd);
+        DBG_PRINTF ("cmd[%d]: rop = [%d:%d], op = [%d:%d] (rnd = %d)\n",
+                    cmd_code, rop.start, rop.end, op.start, op.end, (int) rnd);
+
+        plhs[0] = mxCreateNumericMatrix (length (&rop), 1, mxDOUBLE_CLASS,
+                                         mxREAL);
+        plhs[1] = mxCreateNumericMatrix (length (&rop), 1, mxDOUBLE_CLASS,
+                                         mxREAL);
+        double*   ret_ptr = mxGetPr (plhs[0]);
+        double* signp_ptr = mxGetPr (plhs[1]);
+        mpfr_ptr  rop_ptr = &data[rop.start - 1];
+        mpfr_ptr   op_ptr = &data[op.start - 1];
+        size_t  op_stride = (length (&op) == 1) ? 0 : 1;
+        for (size_t i = 0; i < length (&rop); i++)
+          {
+            int signp = 0;
+            ret_ptr[i] = (double) mpfr_lgamma (rop_ptr + i, &signp,
+                                               op_ptr + (i * op_stride), rnd);
+            signp_ptr[i] = (double) signp;
+          }
         break;
       }
 
