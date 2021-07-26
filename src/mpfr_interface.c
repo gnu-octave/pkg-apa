@@ -829,18 +829,23 @@ mexFunction (int nlhs, mxArray *plhs[],
         MEX_MPFR_RND_T(3, rnd);
         DBG_PRINTF ("cmd[%d]: [%d:%d]\n", cmd_code, rop.start, rop.end);
 
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double* ret_ptr = mxGetPr (plhs[0]);
         double* op_pr = mxGetPr (prhs[2]);
+        size_t ret_stride = (nlhs) ? 1 : 0;
         size_t op_stride = ((opM * opN) == 1) ? 0 : 1;
 
         if (cmd_code == 6)
           for (size_t i = 0; i < length (&rop); i++)
-              mpfr_set_d(&data[(rop.start - 1) + i], op_pr[i * op_stride], rnd);
+            ret_ptr[i * ret_stride] = mpfr_set_d (&data[(rop.start - 1) + i],
+                                                  op_pr[i * op_stride], rnd);
         else
           for (size_t i = 0; i < length (&rop); i++)
             {
               mpfr_clear(&data[(rop.start - 1) + i]);
-              mpfr_init_set_d(&data[(rop.start - 1) + i], op_pr[i * op_stride],
-                              rnd);
+              ret_ptr[i * ret_stride] = mpfr_init_set_d (
+                &data[(rop.start - 1) + i], op_pr[i * op_stride], rnd);
             }
         break;
       }
