@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 84% of MPFR 4.1.0 functions are supported.
+> Implementation status: 86% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -300,10 +300,10 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_ai (mpfr_t rop, mpfr_t x, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_const_log2 (mpfr_t rop, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_const_pi (mpfr_t rop, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_const_euler (mpfr_t rop, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_const_catalan (mpfr_t rop, mpfr_rnd_t rnd)`
+- [x] `int mpfr_const_log2 (mpfr_t rop, mpfr_rnd_t rnd)`
+- [x] `int mpfr_const_pi (mpfr_t rop, mpfr_rnd_t rnd)`
+- [x] `int mpfr_const_euler (mpfr_t rop, mpfr_rnd_t rnd)`
+- [x] `int mpfr_const_catalan (mpfr_t rop, mpfr_rnd_t rnd)`
 
 
 ### Integer and Remainder Related Functions

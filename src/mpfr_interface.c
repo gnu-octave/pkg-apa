@@ -1674,6 +1674,43 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
+      case 139:  // int mpfr_const_log2 (mpfr_t rop, mpfr_rnd_t rnd)
+      case 140:  // int mpfr_const_pi (mpfr_t rop, mpfr_rnd_t rnd)
+      case 141:  // int mpfr_const_euler (mpfr_t rop, mpfr_rnd_t rnd)
+      case 142:  // int mpfr_const_catalan (mpfr_t rop, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, rop);
+        MEX_MPFR_RND_T(2, rnd);
+        DBG_PRINTF ("cmd[%d]: rop = [%d:%d] (rnd = %d)\n",
+                    cmd_code, rop.start, rop.end, (int) rnd);
+
+        int (*fcn)(mpfr_t, mpfr_rnd_t);
+        if (cmd_code == 139)
+          fcn = mpfr_const_log2;
+        else if (cmd_code == 140)
+          fcn = mpfr_const_pi;
+        else if (cmd_code == 141)
+          fcn = mpfr_const_euler;
+        else if (cmd_code == 142)
+          fcn = mpfr_const_catalan;
+        else
+          {
+            MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
+            break;
+          }
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double* ret_ptr = mxGetPr (plhs[0]);
+        size_t ret_stride = (nlhs) ? 1 : 0;
+
+        for (size_t i = 0; i < length (&rop); i++)
+          ret_ptr[i * ret_stride] = (double) fcn (&data[rop.start - 1 + i],
+                                                  rnd);
+        break;
+      }
+
       case 144:  // int mpfr_ceil (mpfr_t rop, mpfr_t op)
       case 145:  // int mpfr_floor (mpfr_t rop, mpfr_t op)
       case 146:  // int mpfr_round (mpfr_t rop, mpfr_t op)
