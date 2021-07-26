@@ -499,7 +499,7 @@ mexFunction (int nlhs, mxArray *plhs[],
         size_t ret_stride = (nlhs) ? 1 : 0;
         size_t  op_stride = (( opM *  opN) == 1) ? 0 : 1;
         size_t exp_stride = ((expM * expN) == 1) ? 0 : 1;
-        if (cmd_code ==  7)
+        if (cmd_code == 7)
           {
             for (size_t i = 0; i < length (&rop); i++)
               {
@@ -957,9 +957,14 @@ mexFunction (int nlhs, mxArray *plhs[],
       case 36:  // int mpfr_mul (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
       case 39:  // int mpfr_div (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
       case 50:  // int mpfr_dim (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 60:  // int mpfr_hypot (mpfr_t rop, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)
       case 92:  // int mpfr_pow (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 108:  // int mpfr_atan2 (mpfr_t rop, mpfr_t y, mpfr_t x, mpfr_rnd_t rnd)
+      case 122:  // int mpfr_gamma_inc (mpfr_t rop, mpfr_t op, mpfr_t op2, mpfr_rnd_t rnd)
       case 126:  // int mpfr_beta (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
       case 137:  // int mpfr_agm (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 156:  // int mpfr_fmod (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)
+      case 158:  // int mpfr_remainder (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)
       case 169:  // int mpfr_min (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
       case 170:  // int mpfr_max (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
       case 180:  // int mpfr_copysign (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
@@ -987,27 +992,37 @@ mexFunction (int nlhs, mxArray *plhs[],
 
         int (*fcn) (mpfr_t, const mpfr_t, const mpfr_t, mpfr_rnd_t);
         if (cmd_code == 31)
-          fcn =  mpfr_add;
+          fcn = mpfr_add;
         else if (cmd_code == 33)
-          fcn =  mpfr_sub;
+          fcn = mpfr_sub;
         else if (cmd_code == 36)
-          fcn =  mpfr_mul;
+          fcn = mpfr_mul;
         else if (cmd_code == 39)
-          fcn =  mpfr_div;
+          fcn = mpfr_div;
         else if (cmd_code == 50)
-          fcn =  mpfr_dim;
+          fcn = mpfr_dim;
+        else if (cmd_code == 60)
+          fcn = mpfr_hypot;
         else if (cmd_code == 92)
-          fcn =  mpfr_pow;
+          fcn = mpfr_pow;
+        else if (cmd_code == 108)
+          fcn = mpfr_atan2;
+        else if (cmd_code == 122)
+          fcn = mpfr_gamma_inc;
         else if (cmd_code == 126)
-          fcn =  mpfr_beta;
+          fcn = mpfr_beta;
         else if (cmd_code == 137)
-          fcn =  mpfr_agm;
+          fcn = mpfr_agm;
+        else if (cmd_code == 156)
+          fcn = mpfr_fmod;
+        else if (cmd_code == 158)
+          fcn = mpfr_remainder;
         else if (cmd_code == 169)
-          fcn =  mpfr_min;
+          fcn = mpfr_min;
         else if (cmd_code == 170)
-          fcn =  mpfr_max;
+          fcn = mpfr_max;
         else if (cmd_code == 180)
-          fcn =  mpfr_copysign;
+          fcn = mpfr_copysign;
         else
           {
             MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
@@ -1028,6 +1043,66 @@ mexFunction (int nlhs, mxArray *plhs[],
             ret_ptr[i * ret_stride] =
               (double) fcn (rop_ptr + i, op1_ptr + (i * op1_stride),
                             op2_ptr + (i * op2_stride), rnd);
+          }
+        break;
+      }
+
+      case 101:  // int mpfr_sin_cos (mpfr_t sop, mpfr_t cop, mpfr_t op, mpfr_rnd_t rnd)
+      case 112:  // int mpfr_sinh_cosh (mpfr_t sop, mpfr_t cop, mpfr_t op, mpfr_rnd_t rnd)
+      case 155:  // int mpfr_modf (mpfr_t iop, mpfr_t fop, mpfr_t op, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK(5);
+        MEX_MPFR_T(1, sop);
+        MEX_MPFR_T(2, cop);
+        MEX_MPFR_T(3, op);
+        if (length (&sop) != length (&cop))
+          {
+            MEX_FCN_ERR ("cmd[%d]:sop and cop must have the same size.\n",
+                         cmd_code);
+            break;
+          }
+        if (sop.start == cop.start)
+          {
+            MEX_FCN_ERR ("cmd[%d]:sop and cop must be different variables.\n",
+                         cmd_code);
+            break;
+          }
+        if ((length (&op) != length (&sop)) && (length (&op) != 1))
+          {
+            MEX_FCN_ERR ("cmd[%d]:op Invalid size.\n", cmd_code);
+            break;
+          }
+        MEX_MPFR_RND_T(4, rnd);
+        DBG_PRINTF ("cmd[%d]: sop = [%d:%d], cop = [%d:%d], op = [%d:%d] "
+                    "(rnd = %d)\n", cmd_code, sop.start, sop.end,
+                    cop.start, cop.end, op.start, op.end, (int) rnd);
+
+        int (*fcn) (mpfr_t, mpfr_t, const mpfr_t, mpfr_rnd_t);
+        if (cmd_code == 101)
+          fcn = mpfr_sin_cos;
+        else if (cmd_code == 112)
+          fcn = mpfr_sinh_cosh;
+        else if (cmd_code == 155)
+          fcn = mpfr_modf;
+        else
+          {
+            MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
+            break;
+          }
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&sop): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double*  ret_ptr = mxGetPr (plhs[0]);
+        mpfr_ptr sop_ptr = &data[sop.start - 1];
+        mpfr_ptr cop_ptr = &data[cop.start - 1];
+        mpfr_ptr  op_ptr = &data[op.start - 1];
+        size_t ret_stride = (nlhs) ? 1 : 0;
+        size_t  op_stride = (length (&op) == 1) ? 0 : 1;
+        for (size_t i = 0; i < length (&sop); i++)
+          {
+            ret_ptr[i * ret_stride] = (double) fcn (sop_ptr + i, cop_ptr + i,
+                                                    op_ptr + (i * op_stride),
+                                                    rnd);
           }
         break;
       }
@@ -1062,13 +1137,13 @@ mexFunction (int nlhs, mxArray *plhs[],
 
         int (*fcn) (mpfr_t, const mpfr_t, const double, mpfr_rnd_t);
         if (cmd_code == 32)
-          fcn =  mpfr_add_d;
+          fcn = mpfr_add_d;
         else if (cmd_code == 35)
-          fcn =  mpfr_sub_d;
+          fcn = mpfr_sub_d;
         else if (cmd_code == 37)
-          fcn =  mpfr_mul_d;
+          fcn = mpfr_mul_d;
         else if (cmd_code == 41)
-          fcn =  mpfr_div_d;
+          fcn = mpfr_div_d;
         else
           {
             MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
@@ -1181,6 +1256,7 @@ mexFunction (int nlhs, mxArray *plhs[],
       case 132:  // int mpfr_j1 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 134:  // int mpfr_y0 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 135:  // int mpfr_y1 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 138:  // int mpfr_ai (mpfr_t rop, mpfr_t x, mpfr_rnd_t rnd)
       case 143:  // int mpfr_rint (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 149:  // int mpfr_rint_ceil (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 150:  // int mpfr_rint_floor (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
@@ -1203,107 +1279,109 @@ mexFunction (int nlhs, mxArray *plhs[],
 
         int (*fcn) (mpfr_t, const mpfr_t, mpfr_rnd_t);
         if (cmd_code == 5)
-          fcn =  mpfr_set;
+          fcn = mpfr_set;
         else if (cmd_code == 38)
-          fcn =  mpfr_sqr;
+          fcn = mpfr_sqr;
         else if (cmd_code == 42)
-          fcn =  mpfr_sqrt;
+          fcn = mpfr_sqrt;
         else if (cmd_code == 44)
-          fcn =  mpfr_rec_sqrt;
+          fcn = mpfr_rec_sqrt;
         else if (cmd_code == 48)
-          fcn =  mpfr_neg;
+          fcn = mpfr_neg;
         else if (cmd_code == 49)
-          fcn =  mpfr_abs;
+          fcn = mpfr_abs;
         else if (cmd_code == 83)
-          fcn =  mpfr_log;
+          fcn = mpfr_log;
         else if (cmd_code == 85)
-          fcn =  mpfr_log2;
+          fcn = mpfr_log2;
         else if (cmd_code == 86)
-          fcn =  mpfr_log10;
+          fcn = mpfr_log10;
         else if (cmd_code == 87)
-          fcn =  mpfr_log1p;
+          fcn = mpfr_log1p;
         else if (cmd_code == 88)
-          fcn =  mpfr_exp;
+          fcn = mpfr_exp;
         else if (cmd_code == 89)
-          fcn =  mpfr_exp2;
+          fcn = mpfr_exp2;
         else if (cmd_code == 90)
-          fcn =  mpfr_exp10;
+          fcn = mpfr_exp10;
         else if (cmd_code == 91)
-          fcn =  mpfr_expm1;
+          fcn = mpfr_expm1;
         else if (cmd_code == 98)
-          fcn =  mpfr_cos;
+          fcn = mpfr_cos;
         else if (cmd_code == 99)
-          fcn =  mpfr_sin;
+          fcn = mpfr_sin;
         else if (cmd_code == 100)
-          fcn =  mpfr_tan;
+          fcn = mpfr_tan;
         else if (cmd_code == 102)
-          fcn =  mpfr_sec;
+          fcn = mpfr_sec;
         else if (cmd_code == 103)
-          fcn =  mpfr_csc;
+          fcn = mpfr_csc;
         else if (cmd_code == 104)
-          fcn =  mpfr_cot;
+          fcn = mpfr_cot;
         else if (cmd_code == 105)
-          fcn =  mpfr_acos;
+          fcn = mpfr_acos;
         else if (cmd_code == 106)
-          fcn =  mpfr_asin;
+          fcn = mpfr_asin;
         else if (cmd_code == 107)
-          fcn =  mpfr_atan;
+          fcn = mpfr_atan;
         else if (cmd_code == 109)
-          fcn =  mpfr_cosh;
+          fcn = mpfr_cosh;
         else if (cmd_code == 110)
-          fcn =  mpfr_sinh;
+          fcn = mpfr_sinh;
         else if (cmd_code == 111)
-          fcn =  mpfr_tanh;
+          fcn = mpfr_tanh;
         else if (cmd_code == 113)
-          fcn =  mpfr_sech;
+          fcn = mpfr_sech;
         else if (cmd_code == 114)
-          fcn =  mpfr_csch;
+          fcn = mpfr_csch;
         else if (cmd_code == 115)
-          fcn =  mpfr_coth;
+          fcn = mpfr_coth;
         else if (cmd_code == 116)
-          fcn =  mpfr_acosh;
+          fcn = mpfr_acosh;
         else if (cmd_code == 117)
-          fcn =  mpfr_asinh;
+          fcn = mpfr_asinh;
         else if (cmd_code == 118)
-          fcn =  mpfr_atanh;
+          fcn = mpfr_atanh;
         else if (cmd_code == 119)
-          fcn =  mpfr_eint;
+          fcn = mpfr_eint;
         else if (cmd_code == 120)
-          fcn =  mpfr_li2;
+          fcn = mpfr_li2;
         else if (cmd_code == 121)
-          fcn =  mpfr_gamma;
+          fcn = mpfr_gamma;
         else if (cmd_code == 123)
-          fcn =  mpfr_lngamma;
+          fcn = mpfr_lngamma;
         else if (cmd_code == 125)
-          fcn =  mpfr_digamma;
+          fcn = mpfr_digamma;
         else if (cmd_code == 127)
-          fcn =  mpfr_zeta;
+          fcn = mpfr_zeta;
         else if (cmd_code == 129)
-          fcn =  mpfr_erf;
+          fcn = mpfr_erf;
         else if (cmd_code == 130)
-          fcn =  mpfr_erfc;
+          fcn = mpfr_erfc;
         else if (cmd_code == 131)
-          fcn =  mpfr_j0;
+          fcn = mpfr_j0;
         else if (cmd_code == 132)
-          fcn =  mpfr_j1;
+          fcn = mpfr_j1;
         else if (cmd_code == 134)
-          fcn =  mpfr_y0;
+          fcn = mpfr_y0;
         else if (cmd_code == 135)
-          fcn =  mpfr_y1;
+          fcn = mpfr_y1;
+        else if (cmd_code == 138)
+          fcn = mpfr_ai;
         else if (cmd_code == 143)
-          fcn =  mpfr_rint;
+          fcn = mpfr_rint;
         else if (cmd_code == 149)
-          fcn =  mpfr_rint_ceil;
+          fcn = mpfr_rint_ceil;
         else if (cmd_code == 150)
-          fcn =  mpfr_rint_floor;
+          fcn = mpfr_rint_floor;
         else if (cmd_code == 151)
-          fcn =  mpfr_rint_round;
+          fcn = mpfr_rint_round;
         else if (cmd_code == 152)
-          fcn =  mpfr_rint_roundeven;
+          fcn = mpfr_rint_roundeven;
         else if (cmd_code == 153)
-          fcn =  mpfr_rint_trunc;
+          fcn = mpfr_rint_trunc;
         else if (cmd_code == 154)
-          fcn =  mpfr_frac;
+          fcn = mpfr_frac;
         else
           {
             MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
@@ -1323,6 +1401,8 @@ mexFunction (int nlhs, mxArray *plhs[],
 
       case 43:  // int mpfr_sqrt_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)
       case 55:  // int mpfr_fac_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)
+      case 84:  // int mpfr_log_ui (mpfr_t rop, unsigned long op, mpfr_rnd_t rnd)
+      case 128:  // int mpfr_zeta_ui (mpfr_t rop, unsigned long op, mpfr_rnd_t rnd)
       {
         MEX_NARGINCHK(4);
         MEX_MPFR_T(1, rop);
@@ -1338,8 +1418,20 @@ mexFunction (int nlhs, mxArray *plhs[],
         DBG_PRINTF ("cmd[%d]: rop = [%d:%d], op = [%d:%d] (rnd = %d)\n",
                     cmd_code, rop.start, rop.end, opM, opN, (int) rnd);
 
-        int (*fcn)(mpfr_t, unsigned long int, mpfr_rnd_t) =
-          ((cmd_code == 43) ? mpfr_sqrt_ui : mpfr_fac_ui);
+        int (*fcn)(mpfr_t, unsigned long int, mpfr_rnd_t);
+        if (cmd_code == 43)
+          fcn = mpfr_sqrt_ui;
+        else if (cmd_code == 55)
+          fcn = mpfr_fac_ui;
+        else if (cmd_code == 84)
+          fcn = mpfr_log_ui;
+        else if (cmd_code == 128)
+          fcn = mpfr_zeta_ui;
+        else
+          {
+            MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
+            break;
+          }
 
         plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
                                          mxDOUBLE_CLASS, mxREAL);
@@ -1538,23 +1630,23 @@ mexFunction (int nlhs, mxArray *plhs[],
 
         int (*fcn) (const mpfr_t, const mpfr_t);
         if (cmd_code == 63)
-          fcn =  mpfr_cmp;
+          fcn = mpfr_cmp;
         else if (cmd_code == 67)
-          fcn =  mpfr_cmpabs;
+          fcn = mpfr_cmpabs;
         else if (cmd_code == 75)
-          fcn =  mpfr_greater_p;
+          fcn = mpfr_greater_p;
         else if (cmd_code == 76)
-          fcn =  mpfr_greaterequal_p;
+          fcn = mpfr_greaterequal_p;
         else if (cmd_code == 77)
-          fcn =  mpfr_less_p;
+          fcn = mpfr_less_p;
         else if (cmd_code == 78)
-          fcn =  mpfr_lessequal_p;
+          fcn = mpfr_lessequal_p;
         else if (cmd_code == 79)
-          fcn =  mpfr_equal_p;
+          fcn = mpfr_equal_p;
         else if (cmd_code == 80)
-          fcn =  mpfr_lessgreater_p;
+          fcn = mpfr_lessgreater_p;
         else if (cmd_code == 81)
-          fcn =  mpfr_unordered_p;
+          fcn = mpfr_unordered_p;
         else if (cmd_code == 82)
           {
             #if (MPFR_VERSION < MPFR_VERSION_NUM(4,1,0))
@@ -1562,7 +1654,7 @@ mexFunction (int nlhs, mxArray *plhs[],
                            cmd_code, MPFR_VERSION_STRING);
               break;
             #else
-              fcn =  mpfr_total_order_p;
+              fcn = mpfr_total_order_p;
             #endif
           }
         else

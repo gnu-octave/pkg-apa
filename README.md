@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 79% of MPFR 4.1.0 functions are supported.
+> Implementation status: 84% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -177,7 +177,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [ ] `int mpfr_fmma (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_t op4, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_fmms (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_t op4, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_hypot (mpfr_t rop, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
+- [x] `int mpfr_hypot (mpfr_t rop, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
 
 - [ ] `int mpfr_sum (mpfr_t rop, const mpfr_ptr tab[], unsigned long int n, mpfr_rnd_t rnd)`
 
@@ -219,7 +219,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 ### Transcendental Functions
 
 - [x] `int mpfr_log (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_log_ui (mpfr_t rop, unsigned long op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_log_ui (mpfr_t rop, unsigned long op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_log2 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_log10 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
@@ -241,7 +241,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [x] `int mpfr_sin (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_tan (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_sin_cos (mpfr_t sop, mpfr_t cop, mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_sin_cos (mpfr_t sop, mpfr_t cop, mpfr_t op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_sec (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_csc (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
@@ -251,13 +251,13 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [x] `int mpfr_asin (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_atan (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_atan2 (mpfr_t rop, mpfr_t y, mpfr_t x, mpfr_rnd_t rnd)`
+- [x] `int mpfr_atan2 (mpfr_t rop, mpfr_t y, mpfr_t x, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_cosh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_sinh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_tanh (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_sinh_cosh (mpfr_t sop, mpfr_t cop, mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_sinh_cosh (mpfr_t sop, mpfr_t cop, mpfr_t op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_sech (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_csch (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
@@ -272,7 +272,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [x] `int mpfr_li2 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_gamma (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_gamma_inc (mpfr_t rop, mpfr_t op, mpfr_t op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_gamma_inc (mpfr_t rop, mpfr_t op, mpfr_t op2, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_lngamma (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
@@ -283,7 +283,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [x] `int mpfr_beta (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_zeta (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_zeta_ui (mpfr_t rop, unsigned long op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_zeta_ui (mpfr_t rop, unsigned long op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_erf (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_erfc (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
@@ -298,7 +298,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_agm (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_ai (mpfr_t rop, mpfr_t x, mpfr_rnd_t rnd)`
+- [x] `int mpfr_ai (mpfr_t rop, mpfr_t x, mpfr_rnd_t rnd)`
 
 - [ ] `int mpfr_const_log2 (mpfr_t rop, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_const_pi (mpfr_t rop, mpfr_rnd_t rnd)`
@@ -323,11 +323,11 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_frac (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_modf (mpfr_t iop, mpfr_t fop, mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_modf (mpfr_t iop, mpfr_t fop, mpfr_t op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_fmod (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fmod (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_fmodquo (mpfr_t r, long* q, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_remainder (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
+- [x] `int mpfr_remainder (mpfr_t r, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_remquo (mpfr_t r, long* q, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_integer_p (mpfr_t op)`
