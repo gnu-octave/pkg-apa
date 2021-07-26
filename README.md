@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 88% of MPFR 4.1.0 functions are supported.
+> Implementation status: 90% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -179,21 +179,21 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_hypot (mpfr_t rop, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_sum (mpfr_t rop, const mpfr_ptr tab[], unsigned long int n, mpfr_rnd_t rnd)`
+- [x] `int mpfr_sum (mpfr_t rop, const mpfr_ptr tab[], unsigned long int n, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_dot (mpfr_t rop, const mpfr_ptr a[], const mpfr_ptr b[], unsigned long int n, mpfr_rnd_t rnd)`
+- [x] `int mpfr_dot (mpfr_t rop, const mpfr_ptr a[], const mpfr_ptr b[], unsigned long int n, mpfr_rnd_t rnd)`
 
 
 ### Comparison Functions
 
 - [x] `int mpfr_cmp (mpfr_t op1, mpfr_t op2)`
-- [ ] `int mpfr_cmp_d (mpfr_t op1, double op2)`
+- [x] `int mpfr_cmp_d (mpfr_t op1, double op2)`
 
-- [ ] `int mpfr_cmp_ui_2exp (mpfr_t op1, unsigned long int op2, mpfr_exp_t e)`
-- [ ] `int mpfr_cmp_si_2exp (mpfr_t op1, long int op2, mpfr_exp_t e)`
+- [x] `int mpfr_cmp_ui_2exp (mpfr_t op1, unsigned long int op2, mpfr_exp_t e)`
+- [x] `int mpfr_cmp_si_2exp (mpfr_t op1, long int op2, mpfr_exp_t e)`
 
 - [x] `int mpfr_cmpabs (mpfr_t op1, mpfr_t op2)`
-- [ ] `int mpfr_cmpabs_ui (mpfr_t op1, unsigned long op2)`
+- [x] `int mpfr_cmpabs_ui (mpfr_t op1, unsigned long op2)`
 
 - [x] `int mpfr_nan_p (mpfr_t op)`
 - [x] `int mpfr_inf_p (mpfr_t op)`

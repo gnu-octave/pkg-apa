@@ -95,6 +95,24 @@ static int VERBOSE = 1;
           }
 
 
+/**
+ * Safely declare and read MPFR_EXP_T variable from MEX interface.
+ *
+ * @param mex_rhs Position (0-based) in MEX input.
+ * @param name    Desired variable name.
+ */
+
+#define MEX_MPFR_EXP_T(mex_rhs, name) \
+        mpfr_exp_t name = mpfr_get_emin (); \
+        if (! extract_si ((mex_rhs), nrhs, prhs, &name)) \
+          { \
+            MEX_FCN_ERR ("cmd[%d]:"#name" Exponent must be a numeric " \
+                         "scalar between %ld and %ld.\n", cmd_code, \
+                         mpfr_get_emin (), mpfr_get_emax ()); \
+            break; \
+          }
+
+
 // MPFR memory management
 // ======================
 //
