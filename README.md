@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 86% of MPFR 4.1.0 functions are supported.
+> Implementation status: 88% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -171,11 +171,11 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_fac_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_fma (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fms (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fma (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fms (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_fmma (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_t op4, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_fmms (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_t op4, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fmma (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_t op4, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fmms (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_t op4, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_hypot (mpfr_t rop, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)`
 
