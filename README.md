@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 74% of MPFR 4.1.0 functions are supported.
+> Implementation status: 79% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -150,26 +150,26 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [x] `int mpfr_div_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_sqrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_sqrt_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_sqrt_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_rec_sqrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_cbrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_rootn_ui (mpfr_t rop, mpfr_t op, unsigned long int n, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_root (mpfr_t rop, mpfr_t op, unsigned long int n, mpfr_rnd_t rnd)`
+- [x] `int mpfr_rootn_ui (mpfr_t rop, mpfr_t op, unsigned long int n, mpfr_rnd_t rnd)`
+- [x] `int mpfr_root (mpfr_t rop, mpfr_t op, unsigned long int n, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_neg (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_abs (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_dim (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_mul_2ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_mul_2si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_mul_2ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_mul_2si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_div_2ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_div_2si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_div_2ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_div_2si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_fac_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_fac_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)`
 
 - [ ] `int mpfr_fma (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_fms (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_t op3, mpfr_rnd_t rnd)`
@@ -232,9 +232,8 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 - [x] `int mpfr_expm1 (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
 - [x] `int mpfr_pow (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_pow_ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_pow_si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_pow_z (mpfr_t rop, mpfr_t op1, mpz_t op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_pow_ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)`
+- [x] `int mpfr_pow_si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_ui_pow_ui (mpfr_t rop, unsigned long int op1, unsigned long int op2, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_ui_pow (mpfr_t rop, unsigned long int op1, mpfr_t op2, mpfr_rnd_t rnd)`
 
