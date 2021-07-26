@@ -652,20 +652,25 @@ mexFunction (int nlhs, mxArray *plhs[],
       }
 
       case 13:  // void mpfr_swap (mpfr_t x, mpfr_t y)
+      case 166:  // void mpfr_nexttoward (mpfr_t x, mpfr_t y)
       {
         MEX_NARGINCHK(3);
-        MEX_MPFR_T(1, op1);
-        MEX_MPFR_T(2, op2);
-        if (length (&op1) != length (&op2))
+        MEX_MPFR_T(1, x);
+        MEX_MPFR_T(2, y);
+        if (length (&x) != length (&y))
           {
-            MEX_FCN_ERR ("cmd[%d]:op2 Invalid size.\n", cmd_code);
+            MEX_FCN_ERR ("cmd[%d]:y Invalid size.\n", cmd_code);
             break;
           }
-        DBG_PRINTF ("cmd[%d]: op1 = [%d:%d], op2 = [%d:%d]\n",
-                    cmd_code, op1.start, op1.end, op2.start, op2.end);
+        DBG_PRINTF ("cmd[%d]: x = [%d:%d], y = [%d:%d]\n",
+                    cmd_code, x.start, x.end, y.start, y.end);
 
-        for (size_t i = 0; i < length (&op1); i++)
-          mpfr_swap (&data[op1.start - 1 + i], &data[op2.start - 1 + i]);
+        if (cmd_code == 13)
+          for (size_t i = 0; i < length (&x); i++)
+            mpfr_swap (&data[x.start - 1 + i], &data[y.start - 1 + i]);
+        else
+          for (size_t i = 0; i < length (&x); i++)
+            mpfr_nexttoward (&data[x.start - 1 + i], &data[y.start - 1 + i]);
         break;
       }
 
@@ -1131,6 +1136,7 @@ mexFunction (int nlhs, mxArray *plhs[],
       case 38:   // int mpfr_sqr (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 42:   // int mpfr_sqrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 44:   // int mpfr_rec_sqrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      case 45:   // int mpfr_cbrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 48:   // int mpfr_neg (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 49:   // int mpfr_abs (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
       case 83:   // int mpfr_log (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
@@ -1381,21 +1387,48 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
-      case 166:  // void mpfr_nexttoward (mpfr_t x, mpfr_t y)
+      case 144:  // int mpfr_ceil (mpfr_t rop, mpfr_t op)
+      case 145:  // int mpfr_floor (mpfr_t rop, mpfr_t op)
+      case 146:  // int mpfr_round (mpfr_t rop, mpfr_t op)
+      case 147:  // int mpfr_roundeven (mpfr_t rop, mpfr_t op)
+      case 148:  // int mpfr_trunc (mpfr_t rop, mpfr_t op)
       {
         MEX_NARGINCHK(3);
-        MEX_MPFR_T(1, op1);
-        MEX_MPFR_T(2, op2);
-        if (length (&op1) != length (&op2))
+        MEX_MPFR_T(1, rop);
+        MEX_MPFR_T(2, op);
+        if (length (&rop) != length (&op))
           {
-            MEX_FCN_ERR ("cmd[%d]:op2 Invalid size.\n", cmd_code);
+            MEX_FCN_ERR ("cmd[%d]:op Invalid size.\n", cmd_code);
             break;
           }
-        DBG_PRINTF ("cmd[%d]: op1 = [%d:%d], op2 = [%d:%d]\n",
-                    cmd_code, op1.start, op1.end, op2.start, op2.end);
+        DBG_PRINTF ("cmd[%d]: rop = [%d:%d], op = [%d:%d]\n",
+                    cmd_code, rop.start, rop.end, op.start, op.end);
 
-        for (size_t i = 0; i < length (&op1); i++)
-          mpfr_nexttoward (&data[op1.start - 1 + i], &data[op2.start - 1 + i]);
+        int (*fcn)(mpfr_t, const mpfr_t);
+        if (cmd_code == 144)
+          fcn = mpfr_ceil;
+        else if (cmd_code == 145)
+          fcn = mpfr_floor;
+        else if (cmd_code == 146)
+          fcn = mpfr_round;
+        else if (cmd_code == 147)
+          fcn = mpfr_roundeven;
+        else if (cmd_code == 148)
+          fcn = mpfr_trunc;
+        else
+          {
+            MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
+            break;
+          }
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double* ret_ptr = mxGetPr (plhs[0]);
+        size_t ret_stride = (nlhs) ? 1 : 0;
+
+        for (size_t i = 0; i < length (&rop); i++)
+          ret_ptr[i * ret_stride] = fcn (&data[rop.start - 1 + i],
+                                         &data[op.start - 1 + i]);
         break;
       }
 

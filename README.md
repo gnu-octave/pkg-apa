@@ -22,7 +22,7 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
-> Implementation status: 71% of MPFR 4.1.0 functions are supported.
+> Implementation status: 74% of MPFR 4.1.0 functions are supported.
 
 The low-level MPFR interface permits efficient access to all functions
 specified by MPFR <https://www.mpfr.org/mpfr-current/mpfr.html>.
@@ -154,7 +154,7 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 
 - [x] `int mpfr_rec_sqrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 
-- [ ] `int mpfr_cbrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
+- [x] `int mpfr_cbrt (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_rootn_ui (mpfr_t rop, mpfr_t op, unsigned long int n, mpfr_rnd_t rnd)`
 - [ ] `int mpfr_root (mpfr_t rop, mpfr_t op, unsigned long int n, mpfr_rnd_t rnd)`
 
@@ -310,11 +310,11 @@ ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
 ### Integer and Remainder Related Functions
 
 - [x] `int mpfr_rint (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
-- [ ] `int mpfr_ceil (mpfr_t rop, mpfr_t op)`
-- [ ] `int mpfr_floor (mpfr_t rop, mpfr_t op)`
-- [ ] `int mpfr_round (mpfr_t rop, mpfr_t op)`
-- [ ] `int mpfr_roundeven (mpfr_t rop, mpfr_t op)`
-- [ ] `int mpfr_trunc (mpfr_t rop, mpfr_t op)`
+- [x] `int mpfr_ceil (mpfr_t rop, mpfr_t op)`
+- [x] `int mpfr_floor (mpfr_t rop, mpfr_t op)`
+- [x] `int mpfr_round (mpfr_t rop, mpfr_t op)`
+- [x] `int mpfr_roundeven (mpfr_t rop, mpfr_t op)`
+- [x] `int mpfr_trunc (mpfr_t rop, mpfr_t op)`
 
 - [x] `int mpfr_rint_ceil (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
 - [x] `int mpfr_rint_floor (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)`
