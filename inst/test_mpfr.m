@@ -1,14 +1,6 @@
 function test_mpfr ()
 % Self-test for @mpfr_t class and mpfr_ low-level interface.
 
-  clear -f mpfr_interface
-  clear -c
-  if (exist('OCTAVE_VERSION', 'builtin') == 5)
-    mex --std=c99 -Wall -Wextra mpfr_interface.c -lmpfr -lgmp
-  else
-    mex CFLAGS='$CFLAGS --std=c99 -Wall -Wextra' mpfr_interface.c -lmpfr -lgmp
-  end
-
   % Good input
   for i = [4, flintmax('double'), 53]
     mpfr_t.set_default_prec (i);
