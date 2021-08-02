@@ -1,4 +1,4 @@
-function test_mpfr ()
+function test_apa ()
 % Self-test for @mpfr_t class and mpfr_ low-level interface.
 
   % Good input

@@ -1,1 +1,5 @@
 *.mex*
+*.a
+gmp.h
+mpfr.h
+mpf2mpfr.h
