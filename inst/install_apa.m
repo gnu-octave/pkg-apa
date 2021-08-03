@@ -13,15 +13,15 @@ function install_apa ()
   if (is_complete (pwd (), [header, libs]))
     cflags{end+1} = '-I.';
     ldflags = libs;
-  elseif (isunix () && is_complete (fullfile (pwd (), 'unix'), [header, libs]))
-    cflags{end+1} = '-Iunix';
-    ldflags = fullfile ('unix', libs);
   elseif (ismac () && is_complete (fullfile (pwd (), 'macos'), [header, libs]))
     cflags{end+1} = '-Imacos';
     ldflags = fullfile ('macos', libs);
   elseif (ispc () && is_complete (fullfile (pwd (), 'mswin'), [header, libs]))
     cflags{end+1} = '-Imswin';
     ldflags = fullfile ('mswin', libs);
+  elseif (isunix () && is_complete (fullfile (pwd (), 'unix'), [header, libs]))
+    cflags{end+1} = '-Iunix';
+    ldflags = fullfile ('unix', libs);
   else
     error (['Could not find pre-built GMP or MPFR libraries.  ', ...
       'Please run the Makefile in the "mex" directory.']);
