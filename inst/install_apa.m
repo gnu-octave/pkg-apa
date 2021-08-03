@@ -4,11 +4,28 @@ function install_apa ()
   [apa_dir, ~, ~] = fileparts (mfilename ('fullpath'));
   mex_dir = fullfile (apa_dir, 'mex');
 
+  header = {'gmp.h', 'mpfr.h', 'mpf2mpfr.h'};
+  libs = {'libmpfr.a', 'libgmp.a'};
+  cflags = {'--std=c99', '-Wall', '-Wextra'};
 
   old_dir = cd (mex_dir);
 
-  cflags = {'--std=c99', '-Wall', '-Wextra', '-I.'};
-  ldflags = {'libmpfr.a', 'libgmp.a'};
+  if (is_complete (pwd (), [header, libs]))
+    cflags{end+1} = '-I.';
+    ldflags = libs;
+  elseif (isunix () && is_complete (fullfile (pwd (), 'unix'), [header, libs]))
+    cflags{end+1} = '-Iunix';
+    ldflags = fullfile ('unix', libs);
+  elseif (ismac () && is_complete (fullfile (pwd (), 'macos'), [header, libs]))
+    cflags{end+1} = '-Imacos';
+    ldflags = fullfile ('macos', libs);
+  elseif (ispc () && is_complete (fullfile (pwd (), 'mswin'), [header, libs]))
+    cflags{end+1} = '-Imswin';
+    ldflags = fullfile ('mswin', libs);
+  else
+    error (['Could not find pre-built GMP or MPFR libraries.  ', ...
+      'Please run the Makefile in the "mex" directory.']);
+  end
 
   if (exist('OCTAVE_VERSION', 'builtin') == 5)
     mex (cflags{:}, 'mpfr_interface.c', ldflags{:});
@@ -24,6 +41,19 @@ function install_apa ()
 
   disp ('APA is ready to use.');
 
+end
+
+
+
+function bool = is_complete (dir, files)
+  bool = true;
+  for ff = files
+    f = ff{1};
+    bool = bool && (exist (fullfile (dir, f), 'file') == 2);
+    if (~ bool)
+      return;
+    end
+  end
 end
 
 
