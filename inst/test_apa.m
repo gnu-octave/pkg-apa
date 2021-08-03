@@ -92,8 +92,16 @@ function test_apa ()
   end
   mpfr_ ('set_verbose', 1);
 
+
+  % =====================
   % Arithmetic operations
   % =====================
+
+  for ops = {@uminus}
+    op = ops{1};
+    assert (isequal (double (op (mpfr_t (1))),   op (1)));
+    assert (isequal (double (op (mpfr_t (1:3))), op (1:3)));
+  end
 
   for ops = {@plus, @minus, @times, @ldivide, @rdivide}
     op = ops{1};
@@ -105,6 +113,28 @@ function test_apa ()
     assert (isequal (double (op ((1:3), mpfr_t (1:3))), op ((1:3), (1:3))));
     assert (isequal (double (op (mpfr_t (1:3), 1)), op ((1:3), 1)));
     assert (isequal (double (op (1, mpfr_t (1:3))), op (1, (1:3))));
+  end
+
+  for ops = {@power}
+    op = ops{1};
+    assert (isequal (double (op (mpfr_t (1:3), mpfr_t (1:3))), op ((1:3), (1:3))));
+    assert (isequal (double (op (mpfr_t (1:3), mpfr_t (1)  )), op ((1:3), 1)));
+    assert (isequal (double (op (mpfr_t (1)  , mpfr_t (1:3))), op (1, (1:3))));
+
+    assert (isequal (double (op (mpfr_t (1:3), (1:3))), op ((1:3), (1:3))));
+    assert (isequal (double (op (mpfr_t (1:3), 1)),     op ((1:3), 1)));
+  end
+
+
+  % ====================
+  % Comparison functions
+  % ====================
+
+  for ops = {@lt, @gt, @le, @ge, @ne, @eq}
+    op = ops{1};
+    assert (isequal (double (op (mpfr_t (1:3), mpfr_t (1:3))), op ((1:3), (1:3))));
+    assert (isequal (double (op (mpfr_t (1:3), (1:3))), op ((1:3), (1:3))));
+    assert (isequal (double (op ((1:3), mpfr_t (1:3))), op ((1:3), (1:3))));
   end
 
 end
