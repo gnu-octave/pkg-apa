@@ -1,5 +1,5 @@
-#ifndef MPFR_INTERFACE_H_
-#define MPFR_INTERFACE_H_
+#ifndef GMP_MPFR_INTERFACE_H_
+#define GMP_MPFR_INTERFACE_H_
 
 
 #include <math.h>
@@ -104,13 +104,17 @@ static int VERBOSE = 1;
 
 #define MEX_MPFR_EXP_T(mex_rhs, name) \
         mpfr_exp_t name = mpfr_get_emin (); \
-        if (! extract_si ((mex_rhs), nrhs, prhs, &name)) \
+        { \
+        int64_t si = 0; \
+        if (! extract_si ((mex_rhs), nrhs, prhs, &si)) \
           { \
             MEX_FCN_ERR ("cmd[%d]:"#name" Exponent must be a numeric " \
                          "scalar between %ld and %ld.\n", cmd_code, \
                          mpfr_get_emin (), mpfr_get_emax ()); \
             break; \
-          }
+          } \
+        name = (mpfr_exp_t) si; \
+        }
 
 
 // MPFR memory management
@@ -517,4 +521,4 @@ extract_prec (int idx, int nrhs, const mxArray *prhs[], mpfr_prec_t *prec)
   return 0;
 }
 
-#endif  // MPFR_INTERFACE_H_
+#endif  // GMP_MPFR_INTERFACE_H_

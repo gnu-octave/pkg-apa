@@ -1,9 +1,9 @@
-#include "mpfr_interface.h"
+#include "gmp_mpfr_interface.h"
 
 /**
  * Octave/Matlab MEX interface for MPFR (Version 4.1.0).
  *
- * https://www.mpfr.org/mpfr-current/mpfr.html
+ * https://www.mpfr.org/mpfr-4.1.0/mpfr.html
  *
  * See mpfr_interface.m for documentation.
  */
@@ -39,6 +39,16 @@ mexFunction (int nlhs, mxArray *plhs[],
       */
 
 
+      case 1000:  // CONSTANT const char * const gmp_version
+      {
+        MEX_NARGINCHK(1);
+        char* output_buf = (char*) mxCalloc (strlen (gmp_version),
+                                             sizeof(char));
+        strcpy (output_buf, gmp_version);
+        plhs[0] = mxCreateString (output_buf);
+        break;
+      }
+
       case 9000:  // size_t get_data_capacity (void)
       {
         MEX_NARGINCHK(1);
@@ -68,7 +78,7 @@ mexFunction (int nlhs, mxArray *plhs[],
       case 9003:  // idx_t mex_mpfr_allocate (size_t count)
       {
         MEX_NARGINCHK(2);
-        size_t count = 0;
+        uint64_t count = 0;
         if (! extract_ui (1, nrhs, prhs, &count))
           {
             MEX_FCN_ERR ("cmd[%d]: Count must be a positive numeric scalar.\n",
@@ -76,9 +86,9 @@ mexFunction (int nlhs, mxArray *plhs[],
             break;
           }
 
-        DBG_PRINTF ("allocate '%d' new MPFR variables\n", count);
+        DBG_PRINTF ("allocate '%d' new MPFR variables\n", (int) count);
         idx_t idx;
-        if (! mex_mpfr_allocate (count, &idx))
+        if (! mex_mpfr_allocate ((size_t) count, &idx))
           {
             MEX_FCN_ERR ("%s\n", "Memory allocation failed.");
             break;

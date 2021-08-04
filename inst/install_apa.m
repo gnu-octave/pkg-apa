@@ -28,7 +28,7 @@ function install_apa ()
   end
 
   if (exist('OCTAVE_VERSION', 'builtin') == 5)
-    mex (cflags{:}, 'mpfr_interface.c', ldflags{:});
+    mex (cflags{:}, 'gmp_mpfr_interface.c', ldflags{:});
   else
     mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], ...
         'mpfr_interface.c', ldflags{:});
