@@ -8,7 +8,7 @@ From the Octave/Matlab command-line run:
 urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.0/apa-0.1.0.zip', ...
           'apa-0.1.0.zip');
 unzip ('apa-0.1.0.zip');
-cd apa-0.1.0
+cd (fullfile ('apa-0.1.0', 'inst'))
 install_apa
 test_apa
 ```
