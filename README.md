@@ -1,5 +1,23 @@
 # APA - Octave/Matlab arbitrary precision arithmetic.
 
+## Installation
+
+From Octave call:
+
+```octave
+pkg load apa
+install_apa
+test_apa
+```
+
+From Matlab call:
+
+```matlab
+cd /path/to/apa/inst
+install_apa
+test_apa
+```
+
 ## High-level MPFR Interface
 
 The high-level MPFR interface is given through the `@mpfr_t` class.

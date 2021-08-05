@@ -27,11 +27,16 @@ function install_apa ()
       'Please run the Makefile in the "mex" directory.']);
   end
 
-  if (exist('OCTAVE_VERSION', 'builtin') == 5)
-    mex (cflags{:}, 'gmp_mpfr_interface.c', ldflags{:});
-  else
-    mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], ...
-        'mpfr_interface.c', ldflags{:});
+  try
+    if (exist('OCTAVE_VERSION', 'builtin') == 5)
+      mex (cflags{:}, 'gmp_mpfr_interface.c', ldflags{:});
+    else
+      mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], ...
+          'gmp_mpfr_interface.c', ldflags{:});
+    end
+  catch
+    cd (old_dir);
+    error ('MEX interface creation failed.  APA cannot be used.');
   end
 
   cd (old_dir);

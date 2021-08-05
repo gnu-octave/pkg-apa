@@ -2,14 +2,16 @@ function test_apa ()
 % Self-test for @mpfr_t class and mpfr_ low-level interface.
 
   % Good input
-  for i = [4, flintmax('double'), 53]
+  % The value `intmax ("int32") - 256` is taken from "mpfr.h" and should work
+  % for 32- and 64-bit precision types.
+  for i = [4, intmax ("int32") - 256, 53]
     mpfr_t.set_default_prec (i);
     assert (mpfr_t.get_default_prec () == i);
   end
   % Bad input
   mpfr_t.set_default_prec (42)
   mpfr_ ('set_verbose', 0);
-  for i = {inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
+  for i = {0, inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
     try
       mpfr_t.set_default_prec (i{1});
       error ('mp:test:missed', 'Should never be reached');

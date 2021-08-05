@@ -521,4 +521,15 @@ extract_prec (int idx, int nrhs, const mxArray *prhs[], mpfr_prec_t *prec)
   return 0;
 }
 
+// Dirty hack for MS Windows Matlab, as the used MinGW is outdated.
+#if defined(MX_API_VER) && (defined(_WIN32) || defined(WIN32))
+FILE *__cdecl __acrt_iob_func(unsigned index)
+{
+    return &(__iob_func()[index]);
+}
+
+typedef FILE *__cdecl (*_f__acrt_iob_func)(unsigned index);
+_f__acrt_iob_func __MINGW_IMP_SYMBOL(__acrt_iob_func) = __acrt_iob_func;
+#endif
+
 #endif  // GMP_MPFR_INTERFACE_H_
