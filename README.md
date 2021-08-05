@@ -40,6 +40,9 @@ interface (explained below) and vectorization wherever possible.
 
 ## Low-level MPFR Interface
 
+> For information how to compile/develop the interface, see
+> [`doc/MEX_INTERFACE.md`](https://github.com/gnu-octave/apa/blob/main/doc/MEX_INTERFACE.md).
+
 The low-level MPFR interface permits efficient access to almost all functions
 specified by MPFR 4.1.0 <https://www.mpfr.org/mpfr-current/mpfr.html>.
 
