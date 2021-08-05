@@ -261,7 +261,7 @@ extract_d (int idx, int nrhs, const mxArray *prhs[], double *d)
 {
   if ((nrhs > idx) && mxIsScalar (prhs[idx]) && mxIsNumeric (prhs[idx]))
     {
-      *d = mxGetScalar (prhs[idx]);
+      *d = (double) mxGetScalar (prhs[idx]);
       return 1;
     }
   DBG_PRINTF ("%s\n", "Failed.");

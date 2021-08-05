@@ -4,7 +4,7 @@ function test_apa ()
   % Good input
   % The value `intmax ("int32") - 256` is taken from "mpfr.h" and should work
   % for 32- and 64-bit precision types.
-  for i = [4, intmax ("int32") - 256, 53]
+  for i = [4, intmax("int32") - 256 - 1, 53]
     mpfr_t.set_default_prec (i);
     assert (mpfr_t.get_default_prec () == i);
   end
