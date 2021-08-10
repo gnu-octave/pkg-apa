@@ -2,13 +2,22 @@
 
 ## Installation
 
-From the Octave/Matlab command-line run:
+From the Octave command-line run:
+
+```octave
+pkg install 'https://github.com/gnu-octave/apa/releases/download/v0.1.1/apa-0.1.1.zip'
+pkg load apa
+install_apa
+test_apa
+```
+
+From the Matlab command-line run (also works for Octave):
 
 ```matlab
-urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.0/apa-0.1.0.zip', ...
-          'apa-0.1.0.zip');
-unzip ('apa-0.1.0.zip');
-cd (fullfile ('apa-0.1.0', 'inst'))
+urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.1/apa-0.1.1.zip', ...
+          'apa-0.1.1.zip');
+unzip ('apa-0.1.1.zip');
+cd (fullfile ('apa-0.1.1', 'inst'))
 install_apa
 test_apa
 ```
