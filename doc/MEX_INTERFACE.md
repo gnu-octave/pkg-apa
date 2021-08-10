@@ -10,10 +10,10 @@ If those pre-compiled libraries are missing or not working, please read below.
 From the Octave/Matlab command-line run:
 
 ```matlab
-urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.1/apa-0.1.1.zip', ...
-          'apa-0.1.1.zip');
-unzip ('apa-0.1.1.zip');
-cd (fullfile ('apa-0.1.1', 'inst'))
+urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.2/apa-0.1.2.zip', ...
+          'apa-0.1.2.zip');
+unzip ('apa-0.1.2.zip');
+cd (fullfile ('apa-0.1.2', 'inst'))
 install_apa
 test_apa
 ```
