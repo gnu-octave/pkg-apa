@@ -7,7 +7,7 @@ From the Octave command-line run:
 ```octave
 pkg install 'https://github.com/gnu-octave/apa/releases/download/v0.1.2/apa-0.1.2.zip'
 pkg load apa
-pkg test_apa
+pkg test apa
 ```
 
 From the Matlab command-line run (also works for Octave):
