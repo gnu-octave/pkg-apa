@@ -511,17 +511,42 @@ classdef mpfr_t
          'Use cell arrays {a; b} instead.']);
     end
 
-%    function subsref(a,s)
-%    % Subscripted reference `a(s1,s2,...sn)`
-%    end
+    function c = subsref (obj, s, rnd)
+      % Subscripted reference `a(s1,s2,...sn)`
+      if (strcmp (s(1).type, '()'))
+        if (nargin < 3)
+          rnd = obj.get_default_rounding_mode ();
+        end
+        subs = s.subs{:};
+        if ((min (subs) < 1) || (max (subs) > (obj.idx(2) - obj.idx(1) + 1)))
+          error ('mpfr_t:subsref', ['Invalid index range. ' ...
+            ' Valid index range is [1 %d], but [%d %d] was requested'],
+            obj.idx(2) - obj.idx(1) + 1, min (subs), max (subs));
+        end
+        c = mpfr_t (zeros (1, length (subs)), max (obj.prec));
+        % Avoid for-loop if indices are contiguous.
+        if (isequal (subs, (subs(1):subs(end))))
+          ret = mpfr_ ('set', c.idx, obj.idx(1) + [subs(1), subs(end)] - 1, ...
+                       rnd);
+        else
+          for i = 1:length (subs)
+            ret = mpfr_ ('set', c.idx(1) + [i, i] - 1, ...
+                              obj.idx(1) + [i, i] - 1, rnd);
+          end
+        end
+      else
+        c = builtin ('subsref', obj, s);
+      end
+    end
 
 %    function subsasgn(a,s,b)
 %    % Subscripted assignment `a(s1,...,sn) = b`
 %    end
 
-%    function subsindex(a)
-%    % Subscript index `b(a)`
-%    end
+    function c = subsindex (a)
+      % Subscript index `c = b(a)`
+      error ('mpfr_t:vertcat', 'MPFR_T variables cannot be used as index.');
+    end
 
   end
 
