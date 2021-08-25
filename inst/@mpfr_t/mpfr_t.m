@@ -78,31 +78,14 @@ classdef mpfr_t
         rnd = mpfr_ ('get_default_rounding_mode');
       end
 
-      if (ischar (x))
-        obj = mpfr_t ({x}, prec, rnd);
-      elseif (isnumeric (x))
-        obj.dims = size (x);
-        obj.idx = mpfr_ ('mex_mpfr_allocate', prod (obj.dims))';
-        mpfr_ ('set_prec', obj.idx, prec);
-        mpfr_ ('set_d', obj.idx, x(:), rnd);
-      elseif (iscellstr (x))
-        obj.dims = size (x);
-        obj.idx = mpfr_ ('mex_mpfr_allocate', prod (obj.dims))';
-        mpfr_ ('set_prec', obj.idx, prec);
-        [ret, strpos] = mpfr_ ('strtofr', obj.idx, x(:), 0, rnd);
-        if (any (ret))
-          warning ('mpfr_t:inexact_conversion', ...
-                   'Conversion of %d value(s) was inexact.', sum (ret ~= 0));
-        end
-        bad_strs = (cellfun (@numel, x(:)) >= strpos);
-        if (any (bad_strs))
-          warning ('mpfr_t:bad_conversion', ...
-                   'Conversion of %d value(s) failed due to bad input.', ...
-                   sum (bad_strs));
-        end
-      else
-        error ('mpfr_t:mpfr_t', 'Input must be numeric, string, or mpfr_t.');
-      end
+      obj.dims = size (x);
+      num_elems = prod (obj.dims);
+      obj.idx = mpfr_ ('mex_mpfr_allocate', num_elems)';
+      mpfr_ ('set_prec', obj.idx, prec);
+      %TODO: colon indices?
+      s.type = '()';
+      s.subs = {1:num_elems};
+      obj.subsasgn (s, x, rnd);
     end
 
     function prec = prec (obj)
@@ -498,21 +481,21 @@ classdef mpfr_t
 %    end
 
     function c = horzcat (a, b, varargin)
-      %TODO Horizontal concatenation `[a b]`.
+      %TODO Horizontal concatenation `c = [a, b]`.
       error ('mpfr_t:horzcat', ...
         ['Arrays of MPFR_T variables are not supported.  ', ...
          'Use cell arrays {a, b} instead.']);
     end
 
     function c = vertcat (a, b, varargin)
-      %TODO Vertical concatenation `[a; b]`.
+      %TODO Vertical concatenation `c = [a; b]`.
       error ('mpfr_t:vertcat', ...
         ['Arrays of MPFR_T variables are not supported.  ', ...
          'Use cell arrays {a; b} instead.']);
     end
 
     function c = subsref (obj, s, rnd)
-      % Subscripted reference `a(s1,s2,...sn)`
+      % Subscripted reference `c = obj (s)`  using rounding mode `rnd`.
       if (strcmp (s(1).type, '()'))
         if (nargin < 3)
           rnd = obj.get_default_rounding_mode ();
@@ -535,13 +518,103 @@ classdef mpfr_t
           end
         end
       else
+        % Permit things like function calls or attribute access.
         c = builtin ('subsref', obj, s);
       end
     end
 
-%    function subsasgn(a,s,b)
-%    % Subscripted assignment `a(s1,...,sn) = b`
-%    end
+    function obj = subsasgn (obj, s, b, rnd)
+      % Subscripted assignment `obj(s) = b` using rounding mode `rnd`.
+      if (strcmp (s(1).type, '()'))
+        if (nargin < 4)
+          rnd = obj.get_default_rounding_mode ();
+        end
+        subs = s.subs{:};
+        if ((min (subs) < 1) || (max (subs) > (obj.idx(2) - obj.idx(1) + 1)))
+          error ('mpfr_t:subsasgn', ['Invalid index range. ' ...
+            ' Valid index range is [1 %d], but [%d %d] was requested'],
+            obj.idx(2) - obj.idx(1) + 1, min (subs), max (subs));
+        end
+        % Avoid for-loop if indices are contiguous.
+        if (isequal (subs, (subs(1):subs(end))))
+          rop = obj.idx(1) + [subs(1), subs(end)] - 1;
+          if (isa (b, 'mpfr_t'))
+            ret = mpfr_ ('set', rop, b.idx, rnd);
+          elseif (isnumeric (b))
+            ret = mpfr_ ('set_d', rop, b(:), rnd);
+          elseif (iscellstr (b) || ischar (b))
+            if (ischar (b))
+              b = {b};
+            end
+            [ret, strpos] = mpfr_ ('strtofr', rop, b(:), 0, rnd);
+            if (any (ret))
+              warning ('mpfr_t:inexact_conversion', ...
+                       'Conversion of %d value(s) was inexact.', ...
+                       sum (ret ~= 0));
+            end
+            bad_strs = (cellfun (@numel, x(:)) >= strpos);
+            if (any (bad_strs))
+              warning ('mpfr_t:bad_conversion', ...
+                       'Conversion of %d value(s) failed due to bad input.', ...
+                       sum (bad_strs));
+            end
+          else
+            error ('mpfr_t:mpfr_t', 'Input must be numeric, string, or mpfr_t.');
+          end
+        else
+          rop = @(i) obj.idx(1) + [i, i] - 1;
+          if (isa (b, 'mpfr_t'))
+            if (diff (b.idx) == 0)
+              op = @(i) b.idx;
+            else
+              op = @(i) b.idx(1) + [i, i] - 1;
+            end
+            for i = 1:length (subs)
+              ret = mpfr_ ('set', rop(i), op(i), rnd);
+            end
+          elseif (isnumeric (b))
+            if (isscalar (b))
+              op = @(i) b;
+            else
+              op = @(i) b(i);
+            end
+            for i = 1:length (subs)
+              ret = mpfr_ ('set_d', rop(i), op(i), rnd);
+            end
+          elseif (iscellstr (b) || ischar (b))
+            if (ischar (b))
+              b = {b};
+            end
+            if (isscalar (b))
+              op = @(i) b;
+            else
+              op = @(i) b(i);
+            end
+            ret = zeros (1, length (subs));
+            strpos = zeros (1, length (subs));
+            for i = 1:length (subs)
+              [ret(i), strpos(i)] = mpfr_ ('strtofr', rop(i), op(i), 0, rnd);
+            end
+            if (any (ret))
+              warning ('mpfr_t:inexact_conversion', ...
+                       'Conversion of %d value(s) was inexact.', ...
+                       sum (ret ~= 0));
+            end
+            bad_strs = (cellfun (@numel, x(:)) >= strpos);
+            if (any (bad_strs))
+              warning ('mpfr_t:bad_conversion', ...
+                       'Conversion of %d value(s) failed due to bad input.', ...
+                       sum (bad_strs));
+            end
+          else
+            error ('mpfr_t:mpfr_t', 'Input must be numeric, string, or mpfr_t.');
+          end
+        end
+      else
+        % Permit things like assignment to attributes.
+        obj = builtin ('subsasgn', obj, s, b);
+      end
+    end
 
     function c = subsindex (a)
       % Subscript index `c = b(a)`
