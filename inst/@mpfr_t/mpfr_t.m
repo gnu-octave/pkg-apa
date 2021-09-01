@@ -376,14 +376,58 @@ classdef mpfr_t
     end
 
 
-%    function mrdivide(a,b)
-%    % Matrix right division `a/b`
-%    end
+    function x = mrdivide (b, a, rnd, prec)
+      % Right matrix division `x = B / A` using rounding mode `rnd`.
+      %
+      % Find x, such that x*A = B.
+      %
+      % If no rounding mode `rnd` is given, the default rounding mode is used.
+      %
+      % If no precision `prec` is given for `c` the maximum precision of a and
+      % is used b.
+      
+      if (nargin < 3)
+        rnd = mpfr_t.get_default_rounding_mode ();
+      end
+      if (nargin < 4)
+        prec = [];
+      end
+      
+      if ((isnumeric (a) && isscalar (a)) ...
+          || (isa (a, 'mpfr_t') && (prod (a.dims) == 1)))
+        x = rdivide (b, a, rnd, prec);
+      else
+        error ('mpfr_t:mrdivide', ...
+          'Solving systems of linear equations is not yet supported.');
+      end
+    end
 
 
-%    function mldivide(a,b)
-%    % Matrix left division `a\b`
-%    end
+    function x = mldivide (a, b, rnd, prec)
+      % Left matrix division `x = A \ B` using rounding mode `rnd`.
+      %
+      % Find x, such that A*x = B.
+      %
+      % If no rounding mode `rnd` is given, the default rounding mode is used.
+      %
+      % If no precision `prec` is given for `c` the maximum precision of a and
+      % is used b.
+      
+      if (nargin < 3)
+        rnd = mpfr_t.get_default_rounding_mode ();
+      end
+      if (nargin < 4)
+        prec = [];
+      end
+      
+      if ((isnumeric (a) && isscalar (a)) ...
+          || (isa (a, 'mpfr_t') && (prod (a.dims) == 1)))
+        x = rdivide (b, a, rnd, prec);
+      else
+        error ('mpfr_t:mrdivide', ...
+          'Solving systems of linear equations is not yet supported.');
+      end
+    end
 
 
     function c = power (a, b, rnd, prec)
@@ -430,9 +474,31 @@ classdef mpfr_t
     end
 
 
-%    function mpower(a,b)
-%    % Matrix power `a^b`
-%    end
+    function c = mpower (a, b, rnd, prec)
+      % Matrix power `c = A ^ B` using rounding mode `rnd`.
+      %
+      % If no rounding mode `rnd` is given, the default rounding mode is used.
+      %
+      % If no precision `prec` is given for `c` the maximum precision of a and
+      % is used b.
+      
+      if (nargin < 3)
+        rnd = mpfr_t.get_default_rounding_mode ();
+      end
+      if (nargin < 4)
+        prec = [];
+      end
+      
+      if (((isnumeric (a) && isscalar (a)) ...
+           || (isa (a, 'mpfr_t') && (prod (a.dims) == 1))) ...
+          && ((isnumeric (b) && isscalar (b)) ...
+              || (isa (b, 'mpfr_t') && (prod (b.dims) == 1))))
+        c = power (a, b, rnd, prec);
+      else
+        error ('mpfr_t:mrdivide', ...
+          'Matrix power not yet supported.');
+      end
+    end
 
 
     function c = lt (a, b)
@@ -505,14 +571,10 @@ classdef mpfr_t
     end
 
 
-%    function colon(a,d,b)
-%    % Colon operator `a:d:b`
-%    end
-
-
-%    function colon(a,b)
-%    % Colon operator `a:b`
-%    end
+    function colon (varargin)
+      % Colon operator `a:b` or `a:d:b`.
+      error ('mpfr_t:colon', 'Colon not supported for MPFR_T variables.');
+    end
 
 
 %    function ctranspose(a)
