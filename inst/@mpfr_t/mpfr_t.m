@@ -55,8 +55,22 @@ classdef mpfr_t
   end
 
 
+  methods (Access = private)
+    function warnInexactOperation (~, ret)
+      if (any (ret))
+        warning ('mpfr_t:inexactOperation', ...
+                 'Conversion of %d value(s) was inexact.', ...
+                 sum (ret ~= 0));
+      end
+    end
+  end
+
+
   methods
     function obj = mpfr_t (x, prec, rnd)
+      % Construct a mpfr_t variable of precision `prec` from `x` using rounding
+      % mode `rnd`.
+
       if (nargin < 1)
         error ('mpfr_t:mpfr_t', 'At least one argument must be provided.');
       end
@@ -82,29 +96,35 @@ classdef mpfr_t
       num_elems = prod (obj.dims);
       obj.idx = mpfr_ ('mex_mpfr_allocate', num_elems)';
       mpfr_ ('set_prec', obj.idx, prec);
-      %TODO: colon indices?
       s.type = '()';
-      s.subs = {1:num_elems};
+      s.subs = {':'};
       obj.subsasgn (s, x, rnd);
     end
+
 
     function prec = prec (obj)
       % Return the precision of obj, i.e., the number of bits used to store
       % its significant.
+
       prec = mpfr_ ('get_prec', obj.idx);
     end
 
+
     function d = double (obj, rnd)
+      % Return a double approximation of `obj` using rounding mode `rnd`.
+
       if (nargin < 2)
         rnd = mpfr_ ('get_default_rounding_mode');
       end
       d = reshape (mpfr_ ('get_d', obj.idx, rnd), obj.dims(1), obj.dims(2));
     end
 
+
     % More information about class methods.
     % https://octave.org/doc/v6.3.0/Operator-Overloading.html
     % https://www.mathworks.com/help/matlab/matlab_oop/implementing-operators-for-your-class.html
     % https://www.mathworks.com/help/matlab/matlab_oop/methods-that-modify-default-behavior.html
+
 
     function disp (obj)
       % Object display
@@ -120,6 +140,7 @@ classdef mpfr_t
         fprintf (1, '  %dx%d MPFR array\n\n', m, n);
       end
     end
+
 
     function c = plus (a, b, rnd, prec)
       % Binary addition `c = a + b` using rounding mode `rnd`.
@@ -166,6 +187,7 @@ classdef mpfr_t
         error ('mpfr_t:plus', 'Invalid operands a and b.');
       end
     end
+
 
     function c = minus (a, b, rnd, prec)
       % Binary subtraction `c = a - b` using rounding mode `rnd`.
@@ -221,17 +243,20 @@ classdef mpfr_t
       end
     end
 
+
     function c = uminus (a)
       % Unary minus `c = -a`
 
       c = minus (0, a);
     end
 
-    function uplus(a)
+
+    function c = uplus (a)
       % Unary plus `c = +a`
 
       c = a;
     end
+
 
     function c = times (a, b, rnd, prec)
       % Element-wise multiplication `c = a .* b` using rounding mode `rnd`.
@@ -278,9 +303,11 @@ classdef mpfr_t
       end
     end
 
+
 %    function mtimes(a,b)
 %    % Matrix multiplication `a*b`
 %    end
+
 
     function c = rdivide (a, b, rnd, prec)
       % Right element-wise division `c = a ./ b` using rounding mode `rnd`.
@@ -336,6 +363,7 @@ classdef mpfr_t
       end
     end
 
+
     function c = ldivide (a, b, varargin)
       % Left element-wise division `c = a .\ b` using rounding mode `rnd`.
       %
@@ -347,13 +375,16 @@ classdef mpfr_t
       c = rdivide (b, a, varargin{:});
     end
 
+
 %    function mrdivide(a,b)
 %    % Matrix right division `a/b`
 %    end
 
+
 %    function mldivide(a,b)
 %    % Matrix left division `a\b`
 %    end
+
 
     function c = power (a, b, rnd, prec)
       % Element-wise power `c = a.^b` using rounding mode `rnd`.
@@ -398,9 +429,11 @@ classdef mpfr_t
       end
     end
 
+
 %    function mpower(a,b)
 %    % Matrix power `a^b`
 %    end
+
 
     function c = lt (a, b)
       % Less than `c = (a < b)`.
@@ -410,6 +443,7 @@ classdef mpfr_t
       c = reshape (c, a.dims(1), a.dims(2));
     end
 
+
     function c = gt (a, b)
       % Greater than `a > b`.
 
@@ -417,6 +451,7 @@ classdef mpfr_t
       c = (mpfr_ ('greater_p', a, mpfr_t (b)) ~= 0);
       c = reshape (c, a.dims(1), a.dims(2));
     end
+
 
     function c = le (a, b)
       % Less than or equal to `a <= b`.
@@ -426,6 +461,7 @@ classdef mpfr_t
       c = reshape (c, a.dims(1), a.dims(2));
     end
 
+
     function c = ge (a, b)
       % Greater than or equal to `a >= b`.
 
@@ -434,11 +470,13 @@ classdef mpfr_t
       c = reshape (c, a.dims(1), a.dims(2));
     end
 
+
     function c = ne (a, b)
       % Not equal to `a ~= b`.
 
       c = ~eq (a, b);
     end
+
 
     function c = eq (a, b)
       % Equality `a == b`.
@@ -448,17 +486,20 @@ classdef mpfr_t
       c = reshape (c, a.dims(1), a.dims(2));
     end
 
-    function and (a, b)
+
+    function and (varargin)
       % Logical AND `a & b`.
       error ('mpfr_t:and', 'Logical AND not supported for MPFR_T variables.');
     end
 
-    function or (a, b)
+
+    function or (varargin)
       % Logical OR `a | b`.
       error ('mpfr_t:or', 'Logical OR not supported for MPFR_T variables.');
     end
 
-    function not (a)
+
+    function not (varargin)
       % Logical NOT `~a`.
       error ('mpfr_t:not', 'Logical NOT not supported for MPFR_T variables.');
     end
@@ -468,17 +509,21 @@ classdef mpfr_t
 %    % Colon operator `a:d:b`
 %    end
 
+
 %    function colon(a,b)
 %    % Colon operator `a:b`
 %    end
+
 
 %    function ctranspose(a)
 %    % Complex conjugate transpose `a'`
 %    end
 
+
 %    function transpose(a)
 %    % Matrix transpose a.'`
 %    end
+
 
     function c = horzcat (a, b, varargin)
       %TODO Horizontal concatenation `c = [a, b]`.
@@ -487,6 +532,7 @@ classdef mpfr_t
          'Use cell arrays {a, b} instead.']);
     end
 
+
     function c = vertcat (a, b, varargin)
       %TODO Vertical concatenation `c = [a; b]`.
       error ('mpfr_t:vertcat', ...
@@ -494,17 +540,29 @@ classdef mpfr_t
          'Use cell arrays {a; b} instead.']);
     end
 
-    function c = subsref (obj, s, rnd)
+
+    function varargout = subsref (obj, s, rnd)
       % Subscripted reference `c = obj (s)`  using rounding mode `rnd`.
       if (strcmp (s(1).type, '()'))
         if (nargin < 3)
           rnd = obj.get_default_rounding_mode ();
         end
         subs = s.subs{:};
-        if ((min (subs) < 1) || (max (subs) > (obj.idx(2) - obj.idx(1) + 1)))
+        obj_numel = obj.idx(2) - obj.idx(1) + 1;
+
+        % Shortcut ':' magic colon indexing.
+        if (ischar (subs) && strcmp (subs, ':'))
+          c = mpfr_t (zeros (1, obj_numel), max (obj.prec));
+          ret = mpfr_ ('set', c.idx, obj.idx, rnd);
+          obj.warnInexactOperation (ret);
+          return;
+        end
+
+        % Numerical indices.
+        if ((min (subs) < 1) || (max (subs) > obj_numel))
           error ('mpfr_t:subsref', ['Invalid index range. ' ...
-            ' Valid index range is [1 %d], but [%d %d] was requested'],
-            obj.idx(2) - obj.idx(1) + 1, min (subs), max (subs));
+            ' Valid index range is [1 %d], but [%d %d] was requested'], ...
+            obj_numel, min (subs), max (subs));
         end
         c = mpfr_t (zeros (1, length (subs)), max (obj.prec));
         % Avoid for-loop if indices are contiguous.
@@ -517,11 +575,14 @@ classdef mpfr_t
                               obj.idx(1) + [i, i] - 1, rnd);
           end
         end
+        obj.warnInexactOperation (ret);
+        varargout{1} = c;
       else
         % Permit things like function calls or attribute access.
-        c = builtin ('subsref', obj, s);
+        [varargout{1:nargout}] = builtin ('subsref', obj, s);
       end
     end
+
 
     function obj = subsasgn (obj, s, b, rnd)
       % Subscripted assignment `obj(s) = b` using rounding mode `rnd`.
@@ -530,14 +591,22 @@ classdef mpfr_t
           rnd = obj.get_default_rounding_mode ();
         end
         subs = s.subs{:};
-        if ((min (subs) < 1) || (max (subs) > (obj.idx(2) - obj.idx(1) + 1)))
+        obj_numel = obj.idx(2) - obj.idx(1) + 1;
+
+        if (isnumeric (subs) ...
+            && ((min (subs) < 1) || (max (subs) > obj_numel)))
           error ('mpfr_t:subsasgn', ['Invalid index range. ' ...
-            ' Valid index range is [1 %d], but [%d %d] was requested'],
-            obj.idx(2) - obj.idx(1) + 1, min (subs), max (subs));
+            ' Valid index range is [1 %d], but [%d %d] was requested'], ...
+            obj_numel, min (subs), max (subs));
         end
-        % Avoid for-loop if indices are contiguous.
-        if (isequal (subs, (subs(1):subs(end))))
-          rop = obj.idx(1) + [subs(1), subs(end)] - 1;
+        % Avoid for-loop if ':' magic colon or indices are contiguous.
+        if ((ischar (subs) && strcmp (subs, ':')) ...
+            || (isequal (subs, (subs(1):subs(end)))))
+          if (ischar (subs))  % ':' magic colon
+            rop = obj.idx;
+          else
+            rop = obj.idx(1) + [subs(1), subs(end)] - 1;
+          end
           if (isa (b, 'mpfr_t'))
             ret = mpfr_ ('set', rop, b.idx, rnd);
           elseif (isnumeric (b))
@@ -547,24 +616,20 @@ classdef mpfr_t
               b = {b};
             end
             [ret, strpos] = mpfr_ ('strtofr', rop, b(:), 0, rnd);
-            if (any (ret))
-              warning ('mpfr_t:inexact_conversion', ...
-                       'Conversion of %d value(s) was inexact.', ...
-                       sum (ret ~= 0));
-            end
-            bad_strs = (cellfun (@numel, x(:)) >= strpos);
+            bad_strs = (cellfun (@numel, b(:)) >= strpos);
             if (any (bad_strs))
               warning ('mpfr_t:bad_conversion', ...
                        'Conversion of %d value(s) failed due to bad input.', ...
                        sum (bad_strs));
             end
           else
-            error ('mpfr_t:mpfr_t', 'Input must be numeric, string, or mpfr_t.');
+            error ('mpfr_t:subsasgn', ...
+                   'Input must be numeric, string, or mpfr_t.');
           end
         else
           rop = @(i) obj.idx(1) + [i, i] - 1;
           if (isa (b, 'mpfr_t'))
-            if (diff (b.idx) == 0)
+            if (diff (b.idx) == 0)  % b is scalar mpfr_t.
               op = @(i) b.idx;
             else
               op = @(i) b.idx(1) + [i, i] - 1;
@@ -591,16 +656,13 @@ classdef mpfr_t
               op = @(i) b(i);
             end
             ret = zeros (1, length (subs));
-            strpos = zeros (1, length (subs));
+            bad_strs = 0;
             for i = 1:length (subs)
-              [ret(i), strpos(i)] = mpfr_ ('strtofr', rop(i), op(i), 0, rnd);
+              [ret(i), strpos] = mpfr_ ('strtofr', rop(i), op(i), 0, rnd);
+              if (numel (op(i)) >= strpos)
+                bad_strs = bad_strs + 1;
+              end
             end
-            if (any (ret))
-              warning ('mpfr_t:inexact_conversion', ...
-                       'Conversion of %d value(s) was inexact.', ...
-                       sum (ret ~= 0));
-            end
-            bad_strs = (cellfun (@numel, x(:)) >= strpos);
             if (any (bad_strs))
               warning ('mpfr_t:bad_conversion', ...
                        'Conversion of %d value(s) failed due to bad input.', ...
@@ -610,13 +672,15 @@ classdef mpfr_t
             error ('mpfr_t:mpfr_t', 'Input must be numeric, string, or mpfr_t.');
           end
         end
+        obj.warnInexactOperation (ret);
       else
         % Permit things like assignment to attributes.
         obj = builtin ('subsasgn', obj, s, b);
       end
     end
 
-    function c = subsindex (a)
+
+    function subsindex (varargin)
       % Subscript index `c = b(a)`
       error ('mpfr_t:vertcat', 'MPFR_T variables cannot be used as index.');
     end
