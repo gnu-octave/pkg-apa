@@ -75,11 +75,6 @@ classdef mpfr_t
         error ('mpfr_t:mpfr_t', 'At least one argument must be provided.');
       end
 
-      if (isa (x, 'mpfr_t'))
-        obj = x;  % Do nothing.  Good to ensure mpfr_t.
-        return;
-      end
-
       if (~ismatrix (x))
         error ('mpfr_t:mpfr_t', ...
           'Only two dimensional matrix input is supported.');
@@ -92,7 +87,11 @@ classdef mpfr_t
         rnd = mpfr_ ('get_default_rounding_mode');
       end
 
-      obj.dims = size (x);
+      if (isa (x, 'mpfr_t'))
+        obj.dims = x.dims;
+      else
+        obj.dims = size (x);
+      end
       num_elems = prod (obj.dims);
       obj.idx = mpfr_ ('mex_mpfr_allocate', num_elems)';
       mpfr_ ('set_prec', obj.idx, prec);
@@ -745,6 +744,46 @@ classdef mpfr_t
     function subsindex (varargin)
       % Subscript index `c = b(a)`
       error ('mpfr_t:vertcat', 'MPFR_T variables cannot be used as index.');
+    end
+    
+    
+    function b = sqrt (a, rnd, prec)
+      % Square root `b = sqrt(a)` using rounding mode `rnd`.
+      %
+      % If no rounding mode `rnd` is given, the default rounding mode is used.
+      %
+      % If no precision `prec` is given for `b` the maximum precision of a.
+
+      if (nargin < 2)
+        rnd = mpfr_t.get_default_rounding_mode ();
+      end
+      if (nargin < 3)
+        prec = max (mpfr_ ('get_prec', a));
+      end
+
+      bb = mpfr_t (zeros (a.dims), prec);
+      mpfr_ ('sqrt', bb, a, rnd);
+      b = bb;  % Do not assign c before calculation succeeded!
+    end
+    
+    
+    function b = abs (a, rnd, prec)
+      % Absolute value `b = abs(a)` using rounding mode `rnd`.
+      %
+      % If no rounding mode `rnd` is given, the default rounding mode is used.
+      %
+      % If no precision `prec` is given for `b` the maximum precision of a.
+
+      if (nargin < 2)
+        rnd = mpfr_t.get_default_rounding_mode ();
+      end
+      if (nargin < 3)
+        prec = max (mpfr_ ('get_prec', a));
+      end
+
+      bb = mpfr_t (zeros (a.dims), prec);
+      mpfr_ ('abs', bb, a, rnd);
+      b = bb;  % Do not assign c before calculation succeeded!
     end
 
   end
