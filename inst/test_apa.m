@@ -5,74 +5,74 @@ function test_apa ()
   % The value `intmax ("int32") - 256` is taken from "mpfr.h" and should work
   % for 32- and 64-bit precision types.
   for i = [4, intmax("int32") - 256 - 1, 53]
-    mpfr_t.set_default_prec (i);
-    assert (mpfr_t.get_default_prec () == i);
+    mpfr_set_default_prec (i);
+    assert (mpfr_get_default_prec () == i);
   end
   % Bad input
-  mpfr_t.set_default_prec (42)
-  mpfr_ ('set_verbose', 0);
+  mpfr_set_default_prec (42)
+  set_verbose (0);
   for i = {0, inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
     try
-      mpfr_t.set_default_prec (i{1});
+      mpfr_set_default_prec (i{1});
       error ('mp:test:missed', 'Should never be reached');
     catch e
       assert (strcmp (e.identifier, 'mp:mexFunction'));
     end
   end
-  mpfr_ ('set_verbose', 1);
+  set_verbose (1);
 
   % Good input
   for i = -1:3
-    mpfr_t.set_default_rounding_mode (i);
-    assert (mpfr_t.get_default_rounding_mode () == i);
+    mpfr_set_default_rounding_mode (i);
+    assert (mpfr_get_default_rounding_mode () == i);
   end
   % Bad input
-  mpfr_t.set_default_rounding_mode (0);
-  mpfr_ ('set_verbose', 0);
+  mpfr_set_default_rounding_mode (0);
+  set_verbose (0);
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
     try
-      mpfr_t.set_default_rounding_mode (i{1});
+      mpfr_set_default_rounding_mode (i{1});
       error ('mp:test:missed', 'Should never be reached');
     catch e
       assert (strcmp (e.identifier, 'mp:mexFunction'));
     end
   end
-  mpfr_ ('set_verbose', 1);
+  set_verbose (1);
 
   % Good input
   DATA_CHUNK_SIZE = 1000;
   N = ceil (sqrt (DATA_CHUNK_SIZE));
   obj = mpfr_t (1);
   assert (isequal (obj.idx, [1, 1]));
-  assert (mpfr_t.get_data_size () == 1);
-  assert (mpfr_t.get_data_capacity () == DATA_CHUNK_SIZE);
+  assert (get_data_size () == 1);
+  assert (get_data_capacity () == DATA_CHUNK_SIZE);
   obj = mpfr_t (eye (N));
   assert (isequal (obj.idx, [2, N^2 + 1]));
-  assert (mpfr_t.get_data_size () == N^2 + 1);
-  assert (mpfr_t.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
+  assert (get_data_size () == N^2 + 1);
+  assert (get_data_capacity () == 2 * DATA_CHUNK_SIZE);
   % Bad input non-MPFR function "mex_mpfr_allocate"
-  mpfr_ ('set_verbose', 0);
+  set_verbose (0);
   for i = {1/2, inf, -42, -1, -2, nan, 'c', eye(3)}
     try
-      mpfr_ ('mex_mpfr_allocate', i{1});
+      mex_mpfr_allocate (i{1});
       error ('mp:test:missed', 'Should never be reached');
     catch e
       assert (strcmp (e.identifier, 'mp:mexFunction'));
-      assert (mpfr_t.get_data_size () == N^2 + 1);
-      assert (mpfr_t.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
+      assert (get_data_size () == N^2 + 1);
+      assert (get_data_capacity () == 2 * DATA_CHUNK_SIZE);
     end
   end
-  mpfr_ ('set_verbose', 1);
+  set_verbose (1);
 
   % Good input
-  mpfr_t.set_default_prec (53);
+  mpfr_set_default_prec (53);
   vals = {inf, nan, pi, 1/6, 42, 2, 1, 2.5, eye(4), [1, 2; nan, 4]};
   vals = [vals, cellfun(@uminus, vals, "UniformOutput", false)];
   for i = vals
     assert (isequaln (double (mpfr_t (i{1})), i{1}));
   end
   % Bad input (precision)
-  mpfr_ ('set_verbose', 0);
+  set_verbose (0);
   for i = {inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
     try
       mpfr_t (1, i{1});
@@ -81,9 +81,9 @@ function test_apa ()
       assert (strcmp (e.identifier, 'mp:mexFunction'));
     end
   end
-  mpfr_ ('set_verbose', 1);
+  set_verbose (1);
   % Bad input (rounding mode)
-  mpfr_ ('set_verbose', 0);
+  set_verbose (0);
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
     try
       mpfr_t (1, 53, i{1});
@@ -92,7 +92,7 @@ function test_apa ()
       assert (strcmp (e.identifier, 'mp:mexFunction'));
     end
   end
-  mpfr_ ('set_verbose', 1);
+  set_verbose (1);
 
 
   % =====================

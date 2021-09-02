@@ -39,7 +39,7 @@ mexFunction (int nlhs, mxArray *plhs[],
       */
 
 
-      case 1000:  // CONSTANT const char * const gmp_version
+      case 1000:  // const char * const gmp_version
       {
         MEX_NARGINCHK(1);
         char* output_buf = (char*) mxCalloc (strlen (gmp_version),
@@ -459,8 +459,8 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
-      case 7:  // `int mpfr_set_ui_2exp (mpfr_t rop, unsigned long int op, mpfr_exp_t e, mpfr_rnd_t rnd)`
-      case 8:  // `int mpfr_set_si_2exp (mpfr_t rop, long int op, mpfr_exp_t e, mpfr_rnd_t rnd)`
+      case 7:  // int mpfr_set_ui_2exp (mpfr_t rop, unsigned long int op, mpfr_exp_t e, mpfr_rnd_t rnd)
+      case 8:  // int mpfr_set_si_2exp (mpfr_t rop, long int op, mpfr_exp_t e, mpfr_rnd_t rnd)
       {
         MEX_NARGINCHK(5);
         MEX_MPFR_T(1, rop);
