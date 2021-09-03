@@ -1,4 +1,15 @@
 function ret = mpfr_abs (rop, op, rnd)
+% Set ROP to -OP and the absolute value of OP respectively, rounded
+% in the direction RND.  Just changes or adjusts the sign if ROP and
+% OP are the same variable, otherwise a rounding might occur if the
+% precision of ROP is less than that of OP.
+%
+% The sign rule also applies to NaN in order to mimic the IEEE 754
+% ‘negate’ and ‘abs’ operations, i.e., for ‘mpfr_neg’, the sign is
+% reversed, and for ‘mpfr_abs’, the sign is set to positive.  But
+% contrary to IEEE 754, the NaN flag is set as usual.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

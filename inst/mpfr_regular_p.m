@@ -1,4 +1,10 @@
 function ret = mpfr_regular_p (op)
+% Return non-zero if OP is respectively NaN, an infinity, an ordinary
+% number (i.e., neither NaN nor an infinity), zero, or a regular
+% number (i.e., neither NaN, nor an infinity nor zero).  Return zero
+% otherwise.
+%
+
   if (isa (op, 'mpfr_t'))
     op = op.idx;
   end

@@ -1,4 +1,10 @@
 function ret = mpfr_sgn (op)
+% Return a positive value if OP > 0, zero if OP = 0, and a negative
+% value if OP < 0.  If the operand is NaN, set the _erange_ flag and
+% return zero.  This is equivalent to ‘mpfr_cmp_ui (op, 0)’, but more
+% efficient.
+%
+
   if (isa (op, 'mpfr_t'))
     op = op.idx;
   end

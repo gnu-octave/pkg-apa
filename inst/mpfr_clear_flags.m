@@ -1,4 +1,9 @@
 function mpfr_clear_flags ()
+% Clear (lower) all global flags (underflow, overflow,
+% divide-by-zero, invalid, inexact, _erange_).  Note: a group of
+% flags can be cleared by using ‘mpfr_flags_clear’.
+%
+
   gmp_mpfr_interface (204);
 end
 

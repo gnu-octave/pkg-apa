@@ -1,4 +1,8 @@
 function ret = mpfr_exp (rop, op, rnd)
+% Set ROP to the exponential of OP, to 2 power of OP or to 10 power
+% of OP, respectively, rounded in the direction RND.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

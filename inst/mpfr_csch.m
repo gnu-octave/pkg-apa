@@ -1,4 +1,8 @@
 function ret = mpfr_csch (rop, op, rnd)
+% Set ROP to the hyperbolic secant of OP, cosecant of OP, cotangent
+% of OP, rounded in the direction RND.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

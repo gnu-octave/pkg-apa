@@ -1,4 +1,9 @@
 function ret = mpfr_digamma (rop, op, rnd)
+% Set ROP to the value of the Digamma (sometimes also called Psi)
+% function on OP, rounded in the direction RND.  When OP is a
+% negative integer, set ROP to NaN.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

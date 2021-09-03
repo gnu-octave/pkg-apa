@@ -1,4 +1,7 @@
 function ret = mpfr_get_default_rounding_mode ()
+% Get the default rounding mode.
+%
+
   ret = gmp_mpfr_interface (162);
 end
 

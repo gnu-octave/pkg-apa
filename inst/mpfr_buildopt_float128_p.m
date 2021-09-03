@@ -1,4 +1,9 @@
 function ret = mpfr_buildopt_float128_p ()
+% Return a non-zero value if MPFR was compiled with ‘_Float128’
+% support (that is, MPFR was built with the ‘--enable-float128’
+% configure option), return zero otherwise.
+%
+
   ret = gmp_mpfr_interface (183);
 end
 

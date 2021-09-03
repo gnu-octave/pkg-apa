@@ -1,4 +1,8 @@
 function ret = mpfr_get_prec (x)
+% Return the precision of X, i.e., the number of bits used to store
+% its significand.
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

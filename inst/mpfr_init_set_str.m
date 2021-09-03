@@ -1,4 +1,8 @@
 function ret = mpfr_init_set_str (x, *s, base, rnd)
+% Initialize X and set its value from the string S in base BASE,
+% rounded in the direction RND.  See ‘mpfr_set_str’.
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

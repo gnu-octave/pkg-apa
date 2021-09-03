@@ -1,4 +1,11 @@
 function ret = mpfr_sinh_cosh (sop, cop, op, rnd)
+% Set simultaneously SOP to the hyperbolic sine of OP and COP to the
+% hyperbolic cosine of OP, rounded in the direction RND with the
+% corresponding precision of SOP and COP, which must be different
+% variables.  Return 0 iff both results are exact (see ‘mpfr_sin_cos’
+% for a more detailed description of the return value).
+%
+
   if (isa (sop, 'mpfr_t'))
     sop = sop.idx;
   end

@@ -1,4 +1,14 @@
 function ret = mpfr_get_d_2exp (*exp, op, rnd)
+% Return D and set EXP (formally, the value pointed to by EXP) such
+% that 0.5<=abs(D)<1 and D times 2 raised to EXP equals OP rounded to
+% double (resp. long double) precision, using the given rounding
+% mode.  If OP is zero, then a zero of the same sign (or an unsigned
+% zero, if the implementation does not have signed zeros) is
+% returned, and EXP is set to 0.  If OP is NaN or an infinity, then
+% the corresponding double precision (resp. long-double precision)
+% value is returned, and EXP is undefined.
+%
+
   if (isa (op, 'mpfr_t'))
     op = op.idx;
   end

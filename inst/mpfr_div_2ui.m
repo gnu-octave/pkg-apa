@@ -1,4 +1,9 @@
 function ret = mpfr_div_2ui (rop, op1, op2, rnd)
+% Set ROP to OP1 divided by 2 raised to OP2 rounded in the direction
+% RND.  Just decreases the exponent by OP2 when ROP and OP1 are
+% identical.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

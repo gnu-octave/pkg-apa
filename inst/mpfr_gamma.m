@@ -1,4 +1,16 @@
 function ret = mpfr_gamma (rop, op, rnd)
+% Set ROP to the value of the Gamma function on OP, resp.  the
+% incomplete Gamma function on OP and OP2, rounded in the direction
+% RND.  (In the literature, ‘mpfr_gamma_inc’ is called upper
+% incomplete Gamma function, or sometimes complementary incomplete
+% Gamma function.)  For ‘mpfr_gamma’ (and ‘mpfr_gamma_inc’ when OP2
+% is zero), when OP is a negative integer, ROP is set to NaN.
+%
+% Note: the current implementation of ‘mpfr_gamma_inc’ is slow for
+% large values of ROP or OP, in which case some internal overflow
+% might also occur.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

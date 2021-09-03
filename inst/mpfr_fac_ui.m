@@ -1,4 +1,7 @@
 function ret = mpfr_fac_ui (rop, op, rnd)
+% Set ROP to the factorial of OP, rounded in the direction RND.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

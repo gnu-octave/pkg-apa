@@ -1,4 +1,8 @@
 function mpfr_nextabove (x)
+% Equivalent to ‘mpfr_nexttoward’ where Y is plus infinity (resp.
+% minus infinity).
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

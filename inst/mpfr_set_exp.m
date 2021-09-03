@@ -1,4 +1,9 @@
 function ret = mpfr_set_exp (x, e)
+% Set the exponent of X to E if X is a non-zero ordinary number and E
+% is in the current exponent range, and return 0; otherwise, return a
+% non-zero value (X is not changed).
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

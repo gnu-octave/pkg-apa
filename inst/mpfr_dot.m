@@ -1,4 +1,11 @@
 function ret = mpfr_dot (rop, a, b, n, rnd)
+% Set ROP to the dot product of elements of A by those of B, whose
+% common size is N, correctly rounded in the direction RND.  Warning:
+% for efficiency reasons, A and B are arrays of pointers to ‘mpfr_t’.
+% This function is experimental, and does not yet handle intermediate
+% overflows and underflows.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

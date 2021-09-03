@@ -1,4 +1,7 @@
 function ret = mpfr_get_version ()
+% Return the MPFR version, as a null-terminated string.
+%
+
   ret = gmp_mpfr_interface (181);
 end
 

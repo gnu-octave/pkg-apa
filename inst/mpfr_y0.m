@@ -1,4 +1,11 @@
 function ret = mpfr_y0 (rop, op, rnd)
+% Set ROP to the value of the second kind Bessel function of order 0
+% (resp. 1 and N) on OP, rounded in the direction RND.  When OP is
+% NaN or negative, ROP is always set to NaN.  When OP is +Inf, ROP is
+% set to +0.  When OP is zero, ROP is set to +Inf or −Inf depending
+% on the parity and sign of N.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

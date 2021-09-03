@@ -1,4 +1,8 @@
 function ret = mpfr_asinh (rop, op, rnd)
+% Set ROP to the inverse hyperbolic cosine, sine or tangent of OP,
+% rounded in the direction RND.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

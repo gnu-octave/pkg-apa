@@ -1,4 +1,9 @@
 function ret = mpfr_less_p (op1, op2)
+% Return non-zero if OP1 > OP2, OP1 >= OP2, OP1 < OP2, OP1 <= OP2,
+% OP1 = OP2 respectively, and zero otherwise.  Those functions return
+% zero whenever OP1 and/or OP2 is NaN.
+%
+
   if (isa (op1, 'mpfr_t'))
     op1 = op1.idx;
   end

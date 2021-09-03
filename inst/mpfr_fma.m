@@ -1,4 +1,11 @@
 function ret = mpfr_fma (rop, op1, op2, op3, rnd)
+% Set ROP to (OP1 times OP2) + OP3 (resp. (OP1 times OP2) - OP3)
+% rounded in the direction RND.  Concerning special values (signed
+% zeros, infinities, NaN), these functions behave like a
+% multiplication followed by a separate addition or subtraction.
+% That is, the fused operation matters only for rounding.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

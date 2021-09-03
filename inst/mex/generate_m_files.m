@@ -2,6 +2,9 @@ function generate_m_files ()
 % This function automatically (re-)generates the m-files corresponding to
 % "gmp_mpfr_interface.c".
 
+  % Parse "mpfr.info" for help strings.
+  help_strings = parse_mpfr_info_file ();
+
   show_error = @(i, s) error (['generate_m_files: failed on input i = %d:', ...
     '\n\n%s\n\n'], i, s);
 
@@ -34,12 +37,13 @@ function generate_m_files ()
     fcn.out_arg = strjoin (fcn.name(1:end-1), ' ');
     fcn.name = fcn.name{end};
     in_args = strtrim (in_args);
-    in_args = in_args(2:end-1);  % Remove '()'
+    in_args = in_args(2:end-1);  % Remove braces '()' around input args.
     in_args = strsplit (in_args, ', ');
     for j = 1:length (in_args)
       arg = strsplit (in_args{j});
       fcn.in_args(j).type = strjoin (arg(1:end-1), ' ');
       fcn.in_args(j).name = arg{end};
+      % Handle trailing C-array brackets '[]' in variable names (sum, dot).
       if ((length (fcn.in_args(j).name) > 2) ...
           && strcmp (fcn.in_args(j).name(end-1:end), '[]'))
         fcn.in_args(j).name = fcn.in_args(j).name(1:end-2);
@@ -101,6 +105,13 @@ function generate_m_files ()
     % Write function signature.
     fcn_str = ['function ', fcn_str_ret, fcn.name, ' (', fcn_str_args, ')\n'];
 
+    % Write help text.
+    if (isfield (help_strings, fcn.name))
+      fcn_str = [fcn_str, help_strings.(fcn.name), '\n\n'];
+    else
+      disp ('                 no help text');
+    end
+
     % Write mpfr_t conversion code.
     for j = 1:length (fcn.in_args)
       if (strcmp (fcn.in_args(j).type, 'mpfr_t'))
@@ -128,3 +139,88 @@ function generate_m_files ()
     clear fcn;
   end
 end
+
+
+function help_strings = parse_mpfr_info_file ()
+  str = read_file_to_cellstr ('mpfr.info');
+  idx_start = find (strcmp (str, '5.1 Initialization Functions'));
+  idx_end = find (strcmp (str, '5.17 Internals'));
+  str = str(idx_start:idx_end);
+
+  help_strings = struct ();
+  item_stack = {};
+  text_stack = {};
+  state = 'start';
+  for i = 1:length (str)
+    line = str{i};
+
+    % Read new item, e.g. ' -- Function: '.
+    if (strncmp (line, ' -- ', 4))
+      % Flush stack if necessary.
+      if (strcmp (state, 'read_item_help'))
+        [help_strings, item_stack, text_stack] = parse_flush_stack ( ...
+         help_strings, item_stack, text_stack);
+      end
+      state = 'new_item';
+      item = strsplit (line, ':');
+      item = strsplit (strtrim (item{2}), '(');
+      item = strsplit (strtrim (item{1}), ' ');
+      item_stack{end + 1} = item{end};
+      continue;
+    end
+
+    % Ignore new item continuation lines.
+    if (strncmp (line, '          ', 10))
+      continue;
+    end
+
+    % Begin or continue reading the help string.
+    if ((strcmp (state, 'new_item') || strcmp (state, 'read_item_help')) ...
+        && ((length (line) == 0) || strncmp (line, '     ', 5)))
+      state = 'read_item_help';
+      % Avoid double blank lines.
+      if ((length (line) == 0) && ((length (text_stack) == 0) ...
+                                   || ~strcmp (text_stack{end}, '%%')))
+        text_stack{end + 1} = '%%';
+      else
+        text_stack{end + 1} = ['%% ', strtrim(line)];
+      end
+      continue;
+    end
+
+    % Nothing suitable found.  Flush stack if necessary.
+    state = 'start';
+    [help_strings, item_stack, text_stack] = parse_flush_stack ( ...
+     help_strings, item_stack, text_stack);
+  end
+end
+
+
+function [help_strings, item_stack, text_stack] = parse_flush_stack ( ...
+  help_strings, item_stack, text_stack)
+% Helper function for info-file parser.
+  if (length (item_stack) > 0)
+    text_stack = strjoin (text_stack, '\n');
+    for j = 1:length (item_stack)
+      help_strings.(item_stack{j}) = text_stack;
+    end
+    item_stack = {};
+    text_stack = {};
+  end
+end
+
+
+function content = read_file_to_cellstr (file)
+% Reads a given file line by line into a cellstring `content`.
+% `fileread` in Octave removes blank lines.
+
+  fid = fopen (file, 'r');
+  i = 1;
+  content{i} = fgetl (fid);
+  while (ischar (content{i}))
+    i = i + 1;
+    content{i} = fgetl (fid);
+  end
+  fclose (fid);
+  content = content(1:end-1);  % No EOL
+endfunction

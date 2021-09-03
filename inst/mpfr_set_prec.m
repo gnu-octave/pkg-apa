@@ -1,4 +1,18 @@
 function mpfr_set_prec (x, prec)
+% Set the precision of X to be *exactly* PREC bits, and set its value
+% to NaN.  The previous value stored in X is lost.  It is equivalent
+% to a call to ‘mpfr_clear(x)’ followed by a call to ‘mpfr_init2(x,
+% prec)’, but more efficient as no allocation is done in case the
+% current allocated space for the significand of X is enough.  The
+% precision PREC can be any integer between ‘MPFR_PREC_MIN’ and
+% ‘MPFR_PREC_MAX’.  In case you want to keep the previous value
+% stored in X, use ‘mpfr_prec_round’ instead.
+%
+% Warning!  You must not use this function if X was initialized with
+% ‘MPFR_DECL_INIT’ or with ‘mpfr_custom_init_set’ (*note Custom
+% Interface::).
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

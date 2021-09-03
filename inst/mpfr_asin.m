@@ -1,4 +1,14 @@
 function ret = mpfr_asin (rop, op, rnd)
+% Set ROP to the arc-cosine, arc-sine or arc-tangent of OP, rounded
+% in the direction RND.  Note that since ‘acos(-1)’ returns the
+% floating-point number closest to Pi according to the given rounding
+% mode, this number might not be in the output range 0 <= ROP < Pi of
+% the arc-cosine function; still, the result lies in the image of the
+% output range by the rounding function.  The same holds for
+% ‘asin(-1)’, ‘asin(1)’, ‘atan(-Inf)’, ‘atan(+Inf)’ or for ‘atan(op)’
+% with large OP and small precision of ROP.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

@@ -1,4 +1,16 @@
 function ret = mpfr_get_d (op, rnd)
+% Convert OP to a ‘float’ (respectively ‘double’, ‘long double’,
+% ‘_Decimal64’, or ‘_Decimal128’) using the rounding mode RND.  If OP
+% is NaN, some fixed NaN (either quiet or signaling) or the result of
+% 0.0/0.0 is returned.  If OP is ±Inf, an infinity of the same sign
+% or the result of ±1.0/0.0 is returned.  If OP is zero, these
+% functions return a zero, trying to preserve its sign, if possible.
+% The ‘mpfr_get_float128’, ‘mpfr_get_decimal64’ and
+% ‘mpfr_get_decimal128’ functions are built only under some
+% conditions: see the documentation of ‘mpfr_set_float128’,
+% ‘mpfr_set_decimal64’ and ‘mpfr_set_decimal128’ respectively.
+%
+
   if (isa (op, 'mpfr_t'))
     op = op.idx;
   end

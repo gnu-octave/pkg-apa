@@ -1,4 +1,8 @@
 function ret = mpfr_get_default_prec ()
+% Return the current default MPFR precision in bits.  See the
+% documentation of ‘mpfr_set_default_prec’.
+%
+
   ret = gmp_mpfr_interface (2);
 end
 

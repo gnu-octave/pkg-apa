@@ -1,4 +1,16 @@
 function ret = mpfr_total_order_p (x, y)
+% This function implements the totalOrder predicate from
+% IEEE 754-2008, where −NaN < −Inf < negative finite numbers < −0 <
+% +0 < positive finite numbers < +Inf < +NaN.  It returns a non-zero
+% value (true) when X is smaller than or equal to Y for this order
+% relation, and zero (false) otherwise.  Contrary to ‘mpfr_cmp (x,
+% y)’, which returns a ternary value, ‘mpfr_total_order_p’ returns a
+% binary value (zero or non-zero).  In particular,
+% ‘mpfr_total_order_p (x, x)’ returns true, ‘mpfr_total_order_p (-0,
+% +0)’ returns true and ‘mpfr_total_order_p (+0, -0)’ returns false.
+% The sign bit of NaN also matters.
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

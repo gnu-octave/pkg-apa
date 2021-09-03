@@ -1,4 +1,28 @@
 function ret = mpfr_set_emin (exp)
+% Set the smallest and largest exponents allowed for a floating-point
+% variable.  Return a non-zero value when EXP is not in the range
+% accepted by the implementation (in that case the smallest or
+% largest exponent is not changed), and zero otherwise.
+%
+% For the subsequent operations, it is the user’s responsibility to
+% check that any floating-point value used as an input is in the new
+% exponent range (for example using ‘mpfr_check_range’).  If a
+% floating-point value outside the new exponent range is used as an
+% input, the default behavior is undefined, in the sense of the ISO C
+% standard; the behavior may also be explicitly documented, such as
+% for ‘mpfr_check_range’.
+%
+% Note: Caches may still have values outside the current exponent
+% range.  This is not an issue as the user cannot use these caches
+% directly via the API (MPFR extends the exponent range internally
+% when need be).
+%
+% If ‘emin’ > ‘emax’ and a floating-point value needs to be produced
+% as output, the behavior is undefined (‘mpfr_set_emin’ and
+% ‘mpfr_set_emax’ do not check this condition as it might occur
+% between successive calls to these two functions).
+%
+
   ret = gmp_mpfr_interface (190, exp);
 end
 

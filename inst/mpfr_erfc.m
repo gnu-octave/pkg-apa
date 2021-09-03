@@ -1,4 +1,8 @@
 function ret = mpfr_erfc (rop, op, rnd)
+% Set ROP to the value of the error function on OP (resp. the
+% complementary error function on OP) rounded in the direction RND.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

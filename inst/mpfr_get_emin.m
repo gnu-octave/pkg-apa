@@ -1,4 +1,12 @@
 function ret = mpfr_get_emin ()
+% Return the (current) smallest and largest exponents allowed for a
+% floating-point variable.  The smallest positive value of a
+% floating-point variable is one half times 2 raised to the smallest
+% exponent and the largest value has the form (1 - epsilon) times 2
+% raised to the largest exponent, where epsilon depends on the
+% precision of the considered variable.
+%
+
   ret = gmp_mpfr_interface (188);
 end
 

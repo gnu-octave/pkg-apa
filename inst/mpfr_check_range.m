@@ -1,4 +1,27 @@
 function ret = mpfr_check_range (x, t, rnd)
+% This function assumes that X is the correctly rounded value of some
+% real value Y in the direction RND and some extended exponent range,
+% and that T is the corresponding *note ternary value::.  For
+% example, one performed ‘t = mpfr_log (x, u, rnd)’, and Y is the
+% exact logarithm of U.  Thus T is negative if X is smaller than Y,
+% positive if X is larger than Y, and zero if X equals Y.  This
+% function modifies X if needed to be in the current range of
+% acceptable values: It generates an underflow or an overflow if the
+% exponent of X is outside the current allowed range; the value of T
+% may be used to avoid a double rounding.  This function returns zero
+% if the new value of X equals the exact one Y, a positive value if
+% that new value is larger than Y, and a negative value if it is
+% smaller than Y.  Note that unlike most functions, the new result X
+% is compared to the (unknown) exact one Y, not the input value X,
+% i.e., the ternary value is propagated.
+%
+% Note: If X is an infinity and T is different from zero (i.e., if
+% the rounded result is an inexact infinity), then the overflow flag
+% is set.  This is useful because ‘mpfr_check_range’ is typically
+% called (at least in MPFR functions) after restoring the flags that
+% could have been set due to internal computations.
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

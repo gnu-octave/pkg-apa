@@ -1,4 +1,7 @@
 function ret = mpfr_sqr (rop, op, rnd)
+% Set ROP to the square of OP rounded in the direction RND.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

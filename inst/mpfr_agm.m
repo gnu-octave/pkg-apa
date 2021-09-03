@@ -1,4 +1,13 @@
 function ret = mpfr_agm (rop, op1, op2, rnd)
+% Set ROP to the arithmetic-geometric mean of OP1 and OP2, rounded in
+% the direction RND.  The arithmetic-geometric mean is the common
+% limit of the sequences U_N and V_N, where U_0=OP1, V_0=OP2, U_(N+1)
+% is the arithmetic mean of U_N and V_N, and V_(N+1) is the geometric
+% mean of U_N and V_N.  If any operand is negative and the other one
+% is not zero, set ROP to NaN.  If any operand is zero and the other
+% one is finite (resp. infinite), set ROP to +0 (resp. NaN).
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

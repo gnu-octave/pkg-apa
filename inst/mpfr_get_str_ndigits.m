@@ -1,4 +1,16 @@
 function ret = mpfr_get_str_ndigits (b, p)
+% Return the minimal integer m such that any number of P bits, when
+% output with m digits in radix B with rounding to nearest, can be
+% recovered exactly when read again, still with rounding to nearest.
+% More precisely, we have m = 1 + ceil(P*log(2)/log(B)), with P
+% replaced by P−1 if B is a power of 2.
+%
+% The argument B must be in the range 2 to 62; this is the range of
+% bases supported by the ‘mpfr_get_str’ function.  Note that contrary
+% to the base argument of this function, negative values are not
+% accepted.
+%
+
   ret = gmp_mpfr_interface (20, b, p);
 end
 

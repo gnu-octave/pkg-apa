@@ -1,4 +1,8 @@
 function ret = mpfr_cos (rop, op, rnd)
+% Set ROP to the cosine of OP, sine of OP, tangent of OP, rounded in
+% the direction RND.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

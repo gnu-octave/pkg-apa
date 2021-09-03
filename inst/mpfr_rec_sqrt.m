@@ -1,4 +1,12 @@
 function ret = mpfr_rec_sqrt (rop, op, rnd)
+% Set ROP to the reciprocal square root of OP rounded in the
+% direction RND.  Set ROP to +Inf if OP is ±0, +0 if OP is +Inf, and
+% NaN if OP is negative.  Warning!  Therefore the result on −0 is
+% different from the one of the rSqrt function recommended by the
+% IEEE 754-2008 standard (Section 9.2.1), which is −Inf instead of
+% +Inf.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

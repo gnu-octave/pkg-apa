@@ -1,4 +1,9 @@
 function mpfr_free_str (*str)
+% Free a string allocated by ‘mpfr_get_str’ using the unallocation
+% function (*note Memory Handling::).  The block is assumed to be
+% ‘strlen(STR)+1’ bytes.
+%
+
   gmp_mpfr_interface (22, *str);
 end
 

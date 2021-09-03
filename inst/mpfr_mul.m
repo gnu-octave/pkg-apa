@@ -1,4 +1,11 @@
 function ret = mpfr_mul (rop, op1, op2, rnd)
+% Set ROP to OP1 times OP2 rounded in the direction RND.  When a
+% result is zero, its sign is the product of the signs of the
+% operands (for types having no signed zeros, 0 is considered
+% positive).  The same restrictions than for ‘mpfr_add_d’ apply to
+% ‘mpfr_mul_d’.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

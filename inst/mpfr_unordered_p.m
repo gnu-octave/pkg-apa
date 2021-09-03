@@ -1,4 +1,8 @@
 function ret = mpfr_unordered_p (op1, op2)
+% Return non-zero if OP1 or OP2 is a NaN (i.e., they cannot be
+% compared), zero otherwise.
+%
+
   if (isa (op1, 'mpfr_t'))
     op1 = op1.idx;
   end

@@ -1,4 +1,8 @@
 function ret = mpfr_min_prec (x)
+% Return the minimal number of bits required to store the significand
+% of X, and 0 for special values, including 0.
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

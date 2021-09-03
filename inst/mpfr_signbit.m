@@ -1,4 +1,8 @@
 function ret = mpfr_signbit (op)
+% Return a non-zero value iff OP has its sign bit set (i.e., if it is
+% negative, −0, or a NaN whose representation has its sign bit set).
+%
+
   if (isa (op, 'mpfr_t'))
     op = op.idx;
   end

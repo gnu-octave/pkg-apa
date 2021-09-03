@@ -1,4 +1,19 @@
 function mpfr_init2 (x, prec)
+% Initialize X, set its precision to be *exactly* PREC bits and its
+% value to NaN.  (Warning: the corresponding MPF function initializes
+% to zero instead.)
+%
+% Normally, a variable should be initialized once only or at least be
+% cleared, using ‘mpfr_clear’, between initializations.  To change
+% the precision of a variable that has already been initialized, use
+% ‘mpfr_set_prec’ or ‘mpfr_prec_round’; note that if the precision is
+% decreased, the unused memory will not be freed, so that it may be
+% wise to choose a large enough initial precision in order to avoid
+% reallocations.  The precision PREC must be an integer between
+% ‘MPFR_PREC_MIN’ and ‘MPFR_PREC_MAX’ (otherwise the behavior is
+% undefined).
+%
+
   if (isa (x, 'mpfr_t'))
     x = x.idx;
   end

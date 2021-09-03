@@ -1,4 +1,11 @@
 function ret = mpfr_frac (rop, op, rnd)
+% Set ROP to the fractional part of OP, having the same sign as OP,
+% rounded in the direction RND (unlike in ‘mpfr_rint’, RND affects
+% only how the exact fractional part is rounded, not how the
+% fractional part is generated).  When OP is an integer or an
+% infinity, set ROP to zero with the same sign as OP.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

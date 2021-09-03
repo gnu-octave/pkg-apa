@@ -1,4 +1,14 @@
 function ret = mpfr_root (rop, op, n, rnd)
+% This function is the same as ‘mpfr_rootn_ui’ except when OP is −0
+% and N is even: the result is −0 instead of +0 (the reason was to be
+% consistent with ‘mpfr_sqrt’).  Said otherwise, if OP is zero, set
+% ROP to OP.
+%
+% This function predates the IEEE 754-2008 standard and behaves
+% differently from its rootn function.  It is marked as deprecated
+% and will be removed in a future release.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end

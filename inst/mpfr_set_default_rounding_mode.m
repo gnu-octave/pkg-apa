@@ -1,4 +1,8 @@
 function mpfr_set_default_rounding_mode (rnd)
+% Set the default rounding mode to RND.  The default rounding mode is
+% to nearest initially.
+%
+
   gmp_mpfr_interface (161, rnd);
 end
 

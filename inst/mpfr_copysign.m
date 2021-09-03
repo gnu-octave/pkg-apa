@@ -1,4 +1,10 @@
 function ret = mpfr_copysign (rop, op1, op2, rnd)
+% Set the value of ROP from OP1, rounded toward the given direction
+% RND, then set its sign bit to that of OP2 (even when OP1 or OP2 is
+% a NaN).  This function is equivalent to ‘mpfr_setsign (ROP, OP1,
+% mpfr_signbit (OP2), RND)’.
+%
+
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
   end
