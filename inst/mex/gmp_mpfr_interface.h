@@ -12,22 +12,29 @@
 
 #define DATA_CHUNK_SIZE 1000  // Allocate space for MPFR variables in chunks.
 
-#define DEBUG 0
-#define DBG_PRINTF(fmt, ...) \
-        do { if (DEBUG) mexPrintf ("DBG %s:%d:%s():" fmt, __FILE__, \
-                                   __LINE__, __func__, __VA_ARGS__); } while (0)
 
-// State deciding about the verbosity level
+// State deciding about the output verbosity level
 //   0 print no MEX_FCN_ERR to stdout
 //   1 print    MEX_FCN_ERR to stdout
+//   2 print very verbose debug output
 static int VERBOSE = 1;
+
 
 // Macro to print a message to stdout and set mexFunction error state variable.
 // IMPORTANT: Only call within mexFunction!!
 #define MEX_FCN_ERR(fmt, ...) \
-        do { if (VERBOSE) mexPrintf ("%s:%d:%s():" fmt, __FILE__, __LINE__, \
-                                     __func__, __VA_ARGS__); throw_error = 1; \
+        do { if (VERBOSE > 0) \
+               mexPrintf ("%s:%d:%s():" fmt, __FILE__, __LINE__, \
+                          __func__, __VA_ARGS__); throw_error = 1; \
            } while (0)
+
+// Macro to print very verbose debug output.  Can be called from everywhere.
+#define DBG_PRINTF(fmt, ...) \
+        do { if (VERBOSE > 1) \
+               mexPrintf ("DBG %s:%d:%s():" fmt, __FILE__, __LINE__, \
+                          __func__, __VA_ARGS__); \
+           } while (0)
+
 
 /**
  * Check number or input arguments.
