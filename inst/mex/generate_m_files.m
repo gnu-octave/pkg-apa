@@ -40,6 +40,10 @@ function generate_m_files ()
       arg = strsplit (in_args{j});
       fcn.in_args(j).type = strjoin (arg(1:end-1), ' ');
       fcn.in_args(j).name = arg{end};
+      if ((length (fcn.in_args(j).name) > 2) ...
+          && strcmp (fcn.in_args(j).name(end-1:end), '[]'))
+        fcn.in_args(j).name = fcn.in_args(j).name(1:end-2);
+      end
     end
 
     fprintf (' %3d/%3d: (%4d) %s\n', i, length (matches), fcn.number, fcn.name);
