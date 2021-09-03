@@ -1,8 +1,6 @@
 function ret = mpfr_ui_pow_ui (rop, op1, op2, rnd)
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
-  else
-    error ('rop must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (96, rop, op1, op2, rnd);
 end

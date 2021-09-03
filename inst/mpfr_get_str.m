@@ -1,8 +1,6 @@
 function ret = mpfr_get_str (*str, *expptr, base, n, op, rnd)
   if (isa (op, 'mpfr_t'))
     op = op.idx;
-  else
-    error ('op must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (21, *str, *expptr, base, n, op, rnd);
 end

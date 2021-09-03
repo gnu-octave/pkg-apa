@@ -1,8 +1,6 @@
 function ret = mpfr_fits_uintmax_p (op, rnd)
   if (isa (op, 'mpfr_t'))
     op = op.idx;
-  else
-    error ('op must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (29, op, rnd);
 end

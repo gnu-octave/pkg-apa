@@ -1,18 +1,12 @@
 function ret = mpfr_atan2 (rop, y, x, rnd)
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
-  else
-    error ('rop must be a "mpfr_t" variable');
   end
   if (isa (y, 'mpfr_t'))
     y = y.idx;
-  else
-    error ('y must be a "mpfr_t" variable');
   end
   if (isa (x, 'mpfr_t'))
     x = x.idx;
-  else
-    error ('x must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (108, rop, y, x, rnd);
 end

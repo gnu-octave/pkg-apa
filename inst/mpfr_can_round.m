@@ -1,8 +1,6 @@
 function ret = mpfr_can_round (b, err, rnd1, rnd2, prec)
   if (isa (b, 'mpfr_t'))
     b = b.idx;
-  else
-    error ('b must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (164, b, err, rnd1, rnd2, prec);
 end

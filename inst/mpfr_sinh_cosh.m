@@ -1,18 +1,12 @@
 function ret = mpfr_sinh_cosh (sop, cop, op, rnd)
   if (isa (sop, 'mpfr_t'))
     sop = sop.idx;
-  else
-    error ('sop must be a "mpfr_t" variable');
   end
   if (isa (cop, 'mpfr_t'))
     cop = cop.idx;
-  else
-    error ('cop must be a "mpfr_t" variable');
   end
   if (isa (op, 'mpfr_t'))
     op = op.idx;
-  else
-    error ('op must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (112, sop, cop, op, rnd);
 end

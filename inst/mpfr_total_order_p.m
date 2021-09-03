@@ -1,13 +1,9 @@
 function ret = mpfr_total_order_p (x, y)
   if (isa (x, 'mpfr_t'))
     x = x.idx;
-  else
-    error ('x must be a "mpfr_t" variable');
   end
   if (isa (y, 'mpfr_t'))
     y = y.idx;
-  else
-    error ('y must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (82, x, y);
 end

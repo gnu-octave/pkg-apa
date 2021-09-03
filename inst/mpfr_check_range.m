@@ -1,8 +1,6 @@
 function ret = mpfr_check_range (x, t, rnd)
   if (isa (x, 'mpfr_t'))
     x = x.idx;
-  else
-    error ('x must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (196, x, t, rnd);
 end

@@ -1,8 +1,6 @@
 function mpfr_set_inf (x, sign)
   if (isa (x, 'mpfr_t'))
     x = x.idx;
-  else
-    error ('x must be a "mpfr_t" variable');
   end
   gmp_mpfr_interface (11, x, sign);
 end

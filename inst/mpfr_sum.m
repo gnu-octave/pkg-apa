@@ -1,8 +1,6 @@
 function ret = mpfr_sum (rop, tab[], n, rnd)
   if (isa (rop, 'mpfr_t'))
     rop = rop.idx;
-  else
-    error ('rop must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (61, rop, tab[], n, rnd);
 end

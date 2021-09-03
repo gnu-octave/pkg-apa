@@ -1,8 +1,6 @@
 function ret = mpfr_min_prec (x)
   if (isa (x, 'mpfr_t'))
     x = x.idx;
-  else
-    error ('x must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (165, x);
 end

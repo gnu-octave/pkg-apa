@@ -1,13 +1,9 @@
 function ret = mpfr_frexp (*exp, y, x, rnd)
   if (isa (y, 'mpfr_t'))
     y = y.idx;
-  else
-    error ('y must be a "mpfr_t" variable');
   end
   if (isa (x, 'mpfr_t'))
     x = x.idx;
-  else
-    error ('x must be a "mpfr_t" variable');
   end
   ret = gmp_mpfr_interface (19, *exp, y, x, rnd);
 end

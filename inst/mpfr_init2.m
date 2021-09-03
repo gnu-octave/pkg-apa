@@ -1,8 +1,6 @@
 function mpfr_init2 (x, prec)
   if (isa (x, 'mpfr_t'))
     x = x.idx;
-  else
-    error ('x must be a "mpfr_t" variable');
   end
   gmp_mpfr_interface (0, x, prec);
 end

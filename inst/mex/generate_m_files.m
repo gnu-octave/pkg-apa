@@ -86,9 +86,6 @@ function generate_m_files ()
         var = fcn.in_args(j).name;
         fcn_str = [fcn_str, '  if (isa (', var, ', ''mpfr_t''))\n'];
         fcn_str = [fcn_str, '    ', var, ' = ', var, '.idx;\n'];
-        fcn_str = [fcn_str, '  else\n'];
-        fcn_str = [fcn_str, '    error (''', var, ...
-                                 ' must be a "mpfr_t" variable'');\n'];
         fcn_str = [fcn_str, '  end\n'];
       end
     end
