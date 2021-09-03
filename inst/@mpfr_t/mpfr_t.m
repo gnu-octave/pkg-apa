@@ -5,6 +5,31 @@ classdef mpfr_t
     idx   % MPFR variable indices.
   end
 
+  methods (Static)
+    function num = get_data_capacity ()
+      % [internal] Return the number of pre-allocated MPFR variables.
+      num = gmp_mpfr_interface (9000);
+    end
+
+    function num = get_data_size ()
+      % [internal] Return the number of currently used MPFR variables.
+      num = gmp_mpfr_interface (9001);
+    end
+
+    function set_verbose (level)
+      % [internal] Set the output verbosity `level` of the GMP MPFR interface.
+      % - level = 0: no output at all (including no error messages)
+      % - level = 1: show error messages
+      % - level = 2: very verbose debug output.
+      gmp_mpfr_interface (9002, level);
+    end
+
+    function idx = allocate (count)
+      % [internal] Return the start and end index of a newly created MPFR
+      % variable for `count` elements.
+      idx = gmp_mpfr_interface (9003, count);
+    end
+  end
 
   methods (Access = private)
     function warnInexactOperation (~, ret)
@@ -44,7 +69,7 @@ classdef mpfr_t
         obj.dims = size (x);
       end
       num_elems = prod (obj.dims);
-      obj.idx = mex_mpfr_allocate (num_elems)';
+      obj.idx = mpfr_t.allocate (num_elems)';
       mpfr_set_prec (obj, prec);
       s.type = '()';
       s.subs = {':'};

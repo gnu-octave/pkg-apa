@@ -49,21 +49,21 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
-      case 9000:  // size_t get_data_capacity (void)
+      case 9000:  // size_t mpfr_t.get_data_capacity (void)
       {
         MEX_NARGINCHK(1);
         plhs[0] = mxCreateDoubleScalar ((double) data_capacity);
         break;
       }
 
-      case 9001:  // size_t get_data_size (void)
+      case 9001:  // size_t mpfr_t.get_data_size (void)
       {
         MEX_NARGINCHK(1);
         plhs[0] = mxCreateDoubleScalar ((double) data_size);
         break;
       }
 
-      case 9002:  // void set_verbose (int level)
+      case 9002:  // void mpfr_t.set_verbose (int level)
       {
         MEX_NARGINCHK(2);
         int64_t level = 1;
@@ -75,7 +75,7 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
-      case 9003:  // idx_t mex_mpfr_allocate (size_t count)
+      case 9003:  // idx_t mpfr_t.allocate (size_t count)
       {
         MEX_NARGINCHK(2);
         uint64_t count = 0;

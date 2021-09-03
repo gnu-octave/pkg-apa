@@ -52,6 +52,10 @@ function generate_m_files ()
         fcn.in_args(2).name = 'nptr';
         fcn.in_args(3) = [];
         fcn.out_arg = '[ret, endptr] = ';
+      case {9000, 9001, 9002, 9003}
+        % Those functions are called by the mpfr_t class.
+        disp ('                 skipped');
+        continue;
     end
 
     % Generate Octave/Matlab function
