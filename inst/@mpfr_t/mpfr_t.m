@@ -457,7 +457,7 @@ classdef mpfr_t
       % is used b.
       
       if (nargin < 3)
-        rnd = mpfr_t.get_default_rounding_mode ();
+        rnd = mpfr_get_default_rounding_mode ();
       end
       if (nargin < 4)
         prec = [];
@@ -581,7 +581,7 @@ classdef mpfr_t
       % Subscripted reference `c = obj (s)`  using rounding mode `rnd`.
       if (strcmp (s(1).type, '()'))
         if (nargin < 3)
-          rnd = obj.get_default_rounding_mode ();
+          rnd = mpfr_get_default_rounding_mode ();
         end
         subs = s.subs{:};
         obj_numel = obj.idx(2) - obj.idx(1) + 1;

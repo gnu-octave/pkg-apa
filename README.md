@@ -60,14 +60,14 @@ can be called using the C-like notation with:
 
 ```octave
 % Prepare input and output variables.
-rop = mpfr_t(zeros (3));
-op1 = mpfr_t(ones (3));
-op2 = mpfr_t(4 * eye (3));
-rnd = mpfr_t.get_default_rounding_mode ();
+rop = mpfr_t (zeros (3));
+op1 = mpfr_t (ones (3));
+op2 = mpfr_t (4 * eye (3));
+rnd = mpfr_default_rounding_mode ();
 
 % Call mpfr_add.  Note unlike Octave/Matlab the
 % left-hand side does NOT contain the result.
-ret = mpfr_('add', rop, op1, op2, rnd);
+ret = mpfr_add (rop, op1, op2, rnd);
 
 double (rop)  % Note rop vs. ret!
 ```
@@ -80,7 +80,7 @@ double (rop)  % Note rop vs. ret!
 Another benefit of using the low-level MPFR interface is that **in-place**
 operations are permitted:
 ```octave
-ret = mpfr_('add', op1, op1, op1, rnd);  % op1 += op1
+ret = mpfr_add (op1, op1, op1, rnd);  % op1 += op1
 ```
 
 The supported functions in detail:
