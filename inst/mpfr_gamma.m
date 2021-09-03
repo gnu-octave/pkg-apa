@@ -1,4 +1,6 @@
 function ret = mpfr_gamma (rop, op, rnd)
+% ret = mpfr_gamma (rop, op, rnd)
+%
 % Set ROP to the value of the Gamma function on OP, resp.  the
 % incomplete Gamma function on OP and OP2, rounded in the direction
 % RND.  (In the literature, ‘mpfr_gamma_inc’ is called upper

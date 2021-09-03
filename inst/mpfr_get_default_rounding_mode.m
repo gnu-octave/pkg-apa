@@ -1,4 +1,6 @@
 function ret = mpfr_get_default_rounding_mode ()
+% ret = mpfr_get_default_rounding_mode ()
+%
 % Get the default rounding mode.
 %
 

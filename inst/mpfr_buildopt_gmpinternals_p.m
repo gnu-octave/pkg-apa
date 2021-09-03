@@ -1,4 +1,6 @@
 function ret = mpfr_buildopt_gmpinternals_p ()
+% ret = mpfr_buildopt_gmpinternals_p ()
+%
 % Return a non-zero value if MPFR was compiled with GMP internals
 % (that is, MPFR was built with either ‘--with-gmp-build’ or
 % ‘--enable-gmp-internals’ configure option), return zero otherwise.

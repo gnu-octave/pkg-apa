@@ -1,4 +1,6 @@
 function ret = mpfr_prec_round (x, prec, rnd)
+% ret = mpfr_prec_round (x, prec, rnd)
+%
 % Round X according to RND with precision PREC, which must be an
 % integer between ‘MPFR_PREC_MIN’ and ‘MPFR_PREC_MAX’ (otherwise the
 % behavior is undefined).  If PREC is greater than or equal to the

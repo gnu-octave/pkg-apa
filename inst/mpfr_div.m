@@ -1,4 +1,6 @@
 function ret = mpfr_div (rop, op1, op2, rnd)
+% ret = mpfr_div (rop, op1, op2, rnd)
+%
 % Set ROP to OP1/OP2 rounded in the direction RND.  When a result is
 % zero, its sign is the product of the signs of the operands.  For
 % types having no signed zeros, 0 is considered positive; but note

@@ -1,4 +1,6 @@
 function mpfr_swap (x, y)
+% mpfr_swap (x, y)
+%
 % Swap the structures pointed to by X and Y.  In particular, the
 % values are exchanged without rounding (this may be different from
 % three ‘mpfr_set’ calls using a third auxiliary variable).

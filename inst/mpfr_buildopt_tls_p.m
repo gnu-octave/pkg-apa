@@ -1,4 +1,6 @@
 function ret = mpfr_buildopt_tls_p ()
+% ret = mpfr_buildopt_tls_p ()
+%
 % Return a non-zero value if MPFR was compiled as thread safe using
 % compiler-level Thread-Local Storage (that is, MPFR was built with
 % the ‘--enable-thread-safe’ configure option, see ‘INSTALL’ file),

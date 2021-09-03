@@ -1,4 +1,6 @@
 function ret = mpfr_rint_roundeven (rop, op, rnd)
+% ret = mpfr_rint_roundeven (rop, op, rnd)
+%
 % Set ROP to OP rounded to an integer:
 % • ‘mpfr_rint_ceil’: to the next higher or equal integer;
 % • ‘mpfr_rint_floor’: to the next lower or equal integer;

@@ -1,4 +1,6 @@
 function [ret, signp] = mpfr_lgamma (rop, op, rnd)
+% [ret, signp] = mpfr_lgamma (rop, op, rnd)
+%
 % Set ROP to the value of the logarithm of the absolute value of the
 % Gamma function on OP, rounded in the direction RND.  The sign (1 or
 % −1) of Gamma(OP) is returned in the object pointed to by SIGNP.

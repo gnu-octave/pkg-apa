@@ -1,4 +1,6 @@
 function ret = mpfr_cosh (rop, op, rnd)
+% ret = mpfr_cosh (rop, op, rnd)
+%
 % Set ROP to the hyperbolic cosine, sine or tangent of OP, rounded in
 % the direction RND.
 %

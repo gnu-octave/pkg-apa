@@ -1,4 +1,6 @@
 function ret = mpfr_integer_p (op)
+% ret = mpfr_integer_p (op)
+%
 % Return non-zero iff OP is an integer.
 %
 

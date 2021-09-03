@@ -1,4 +1,6 @@
 function ret = mpfr_abs (rop, op, rnd)
+% ret = mpfr_abs (rop, op, rnd)
+%
 % Set ROP to -OP and the absolute value of OP respectively, rounded
 % in the direction RND.  Just changes or adjusts the sign if ROP and
 % OP are the same variable, otherwise a rounding might occur if the

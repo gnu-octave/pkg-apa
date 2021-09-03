@@ -1,4 +1,6 @@
 function ret = mpfr_li2 (rop, op, rnd)
+% ret = mpfr_li2 (rop, op, rnd)
+%
 % Set ROP to real part of the dilogarithm of OP, rounded in the
 % direction RND.  MPFR defines the dilogarithm function as the
 % integral of -log(1-t)/t from 0 to OP.

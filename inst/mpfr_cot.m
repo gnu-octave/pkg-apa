@@ -1,4 +1,6 @@
 function ret = mpfr_cot (rop, op, rnd)
+% ret = mpfr_cot (rop, op, rnd)
+%
 % Set ROP to the secant of OP, cosecant of OP, cotangent of OP,
 % rounded in the direction RND.
 %

@@ -1,4 +1,6 @@
 function mpfr_set_inf (x, sign)
+% mpfr_set_inf (x, sign)
+%
 % Set the variable X to NaN (Not-a-Number), infinity or zero
 % respectively.  In ‘mpfr_set_inf’ or ‘mpfr_set_zero’, X is set to
 % plus infinity or plus zero iff SIGN is nonnegative; in

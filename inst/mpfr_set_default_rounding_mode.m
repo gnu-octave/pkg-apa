@@ -1,4 +1,6 @@
 function mpfr_set_default_rounding_mode (rnd)
+% mpfr_set_default_rounding_mode (rnd)
+%
 % Set the default rounding mode to RND.  The default rounding mode is
 % to nearest initially.
 %

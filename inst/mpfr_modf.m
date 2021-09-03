@@ -1,4 +1,6 @@
 function ret = mpfr_modf (iop, fop, op, rnd)
+% ret = mpfr_modf (iop, fop, op, rnd)
+%
 % Set simultaneously IOP to the integral part of OP and FOP to the
 % fractional part of OP, rounded in the direction RND with the
 % corresponding precision of IOP and FOP (equivalent to

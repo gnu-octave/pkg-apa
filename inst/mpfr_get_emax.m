@@ -1,4 +1,6 @@
 function ret = mpfr_get_emax ()
+% ret = mpfr_get_emax ()
+%
 % Return the (current) smallest and largest exponents allowed for a
 % floating-point variable.  The smallest positive value of a
 % floating-point variable is one half times 2 raised to the smallest

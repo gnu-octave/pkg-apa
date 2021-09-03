@@ -1,4 +1,6 @@
 function ret = mpfr_fms (rop, op1, op2, op3, rnd)
+% ret = mpfr_fms (rop, op1, op2, op3, rnd)
+%
 % Set ROP to (OP1 times OP2) + OP3 (resp. (OP1 times OP2) - OP3)
 % rounded in the direction RND.  Concerning special values (signed
 % zeros, infinities, NaN), these functions behave like a

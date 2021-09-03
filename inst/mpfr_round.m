@@ -1,4 +1,6 @@
 function ret = mpfr_round (rop, op)
+% ret = mpfr_round (rop, op)
+%
 % Set ROP to OP rounded to an integer.  ‘mpfr_rint’ rounds to the
 % nearest representable integer in the given direction RND, and the
 % other five functions behave in a similar way with some fixed

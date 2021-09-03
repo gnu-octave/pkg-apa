@@ -1,4 +1,6 @@
 function ret = mpfr_tan (rop, op, rnd)
+% ret = mpfr_tan (rop, op, rnd)
+%
 % Set ROP to the cosine of OP, sine of OP, tangent of OP, rounded in
 % the direction RND.
 %

@@ -1,4 +1,6 @@
 function [ret, endptr] = mpfr_strtofr (rop, nptr, base, rnd)
+% [ret, endptr] = mpfr_strtofr (rop, nptr, base, rnd)
+%
 % Read a floating-point number from a string NPTR in base BASE,
 % rounded in the direction RND; BASE must be either 0 (to detect the
 % base, as described below) or a number from 2 to 62 (otherwise the

@@ -1,4 +1,6 @@
 function [ret, q] = mpfr_remquo (r, x, y, rnd)
+% [ret, q] = mpfr_remquo (r, x, y, rnd)
+%
 % Set R to the value of X - NY, rounded according to the direction
 % RND, where N is the integer quotient of X divided by Y, defined as
 % follows: N is rounded toward zero for ‘mpfr_fmod’ and

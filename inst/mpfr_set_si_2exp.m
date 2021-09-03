@@ -1,4 +1,6 @@
 function ret = mpfr_set_si_2exp (rop, op, e, rnd)
+% ret = mpfr_set_si_2exp (rop, op, e, rnd)
+%
 % Set the value of ROP from OP multiplied by two to the power E,
 % rounded toward the given direction RND.  Note that the input 0 is
 % converted to +0.

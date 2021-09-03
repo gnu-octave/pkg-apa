@@ -1,4 +1,6 @@
 function mpfr_nexttoward (x, y)
+% mpfr_nexttoward (x, y)
+%
 % If X or Y is NaN, set X to NaN; note that the NaN flag is set as
 % usual.  If X and Y are equal, X is unchanged.  Otherwise, if X is
 % different from Y, replace X by the next floating-point number (with

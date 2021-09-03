@@ -1,4 +1,6 @@
 function ret = mpfr_atan (rop, op, rnd)
+% ret = mpfr_atan (rop, op, rnd)
+%
 % Set ROP to the arc-cosine, arc-sine or arc-tangent of OP, rounded
 % in the direction RND.  Note that since ‘acos(-1)’ returns the
 % floating-point number closest to Pi according to the given rounding

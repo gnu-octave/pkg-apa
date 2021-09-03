@@ -1,4 +1,6 @@
 function ret = mpfr_get_version ()
+% ret = mpfr_get_version ()
+%
 % Return the MPFR version, as a null-terminated string.
 %
 

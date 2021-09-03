@@ -1,4 +1,6 @@
 function ret = mpfr_sqr (rop, op, rnd)
+% ret = mpfr_sqr (rop, op, rnd)
+%
 % Set ROP to the square of OP rounded in the direction RND.
 %
 

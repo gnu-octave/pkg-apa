@@ -1,4 +1,6 @@
 function ret = mpfr_sqrt (rop, op, rnd)
+% ret = mpfr_sqrt (rop, op, rnd)
+%
 % Set ROP to the square root of OP rounded in the direction RND.  Set
 % ROP to −0 if OP is −0, to be consistent with the IEEE 754 standard.
 % Set ROP to NaN if OP is negative.

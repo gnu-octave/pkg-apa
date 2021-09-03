@@ -1,4 +1,6 @@
 function ret = mpfr_log_ui (rop, op, rnd)
+% ret = mpfr_log_ui (rop, op, rnd)
+%
 % Set ROP to the natural logarithm of OP, log2(OP) or log10(OP),
 % respectively, rounded in the direction RND.  Set ROP to +0 if OP is
 % 1 (in all rounding modes), for consistency with the ISO C99 and

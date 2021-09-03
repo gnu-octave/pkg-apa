@@ -1,4 +1,6 @@
 function mpfr_set_inexflag ()
+% mpfr_set_inexflag ()
+%
 % Set (raise) the underflow, overflow, divide-by-zero, invalid,
 % inexact and _erange_ flags.
 %

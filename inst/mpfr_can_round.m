@@ -1,4 +1,6 @@
 function ret = mpfr_can_round (b, err, rnd1, rnd2, prec)
+% ret = mpfr_can_round (b, err, rnd1, rnd2, prec)
+%
 % Assuming B is an approximation of an unknown number X in the
 % direction RND1 with error at most two to the power E(b)-ERR where
 % E(b) is the exponent of B, return a non-zero value if one is able

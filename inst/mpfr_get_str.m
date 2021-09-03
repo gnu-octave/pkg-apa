@@ -1,4 +1,6 @@
 function [significant, expptr] = mpfr_get_str (base, n, op, rnd)
+% [significant, expptr] = mpfr_get_str (base, n, op, rnd)
+%
 % Convert OP to a string of digits in base abs(BASE), with rounding
 % in the direction RND, where N is either zero (see below) or the
 % number of significant digits output in the string.  The argument

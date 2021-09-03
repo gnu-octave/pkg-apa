@@ -1,4 +1,6 @@
 function ret = mpfr_atan2 (rop, y, x, rnd)
+% ret = mpfr_atan2 (rop, y, x, rnd)
+%
 % Set ROP to the arc-tangent2 of Y and X, rounded in the direction
 % RND: if ‘x > 0’, ‘atan2(y, x) = atan(y/x)’; if ‘x < 0’, ‘atan2(y,
 % x) = sign(y)*(Pi - atan(abs(y/x)))’, thus a number from -Pi to Pi.

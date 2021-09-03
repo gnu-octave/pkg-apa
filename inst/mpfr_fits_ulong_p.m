@@ -1,4 +1,6 @@
 function ret = mpfr_fits_ulong_p (op, rnd)
+% ret = mpfr_fits_ulong_p (op, rnd)
+%
 % Return non-zero if OP would fit in the respective C data type,
 % respectively ‘unsigned long’, ‘long’, ‘unsigned int’, ‘int’,
 % ‘unsigned short’, ‘short’, ‘uintmax_t’, ‘intmax_t’, when rounded to

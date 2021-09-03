@@ -1,4 +1,6 @@
 function ret = mpfr_root (rop, op, n, rnd)
+% ret = mpfr_root (rop, op, n, rnd)
+%
 % This function is the same as ‘mpfr_rootn_ui’ except when OP is −0
 % and N is even: the result is −0 instead of +0 (the reason was to be
 % consistent with ‘mpfr_sqrt’).  Said otherwise, if OP is zero, set

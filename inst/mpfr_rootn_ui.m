@@ -1,4 +1,6 @@
 function ret = mpfr_rootn_ui (rop, op, n, rnd)
+% ret = mpfr_rootn_ui (rop, op, n, rnd)
+%
 % Set ROP to the Nth root (with N = 3, the cubic root, for
 % ‘mpfr_cbrt’) of OP rounded in the direction RND.  For N = 0, set
 % ROP to NaN.  For N odd (resp. even) and OP negative (including

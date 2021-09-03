@@ -1,4 +1,6 @@
 function ret = mpfr_check_range (x, t, rnd)
+% ret = mpfr_check_range (x, t, rnd)
+%
 % This function assumes that X is the correctly rounded value of some
 % real value Y in the direction RND and some extended exponent range,
 % and that T is the corresponding *note ternary value::.  For

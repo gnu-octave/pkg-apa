@@ -1,4 +1,6 @@
 function ret = mpfr_subnormalize (x, t, rnd)
+% ret = mpfr_subnormalize (x, t, rnd)
+%
 % This function rounds X emulating subnormal number arithmetic: if X
 % is outside the subnormal exponent range of the emulated
 % floating-point system, this function just propagates the *note

@@ -1,4 +1,6 @@
 function ret = mpfr_min_prec (x)
+% ret = mpfr_min_prec (x)
+%
 % Return the minimal number of bits required to store the significand
 % of X, and 0 for special values, including 0.
 %

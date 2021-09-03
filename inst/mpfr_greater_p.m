@@ -1,4 +1,6 @@
 function ret = mpfr_greater_p (op1, op2)
+% ret = mpfr_greater_p (op1, op2)
+%
 % Return non-zero if OP1 > OP2, OP1 >= OP2, OP1 < OP2, OP1 <= OP2,
 % OP1 = OP2 respectively, and zero otherwise.  Those functions return
 % zero whenever OP1 and/or OP2 is NaN.

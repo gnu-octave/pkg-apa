@@ -1,4 +1,6 @@
 function ret = mpfr_setsign (rop, op, s, rnd)
+% ret = mpfr_setsign (rop, op, s, rnd)
+%
 % Set the value of ROP from OP, rounded toward the given direction
 % RND, then set (resp. clear) its sign bit if S is non-zero (resp.
 % zero), even when OP is a NaN.

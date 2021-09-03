@@ -1,4 +1,6 @@
 function ret = mpfr_get_str_ndigits (b, p)
+% ret = mpfr_get_str_ndigits (b, p)
+%
 % Return the minimal integer m such that any number of P bits, when
 % output with m digits in radix B with rounding to nearest, can be
 % recovered exactly when read again, still with rounding to nearest.

@@ -1,4 +1,6 @@
 function ret = mpfr_sin_cos (sop, cop, op, rnd)
+% ret = mpfr_sin_cos (sop, cop, op, rnd)
+%
 % Set simultaneously SOP to the sine of OP and COP to the cosine of
 % OP, rounded in the direction RND with the corresponding precisions
 % of SOP and COP, which must be different variables.  Return 0 iff

@@ -1,4 +1,6 @@
 function ret = mpfr_erf (rop, op, rnd)
+% ret = mpfr_erf (rop, op, rnd)
+%
 % Set ROP to the value of the error function on OP (resp. the
 % complementary error function on OP) rounded in the direction RND.
 %

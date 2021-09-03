@@ -1,4 +1,6 @@
 function ret = mpfr_sum (rop, tab, n, rnd)
+% ret = mpfr_sum (rop, tab, n, rnd)
+%
 % Set ROP to the sum of all elements of TAB, whose size is N,
 % correctly rounded in the direction RND.  Warning: for efficiency
 % reasons, TAB is an array of pointers to ‘mpfr_t’, not an array of

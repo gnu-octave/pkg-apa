@@ -1,4 +1,6 @@
 function mpfr_set_default_prec (prec)
+% mpfr_set_default_prec (prec)
+%
 % Set the default precision to be *exactly* PREC bits, where PREC can
 % be any integer between ‘MPFR_PREC_MIN’ and ‘MPFR_PREC_MAX’.  The
 % precision of a variable means the number of bits used to store its

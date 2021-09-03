@@ -1,4 +1,6 @@
 function ret = mpfr_fmma (rop, op1, op2, op3, op4, rnd)
+% ret = mpfr_fmma (rop, op1, op2, op3, op4, rnd)
+%
 % Set ROP to (OP1 times OP2) + (OP3 times OP4) (resp. (OP1 times OP2)
 % - (OP3 times OP4)) rounded in the direction RND.  In case the
 % computation of OP1 times OP2 overflows or underflows (or that of

@@ -1,4 +1,6 @@
 function ret = mpfr_init_set (rop, op, rnd)
+% ret = mpfr_init_set (rop, op, rnd)
+%
 % Initialize ROP and set its value from OP, rounded in the direction
 % RND.  The precision of ROP will be taken from the active default
 % precision, as set by ‘mpfr_set_default_prec’.

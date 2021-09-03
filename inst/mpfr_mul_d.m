@@ -1,4 +1,6 @@
 function ret = mpfr_mul_d (rop, op1, op2, rnd)
+% ret = mpfr_mul_d (rop, op1, op2, rnd)
+%
 % Set ROP to OP1 times OP2 rounded in the direction RND.  When a
 % result is zero, its sign is the product of the signs of the
 % operands (for types having no signed zeros, 0 is considered

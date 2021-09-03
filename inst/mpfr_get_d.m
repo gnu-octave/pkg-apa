@@ -1,4 +1,6 @@
 function ret = mpfr_get_d (op, rnd)
+% ret = mpfr_get_d (op, rnd)
+%
 % Convert OP to a ‘float’ (respectively ‘double’, ‘long double’,
 % ‘_Decimal64’, or ‘_Decimal128’) using the rounding mode RND.  If OP
 % is NaN, some fixed NaN (either quiet or signaling) or the result of

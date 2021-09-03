@@ -48,6 +48,10 @@ function generate_m_files ()
           && strcmp (fcn.in_args(j).name(end-1:end), '[]'))
         fcn.in_args(j).name = fcn.in_args(j).name(1:end-2);
       end
+      % Handle leading C-pointer stars '*' in variable names (mpfr_set_str).
+      if ((length (fcn.in_args(j).name) > 0) && (fcn.in_args(j).name(1) == '*'))
+        fcn.in_args(j).name = fcn.in_args(j).name(2:end);
+      end
     end
 
     fprintf (' %3d/%3d: (%4d) %s\n', i, length (matches), fcn.number, fcn.name);
@@ -106,6 +110,8 @@ function generate_m_files ()
     fcn_str = ['function ', fcn_str_ret, fcn.name, ' (', fcn_str_args, ')\n'];
 
     % Write help text.
+    fcn_str = [fcn_str, '%% ', fcn_str_ret, fcn.name, ' (', fcn_str_args, ')\n'];
+    fcn_str = [fcn_str, '%%\n'];
     if (isfield (help_strings, fcn.name))
       fcn_str = [fcn_str, help_strings.(fcn.name), '\n\n'];
     else

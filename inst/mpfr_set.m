@@ -1,4 +1,6 @@
 function ret = mpfr_set (rop, op, rnd)
+% ret = mpfr_set (rop, op, rnd)
+%
 % Set the value of ROP from OP, rounded toward the given direction
 % RND.  Note that the input 0 is converted to +0 by ‘mpfr_set_ui’,
 % ‘mpfr_set_si’, ‘mpfr_set_uj’, ‘mpfr_set_sj’, The

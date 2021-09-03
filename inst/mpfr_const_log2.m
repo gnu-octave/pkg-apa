@@ -1,4 +1,6 @@
 function ret = mpfr_const_log2 (rop, rnd)
+% ret = mpfr_const_log2 (rop, rnd)
+%
 % Set ROP to the logarithm of 2, the value of Pi, of Euler’s constant
 % 0.577..., of Catalan’s constant 0.915..., respectively, rounded in
 % the direction RND.  These functions cache the computed values to

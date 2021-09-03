@@ -1,4 +1,6 @@
 function mpfr_clear_erangeflag ()
+% mpfr_clear_erangeflag ()
+%
 % Clear (lower) the underflow, overflow, divide-by-zero, invalid,
 % inexact and _erange_ flags.
 %

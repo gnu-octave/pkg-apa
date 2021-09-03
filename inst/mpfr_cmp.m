@@ -1,4 +1,6 @@
 function ret = mpfr_cmp (op1, op2)
+% ret = mpfr_cmp (op1, op2)
+%
 % Compare OP1 and OP2.  Return a positive value if OP1 > OP2, zero if
 % OP1 = OP2, and a negative value if OP1 < OP2.  Both OP1 and OP2 are
 % considered to their full own precision, which may differ.  If one

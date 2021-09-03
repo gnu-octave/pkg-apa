@@ -1,4 +1,6 @@
 function ret = mpfr_get_emin_max ()
+% ret = mpfr_get_emin_max ()
+%
 % Return the minimum and maximum of the exponents allowed for
 % ‘mpfr_set_emin’ and ‘mpfr_set_emax’ respectively.  These values are
 % implementation dependent, thus a program using

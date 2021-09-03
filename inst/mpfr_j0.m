@@ -1,4 +1,6 @@
 function ret = mpfr_j0 (rop, op, rnd)
+% ret = mpfr_j0 (rop, op, rnd)
+%
 % Set ROP to the value of the first kind Bessel function of order 0,
 % (resp. 1 and N) on OP, rounded in the direction RND.  When OP is
 % NaN, ROP is always set to NaN.  When OP is plus or minus Infinity,

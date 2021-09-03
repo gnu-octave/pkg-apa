@@ -1,4 +1,6 @@
 function ret = mpfr_buildopt_decimal_p ()
+% ret = mpfr_buildopt_decimal_p ()
+%
 % Return a non-zero value if MPFR was compiled with decimal float
 % support (that is, MPFR was built with the ‘--enable-decimal-float’
 % configure option), return zero otherwise.

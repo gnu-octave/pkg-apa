@@ -1,4 +1,6 @@
 function ret = mpfr_asinh (rop, op, rnd)
+% ret = mpfr_asinh (rop, op, rnd)
+%
 % Set ROP to the inverse hyperbolic cosine, sine or tangent of OP,
 % rounded in the direction RND.
 %

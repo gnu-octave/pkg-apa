@@ -1,4 +1,6 @@
 function ret = mpfr_divby0_p ()
+% ret = mpfr_divby0_p ()
+%
 % Return the corresponding (underflow, overflow, divide-by-zero,
 % invalid, inexact, _erange_) flag, which is non-zero iff the flag is
 % set.

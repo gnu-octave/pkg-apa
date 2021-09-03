@@ -1,4 +1,6 @@
 function mpfr_init2 (x, prec)
+% mpfr_init2 (x, prec)
+%
 % Initialize X, set its precision to be *exactly* PREC bits and its
 % value to NaN.  (Warning: the corresponding MPF function initializes
 % to zero instead.)

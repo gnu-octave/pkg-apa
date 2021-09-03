@@ -1,4 +1,6 @@
 function ret = mpfr_agm (rop, op1, op2, rnd)
+% ret = mpfr_agm (rop, op1, op2, rnd)
+%
 % Set ROP to the arithmetic-geometric mean of OP1 and OP2, rounded in
 % the direction RND.  The arithmetic-geometric mean is the common
 % limit of the sequences U_N and V_N, where U_0=OP1, V_0=OP2, U_(N+1)

@@ -1,4 +1,6 @@
 function ret = mpfr_ai (rop, x, rnd)
+% ret = mpfr_ai (rop, x, rnd)
+%
 % Set ROP to the value of the Airy function Ai on X, rounded in the
 % direction RND.  When X is NaN, ROP is always set to NaN.  When X is
 % +Inf or −Inf, ROP is +0.  The current implementation is not

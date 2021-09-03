@@ -1,4 +1,6 @@
 function ret = mpfr_rec_sqrt (rop, op, rnd)
+% ret = mpfr_rec_sqrt (rop, op, rnd)
+%
 % Set ROP to the reciprocal square root of OP rounded in the
 % direction RND.  Set ROP to +Inf if OP is ±0, +0 if OP is +Inf, and
 % NaN if OP is negative.  Warning!  Therefore the result on −0 is

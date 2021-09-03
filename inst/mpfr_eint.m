@@ -1,4 +1,6 @@
 function ret = mpfr_eint (rop, op, rnd)
+% ret = mpfr_eint (rop, op, rnd)
+%
 % Set ROP to the exponential integral of OP, rounded in the direction
 % RND.  This is the sum of Euler’s constant, of the logarithm of the
 % absolute value of OP, and of the sum for k from 1 to infinity of OP

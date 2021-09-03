@@ -1,4 +1,6 @@
 function ret = mpfr_sech (rop, op, rnd)
+% ret = mpfr_sech (rop, op, rnd)
+%
 % Set ROP to the hyperbolic secant of OP, cosecant of OP, cotangent
 % of OP, rounded in the direction RND.
 %

@@ -1,4 +1,6 @@
 function ret = mpfr_total_order_p (x, y)
+% ret = mpfr_total_order_p (x, y)
+%
 % This function implements the totalOrder predicate from
 % IEEE 754-2008, where −NaN < −Inf < negative finite numbers < −0 <
 % +0 < positive finite numbers < +Inf < +NaN.  It returns a non-zero

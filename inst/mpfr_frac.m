@@ -1,4 +1,6 @@
 function ret = mpfr_frac (rop, op, rnd)
+% ret = mpfr_frac (rop, op, rnd)
+%
 % Set ROP to the fractional part of OP, having the same sign as OP,
 % rounded in the direction RND (unlike in ‘mpfr_rint’, RND affects
 % only how the exact fractional part is rounded, not how the

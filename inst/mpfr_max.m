@@ -1,4 +1,6 @@
 function ret = mpfr_max (rop, op1, op2, rnd)
+% ret = mpfr_max (rop, op1, op2, rnd)
+%
 % Set ROP to the minimum (resp. maximum) of OP1 and OP2.  If OP1 and
 % OP2 are both NaN, then ROP is set to NaN.  If OP1 or OP2 is NaN,
 % then ROP is set to the numeric value.  If OP1 and OP2 are zeros of

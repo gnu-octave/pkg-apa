@@ -1,4 +1,6 @@
 function ret = mpfr_set_emin (exp)
+% ret = mpfr_set_emin (exp)
+%
 % Set the smallest and largest exponents allowed for a floating-point
 % variable.  Return a non-zero value when EXP is not in the range
 % accepted by the implementation (in that case the smallest or

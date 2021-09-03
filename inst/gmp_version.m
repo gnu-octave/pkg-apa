@@ -1,4 +1,6 @@
 function ret = gmp_version ()
+% ret = gmp_version ()
+%
   ret = gmp_mpfr_interface (1000);
 end
 
