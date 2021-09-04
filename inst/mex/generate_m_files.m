@@ -59,7 +59,8 @@ function generate_m_files ()
     % Patch changes to C function definition
     switch (fcn.number)
       case 21
-        % char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base, size_t n, mpfr_t op, mpfr_rnd_t rnd)
+        % char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base, 
+        %                      size_t n, mpfr_t op, mpfr_rnd_t rnd)
         % [significant, expptr] = mpfr_get_str (base, n, op, rnd)
         fcn.in_args(1:2) = [];
         fcn.out_arg = '[significant, expptr] = ';
@@ -76,7 +77,8 @@ function generate_m_files ()
         fcn.in_args(2) = [];
         fcn.out_arg = '[ret, q] = ';
       case 217
-        % int mpfr_strtofr (mpfr_t rop, const char *nptr, char **endptr, int base, mpfr_rnd_t rnd)
+        % int mpfr_strtofr (mpfr_t rop, const char *nptr, char **endptr,
+        %                   int base, mpfr_rnd_t rnd)
         % [ret, endptr] = mpfr_strtofr (rop, nptr, base, rnd)
         fcn.in_args(2).name = 'nptr';
         fcn.in_args(3) = [];
