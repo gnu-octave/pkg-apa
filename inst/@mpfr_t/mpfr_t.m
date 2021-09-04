@@ -105,14 +105,27 @@ classdef mpfr_t
       % Object display
       if (isscalar (obj))
         if (prod (obj.dims) == 1)
-          fprintf (1, '  MPFR scalar (precision %d binary digits)\n\n', obj.prec);
-          fprintf (1, '    double approximation: %f\n', double (obj));
+          dim_str = 'scalar';
         else
-          fprintf (1, '  %dx%d MPFR matrix\n\n', obj.dims(1), obj.dims(2));
+          dim_str = sprintf ('%dx%d matrix', obj.dims(1), obj.dims(2));
+        end
+        prec = obj.prec;
+        prec = [min(prec), max(prec)];
+        if (prec(1) == prec(2))
+          prec_str = num2str (prec(1));
+        else
+          prec_str = sprintf ('between %d and %d', prec(1), prec(2));
+        end
+        fprintf (1, '  MPFR %s (precision %s binary digits)\n\n', dim_str, ...
+                                                                  prec_str);
+        if (prod (obj.dims) == 1)
+          fprintf (1, '  Double approximation: %f\n', double (obj));
+        elseif ((obj.dims(1) <= 5) && (obj.dims(2) <= 5))
+          fprintf (1, '  Double approximation:\n\n');
+          disp (double (obj));
         end
       else
-        [m, n] = size (obj);
-        fprintf (1, '  %dx%d MPFR array\n\n', m, n);
+        builtin ('disp', obj);
       end
     end
 
