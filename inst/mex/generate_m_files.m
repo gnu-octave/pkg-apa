@@ -49,7 +49,7 @@ function generate_m_files ()
         fcn.in_args(j).name = fcn.in_args(j).name(1:end-2);
       end
       % Handle leading C-pointer stars '*' in variable names (mpfr_set_str).
-      if ((length (fcn.in_args(j).name) > 0) && (fcn.in_args(j).name(1) == '*'))
+      if ((~isempty (fcn.in_args(j).name)) && (fcn.in_args(j).name(1) == '*'))
         fcn.in_args(j).name = fcn.in_args(j).name(2:end);
       end
     end
@@ -184,11 +184,11 @@ function help_strings = parse_mpfr_info_file ()
 
     % Begin or continue reading the help string.
     if ((strcmp (state, 'new_item') || strcmp (state, 'read_item_help')) ...
-        && ((length (line) == 0) || strncmp (line, '     ', 5)))
+        && ((isempty (line)) || strncmp (line, '     ', 5)))
       state = 'read_item_help';
       % Avoid double blank lines.
-      if ((length (line) == 0) && ((length (text_stack) == 0) ...
-                                   || ~strcmp (text_stack{end}, '%%')))
+      if ((isempty (line)) && ((isempty (text_stack)) ...
+                               || ~strcmp (text_stack{end}, '%%')))
         text_stack{end + 1} = '%%';
       else
         text_stack{end + 1} = ['%% ', strtrim(line)];
@@ -207,7 +207,7 @@ end
 function [help_strings, item_stack, text_stack] = parse_flush_stack ( ...
   help_strings, item_stack, text_stack)
 % Helper function for info-file parser.
-  if (length (item_stack) > 0)
+  if (~isempty (item_stack))
     text_stack = strjoin (text_stack, '\n');
     for j = 1:length (item_stack)
       help_strings.(item_stack{j}) = text_stack;
@@ -231,4 +231,4 @@ function content = read_file_to_cellstr (file)
   end
   fclose (fid);
   content = content(1:end-1);  % No EOL
-endfunction
+end
