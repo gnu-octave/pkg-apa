@@ -42,6 +42,23 @@ classdef mpfr_t
   end
 
 
+  methods (Static, Access = private)
+    function c = call_comparison_op (a, b, op)
+      if (isa (a, 'mpfr_t'))
+        new_dims = a.dims;
+      else
+        a = mpfr_t (a);
+        new_dims = b.dims;
+      end
+      if (~isa (b, 'mpfr_t'))
+         b = mpfr_t (b);
+      end
+      c = (op (a, b) ~= 0);
+      c = reshape (c, new_dims);
+    end
+  end
+
+
   methods
     function obj = mpfr_t (x, prec, rnd)
       % Construct a mpfr_t variable of precision `prec` from `x` using rounding
@@ -491,36 +508,28 @@ classdef mpfr_t
     function c = lt (a, b)
       % Less than `c = (a < b)`.
 
-      a = mpfr_t (a);  % FIXME
-      c = (mpfr_less_p (a, mpfr_t (b)) ~= 0);
-      c = reshape (c, a.dims(1), a.dims(2));
+      c = mpfr_t.call_comparison_op (a, b, @mpfr_less_p);
     end
 
 
     function c = gt (a, b)
       % Greater than `a > b`.
 
-      a = mpfr_t (a); % FIXME
-      c = (mpfr_greater_p (a, mpfr_t (b)) ~= 0);
-      c = reshape (c, a.dims(1), a.dims(2));
+      c = mpfr_t.call_comparison_op (a, b, @mpfr_greater_p);
     end
 
 
     function c = le (a, b)
       % Less than or equal to `a <= b`.
 
-      a = mpfr_t (a); % FIXME
-      c = (mpfr_lessequal_p (a, mpfr_t (b)) ~= 0);
-      c = reshape (c, a.dims(1), a.dims(2));
+      c = mpfr_t.call_comparison_op (a, b, @mpfr_lessequal_p);
     end
 
 
     function c = ge (a, b)
       % Greater than or equal to `a >= b`.
 
-      a = mpfr_t (a); % FIXME
-      c = (mpfr_greaterequal_p (a, mpfr_t (b)) ~= 0);
-      c = reshape (c, a.dims(1), a.dims(2));
+      c = mpfr_t.call_comparison_op (a, b, @mpfr_greaterequal_p);
     end
 
 
@@ -534,9 +543,7 @@ classdef mpfr_t
     function c = eq (a, b)
       % Equality `a == b`.
 
-      a = mpfr_t (a); % FIXME
-      c = (mpfr_equal_p (a, mpfr_t (b)) ~= 0);
-      c = reshape (c, a.dims(1), a.dims(2));
+      c = mpfr_t.call_comparison_op (a, b, @mpfr_equal_p);
     end
 
 

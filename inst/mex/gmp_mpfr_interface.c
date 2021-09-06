@@ -1882,7 +1882,8 @@ mexFunction (int nlhs, mxArray *plhs[],
         MEX_NARGINCHK(3);
         MEX_MPFR_T(1, op1);
         MEX_MPFR_T(2, op2);
-        if (length (&op1) != length (&op2))
+        if ((length (&op1) != length (&op2)) && (length (&op1) != 1)
+                                             && (length (&op2) != 1))
           {
             MEX_FCN_ERR ("cmd[%d]:op2 Invalid size.\n", cmd_code);
             break;
@@ -1925,14 +1926,19 @@ mexFunction (int nlhs, mxArray *plhs[],
             break;
           }
 
-        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&op1): 1, 1,
-                                         mxDOUBLE_CLASS, mxREAL);
+        plhs[0] = mxCreateNumericMatrix (nlhs
+                                         ? MAX (length (&op1), length (&op2))
+                                         : 1,
+                                         1, mxDOUBLE_CLASS, mxREAL);
         double*  ret_ptr = mxGetPr (plhs[0]);
         mpfr_ptr op1_ptr = &data[op1.start - 1];
         mpfr_ptr op2_ptr = &data[op2.start - 1];
         size_t ret_stride = (nlhs) ? 1 : 0;
-        for (size_t i = 0; i < length (&op1); i++)
-          ret_ptr[i * ret_stride] = (double) fcn (op1_ptr + i, op2_ptr + i);
+        size_t op1_stride = (length (&op1) == 1) ? 0 : 1;
+        size_t op2_stride = (length (&op2) == 1) ? 0 : 1;
+        for (size_t i = 0; i < MAX (length (&op1), length (&op2)); i++)
+          ret_ptr[i * ret_stride] = (double) fcn (op1_ptr + (i * op1_stride),
+                                                  op2_ptr + (i * op2_stride));
         break;
       }
 
