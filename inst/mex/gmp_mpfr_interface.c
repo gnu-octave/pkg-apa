@@ -23,7 +23,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   // Check code
   uint64_t cmd_code = 0;
   if (! extract_ui (0, nrhs, prhs, &cmd_code))
-    mexErrMsgIdAndTxt ("mp:mexFunction",
+    mexErrMsgIdAndTxt ("apa:mexFunction",
                        "First input must be an MPFR command code.");
 
   int throw_error = 0;  // Marker if error should be thrown.
@@ -2389,5 +2389,5 @@ mexFunction (int nlhs, mxArray *plhs[],
     }
 
   if (throw_error)
-    mexErrMsgIdAndTxt ("mp:mexFunction", "See previous error message.");
+    mexErrMsgIdAndTxt ("apa:mexFunction", "See previous error message.");
 }

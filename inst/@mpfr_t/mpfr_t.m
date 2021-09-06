@@ -119,7 +119,8 @@ classdef mpfr_t
 
 
     function disp (obj)
-      % Object display
+      % Object display.
+      
       if (isscalar (obj))
         if (prod (obj.dims) == 1)
           dim_str = 'scalar';
@@ -756,7 +757,7 @@ classdef mpfr_t
 
       bb = mpfr_t (zeros (a.dims), prec);
       mpfr_sqrt (bb, a, rnd);
-      b = bb;  % Do not assign c before calculation succeeded!
+      b = bb;  % Do not assign b before calculation succeeded!
     end
     
     
@@ -776,7 +777,7 @@ classdef mpfr_t
 
       bb = mpfr_t (zeros (a.dims), prec);
       mpfr_abs (bb, a, rnd);
-      b = bb;  % Do not assign c before calculation succeeded!
+      b = bb;  % Do not assign b before calculation succeeded!
     end
 
   end
