@@ -9,15 +9,17 @@ function install_apa (cmd)
   end
 
   [apa_dir, ~, ~] = fileparts (mfilename ('fullpath'));
-  mex_dir = fullfile (apa_dir, 'mex');
 
-  header = {'gmp.h', 'mpfr.h', 'mpf2mpfr.h'};
-  libs = {'libmpfr.a', 'libgmp.a'};
-  cflags = {'--std=c99', '-Wall', '-Wextra'};
-
-  old_dir = cd (mex_dir);
+  old_dir = cd (apa_dir);
 
   if (strcmp (cmd, 'rebuild') || exist ('gmp_mpfr_interface', 'file') ~= 3)
+    
+    cd (fullfile (apa_dir, 'mex'));
+
+    header = {'gmp.h', 'mpfr.h', 'mpf2mpfr.h'};
+    libs = {'libmpfr.a', 'libgmp.a'};
+    cflags = {'--std=c99', '-Wall', '-Wextra'};
+    
     if (is_complete (pwd (), [header, libs]))
       cflags{end+1} = '-I.';
       ldflags = libs;
