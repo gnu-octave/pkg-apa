@@ -1,5 +1,12 @@
 function test_apa ()
-% Self-test for @mpfr_t class and mpfr_ low-level interface.
+% Self-test for @mpfr_t class and MPFR-low-level interface.
+
+  % Check if @mpfr_t variables exist
+  if (mpfr_t.get_data_size ())
+    error ('apa:test:dirtyEnvironment', ...
+      ['Existing @mpfr_t variables detected.  Please run the test suite ', ...
+       'in a clean Octave/Matlab session.\n\nRun:\n  clear all; test_apa']);
+  end
 
   % Good input
   % The value `intmax ("int32") - 256` is taken from "mpfr.h" and should work
@@ -14,9 +21,9 @@ function test_apa ()
   for i = {0, inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
     try
       mpfr_set_default_prec (i{1});
-      error ('mp:test:missed', 'Should never be reached');
+      error ('apa:test:missed', 'Should never be reached');
     catch e
-      assert (strcmp (e.identifier, 'mp:mexFunction'));
+      assert (strcmp (e.identifier, 'apa:mexFunction'));
     end
   end
   mpfr_t.set_verbose (1);
@@ -32,9 +39,9 @@ function test_apa ()
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
     try
       mpfr_set_default_rounding_mode (i{1});
-      error ('mp:test:missed', 'Should never be reached');
+      error ('apa:test:missed', 'Should never be reached');
     catch e
-      assert (strcmp (e.identifier, 'mp:mexFunction'));
+      assert (strcmp (e.identifier, 'apa:mexFunction'));
     end
   end
   mpfr_t.set_verbose (1);
@@ -55,9 +62,9 @@ function test_apa ()
   for i = {1/2, inf, -42, -1, -2, nan, 'c', eye(3)}
     try
       mpfr_t.allocate (i{1});
-      error ('mp:test:missed', 'Should never be reached');
+      error ('apa:test:missed', 'Should never be reached');
     catch e
-      assert (strcmp (e.identifier, 'mp:mexFunction'));
+      assert (strcmp (e.identifier, 'apa:mexFunction'));
       assert (mpfr_t.get_data_size () == N^2 + 1);
       assert (mpfr_t.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
     end
@@ -76,9 +83,9 @@ function test_apa ()
   for i = {inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
     try
       mpfr_t (1, i{1});
-      error ('mp:test:missed', 'Should never be reached');
+      error ('apa:test:missed', 'Should never be reached');
     catch e
-      assert (strcmp (e.identifier, 'mp:mexFunction'));
+      assert (strcmp (e.identifier, 'apa:mexFunction'));
     end
   end
   mpfr_t.set_verbose (1);
@@ -87,9 +94,9 @@ function test_apa ()
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
     try
       mpfr_t (1, 53, i{1});
-      error ('mp:test:missed', 'Should never be reached');
+      error ('apa:test:missed', 'Should never be reached');
     catch e
-      assert (strcmp (e.identifier, 'mp:mexFunction'));
+      assert (strcmp (e.identifier, 'apa:mexFunction'));
     end
   end
   mpfr_t.set_verbose (1);
