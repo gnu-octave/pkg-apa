@@ -74,7 +74,14 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
-      case 9003:  // idx_t mpfr_t.allocate (size_t count)
+      case 9003:  // int mpfr_t.get_verbose (void)
+      {
+        MEX_NARGINCHK(1);
+        plhs[0] = mxCreateDoubleScalar ((double) VERBOSE);
+        break;
+      }
+
+      case 9004:  // idx_t mpfr_t.allocate (size_t count)
       {
         MEX_NARGINCHK(2);
         uint64_t count = 0;

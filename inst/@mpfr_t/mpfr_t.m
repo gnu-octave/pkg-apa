@@ -20,14 +20,26 @@ classdef mpfr_t
       % [internal] Set the output verbosity `level` of the GMP MPFR interface.
       % - level = 0: no output at all (including no error messages)
       % - level = 1: show error messages
-      % - level = 2: very verbose debug output.
+      % - level = 2: show error messages and precision warnings [default]
+      % - level = 3: very verbose debug output.
+
       gmp_mpfr_interface (9002, level);
     end
+
+
+    function level = get_verbose ()
+      % [internal] Get the output verbosity `level` of the GMP MPFR interface.
+      % See also `mpfr_t.set_verbose`.
+
+      level = gmp_mpfr_interface (9003);
+    end
+
 
     function idx = allocate (count)
       % [internal] Return the start and end index of a newly created MPFR
       % variable for `count` elements.
-      idx = gmp_mpfr_interface (9003, count);
+
+      idx = gmp_mpfr_interface (9004, count);
     end
   end
 

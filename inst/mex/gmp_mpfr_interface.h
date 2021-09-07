@@ -14,10 +14,11 @@
 
 
 // State deciding about the output verbosity level
-//   0 print no MEX_FCN_ERR to stdout
-//   1 print    MEX_FCN_ERR to stdout
-//   2 print very verbose debug output
-static int VERBOSE = 1;
+// - level = 0: no output at all (including no error messages)
+// - level = 1: show error messages
+// - level = 2: show error messages and precision warnings [default]
+// - level = 3: very verbose debug output.
+static int VERBOSE = 2;
 
 
 // Macro to print a message to stdout and set mexFunction error state variable.
@@ -30,7 +31,7 @@ static int VERBOSE = 1;
 
 // Macro to print very verbose debug output.  Can be called from everywhere.
 #define DBG_PRINTF(fmt, ...) \
-        do { if (VERBOSE > 1) \
+        do { if (VERBOSE > 2) \
                mexPrintf ("DBG %s:%d:%s():" fmt, __FILE__, __LINE__, \
                           __func__, __VA_ARGS__); \
            } while (0)
