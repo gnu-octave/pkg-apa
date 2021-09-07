@@ -50,11 +50,24 @@ classdef mpfr_t
 
 
   methods (Access = private)
-    function warnInexactOperation (~, ret)
-      if (any (ret))
+    function warnInexactOperation (obj, ret)
+      % [internal] MPFR functions returning an int return a ternary value.
+      % If the ternary value is zero, it means that the value stored in the
+      % destination variable is the exact result of the corresponding
+      % mathematical function.  If the ternary value is positive (resp.
+      % negative), it means the value stored in the destination variable is
+      % greater (resp. lower) than the exact result.  For example with the
+      % MPFR_RNDU rounding mode, the ternary value is usually positive, except
+      % when the result is exact, in which case it is zero.  In the case of an
+      % infinite result, it is considered as inexact when it was obtained by
+      % overflow, and exact otherwise.  A NaN result (Not-a-Number) always
+      % corresponds to an exact return value.  The opposite of a returned
+      % ternary value is guaranteed to be representable in an int.
+
+      if (any (ret) && (obj.get_verbose () > 1))
         warning ('mpfr_t:inexactOperation', ...
-                 'Conversion of %d value(s) was inexact.', ...
-                 sum (ret ~= 0));
+                 ['mpfr_t: The last operation was reported as inexact.\n', ...
+                  'Supress this message with `mpfr_t.set_verbose(1)`.']);
       end
     end
   end
@@ -62,6 +75,7 @@ classdef mpfr_t
 
   methods (Static, Access = private)
     function c = call_comparison_op (a, b, op)
+      % [internal] Handle calls to all sorts of MPFR comparision functions.
       if (isa (a, 'mpfr_t'))
         new_dims = a.dims;
       else
@@ -191,7 +205,8 @@ classdef mpfr_t
         else
           error ('mpfr_t:plus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_add_d (cc, a, double (b(:)), mpfr_get_default_rounding_mode ());
+        ret = mpfr_add_d (cc, a, double (b(:)), rnd);
+        cc.warnInexactOperation (ret);
         c = cc;  % Do not assign c before calculation succeeded!
       elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         if (isempty (prec))
@@ -204,7 +219,8 @@ classdef mpfr_t
         else
           error ('mpfr_t:plus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_add (cc, a, b, rnd);
+        ret = mpfr_add (cc, a, b, rnd);
+        cc.warnInexactOperation (ret);
         c = cc;  % Do not assign c before calculation succeeded!
       else
         error ('mpfr_t:plus', 'Invalid operands a and b.');
@@ -235,7 +251,7 @@ classdef mpfr_t
         else
           error ('mpfr_t:minus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_d_sub (cc, double (a(:)), b, rnd);
+        ret = mpfr_d_sub (cc, double (a(:)), b, rnd);
         c = cc;  % Do not assign c before calculation succeeded!
       elseif (isa (a, 'mpfr_t') && isnumeric (b))
         if (isscalar (b) || isequal (a.dims, size (b)))
@@ -246,7 +262,7 @@ classdef mpfr_t
         else
           error ('mpfr_t:minus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_sub_d (cc, a, double (b(:)), rnd);
+        ret = mpfr_sub_d (cc, a, double (b(:)), rnd);
         c = cc;  % Do not assign c before calculation succeeded!
       elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         if (isempty (prec))
@@ -259,11 +275,12 @@ classdef mpfr_t
         else
           error ('mpfr_t:minus', 'Incompatible dimensions of a and b.');
         end
-        mpfr_sub (cc, a, b, rnd);
+        ret = mpfr_sub (cc, a, b, rnd);
         c = cc;  % Do not assign c before calculation succeeded!
       else
         error ('mpfr_t:minus', 'Invalid operands a and b.');
       end
+      c.warnInexactOperation (ret);
     end
 
 
@@ -306,7 +323,8 @@ classdef mpfr_t
         else
           error ('mpfr_t:times', 'Incompatible dimensions of a and b.');
         end
-        mpfr_mul_d (cc, a, double (b(:)), rnd);
+        ret = mpfr_mul_d (cc, a, double (b(:)), rnd);
+        cc.warnInexactOperation (ret);
         c = cc;  % Do not assign c before calculation succeeded!
       elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         if (isempty (prec))
@@ -319,7 +337,8 @@ classdef mpfr_t
         else
           error ('mpfr_t:times', 'Incompatible dimensions of a and b.');
         end
-        mpfr_mul (cc, a, b, rnd);
+        ret = mpfr_mul (cc, a, b, rnd);
+        cc.warnInexactOperation (ret);
         c = cc;  % Do not assign c before calculation succeeded!
       else
         error ('mpfr_t:times', 'Invalid operands a and b.');
@@ -355,7 +374,7 @@ classdef mpfr_t
         else
           error ('mpfr_t:rdivide', 'Incompatible dimensions of a and b.');
         end
-        mpfr_d_div (cc, double (a(:)), b, rnd);
+        ret = mpfr_d_div (cc, double (a(:)), b, rnd);
         c = cc;  % Do not assign c before calculation succeeded!
       elseif (isa (a, 'mpfr_t') && isnumeric (b))
         if (isscalar (b) || isequal (a.dims, size (b)))
@@ -366,7 +385,7 @@ classdef mpfr_t
         else
           error ('mpfr_t:rdivide', 'Incompatible dimensions of a and b.');
         end
-        mpfr_div_d (cc, a, double (b(:)), rnd);
+        ret = mpfr_div_d (cc, a, double (b(:)), rnd);
         c = cc;  % Do not assign c before calculation succeeded!
       elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         if (isempty (prec))
@@ -379,11 +398,12 @@ classdef mpfr_t
         else
           error ('mpfr_t:rdivide', 'Incompatible dimensions of a and b.');
         end
-        mpfr_div (cc, a, b, rnd);
+        ret = mpfr_div (cc, a, b, rnd);
         c = cc;  % Do not assign c before calculation succeeded!
       else
         error ('mpfr_t:rdivide', 'Invalid operands a and b.');
       end
+      c.warnInexactOperation (ret);
     end
 
 
@@ -476,7 +496,7 @@ classdef mpfr_t
         else
           error ('mpfr_t:power', 'Incompatible dimensions of a and b.');
         end
-        mpfr_pow_si (cc, a, double (b(:)), rnd);
+        ret = mpfr_pow_si (cc, a, double (b(:)), rnd);
         c = cc;  % Do not assign c before calculation succeeded!
       elseif (isa (a, 'mpfr_t') && isa (b, 'mpfr_t'))
         if (isempty (prec))
@@ -489,11 +509,12 @@ classdef mpfr_t
         else
           error ('mpfr_t:power', 'Incompatible dimensions of a and b.');
         end
-        mpfr_pow (cc, a, b, rnd);
+        ret = mpfr_pow (cc, a, b, rnd);
         c = cc;  % Do not assign c before calculation succeeded!
       else
         error ('mpfr_t:power', 'Invalid operands a and b.');
       end
+      c.warnInexactOperation (ret);
     end
 
 
@@ -768,6 +789,7 @@ classdef mpfr_t
           end
         else
           rop = @(i) obj.idx(1) + [i, i] - 1;
+          ret = zeros (length (subs), 1);
           if (isa (b, 'mpfr_t'))
             if (diff (b.idx) == 0)  % b is scalar mpfr_t.
               op = @(i) b;
@@ -775,7 +797,7 @@ classdef mpfr_t
               op = @(i) b.idx(1) + [i, i] - 1;
             end
             for i = 1:length (subs)
-              ret = mpfr_set (rop(i), op(i), rnd);
+              ret(i) = mpfr_set (rop(i), op(i), rnd);
             end
           elseif (isnumeric (b))
             if (isscalar (b))
@@ -784,7 +806,7 @@ classdef mpfr_t
               op = @(i) b(i);
             end
             for i = 1:length (subs)
-              ret = mpfr_set_d (rop(i), op(i), rnd);
+              ret(i) = mpfr_set_d (rop(i), op(i), rnd);
             end
           elseif (iscellstr (b) || ischar (b))
             if (ischar (b))
@@ -795,7 +817,6 @@ classdef mpfr_t
             else
               op = @(i) b(i);
             end
-            ret = zeros (1, length (subs));
             bad_strs = 0;
             for i = 1:length (subs)
               [ret(i), strpos] = mpfr_strtofr (rop(i), op(i), 0, rnd);
@@ -809,7 +830,8 @@ classdef mpfr_t
                        sum (bad_strs));
             end
           else
-            error ('mpfr_t:mpfr_t', 'Input must be numeric, string, or mpfr_t.');
+            error ('mpfr_t:mpfr_t', ...
+                   'Input must be numeric, string, or mpfr_t.');
           end
         end
         obj.warnInexactOperation (ret);
@@ -857,7 +879,8 @@ classdef mpfr_t
       end
 
       bb = mpfr_t (zeros (a.dims), prec);
-      mpfr_sqrt (bb, a, rnd);
+      ret = mpfr_sqrt (bb, a, rnd);
+      obj.warnInexactOperation (ret);
       b = bb;  % Do not assign b before calculation succeeded!
     end
 
@@ -877,7 +900,8 @@ classdef mpfr_t
       end
 
       bb = mpfr_t (zeros (a.dims), prec);
-      mpfr_abs (bb, a, rnd);
+      ret = mpfr_abs (bb, a, rnd);
+      obj.warnInexactOperation (ret);
       b = bb;  % Do not assign b before calculation succeeded!
     end
 
