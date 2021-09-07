@@ -3,6 +3,7 @@ classdef mpfr_t
   properties (SetAccess = protected)
     dims  % Original object dimensions.
     idx   % MPFR variable indices.
+    cleanupObj  % Destructor object.
   end
 
 
@@ -123,6 +124,13 @@ classdef mpfr_t
       s.type = '()';
       s.subs = {':'};
       obj.subsasgn (s, x, rnd);
+
+      % Register destructor
+      obj.cleanupObj = onCleanup(@() delete (obj));
+    end
+
+
+    function delete (obj)
     end
 
 
