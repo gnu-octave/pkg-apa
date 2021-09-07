@@ -102,6 +102,39 @@ function test_apa ()
   mpfr_t.set_verbose (1);
 
 
+  % ===================
+  % Indexing operations
+  % ===================
+
+  N = 4;
+  A = rand (N);
+  Ampfr = mpfr_t (A);
+  for i = 1:numel (A)
+    assert (isequal (double (Ampfr(i)), A(i)));
+  end
+  for i = 1:N
+    for j = 1:N
+      assert (isequal (double (Ampfr(i,j)), A(i,j)));
+      assert (isequal (double (Ampfr(1:i,j)), A(1:i,j)));
+      assert (isequal (double (Ampfr(i,1:j)), A(i,1:j)));
+      assert (isequal (double (Ampfr(1:i,1:j)), A(1:i,1:j)));
+      assert (isequal (double (Ampfr(i:end,j)), A(i:end,j)));
+      assert (isequal (double (Ampfr(i,j:end)), A(i,j:end)));
+      assert (isequal (double (Ampfr(i:end,j:end)), A(i:end,j:end)));
+      assert (isequal (double (Ampfr(i:j,i:j)), A(i:j,i:j)));
+      assert (isequal (double (Ampfr(j:i,j:i)), A(j:i,j:i)));
+    end
+    assert (isequal (double (Ampfr(i,:)), A(i,:)));
+    assert (isequal (double (Ampfr(i,[])), A(i,[])));
+  end
+  for j = 1:N
+    assert (isequal (double (Ampfr(:,j)), A(:,j)));
+    assert (isequal (double (Ampfr([],j)), A([],j)));
+  end
+  assert (isequal (double (Ampfr([],:)), A([],:)));
+  assert (isequal (double (Ampfr(:,[])), A(:,[])));
+
+
   % =====================
   % Arithmetic operations
   % =====================
