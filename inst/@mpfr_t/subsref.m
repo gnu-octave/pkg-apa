@@ -12,64 +12,59 @@ function varargout = subsref (obj, s, rnd)
     end
     obj_numel = obj.idx(2) - obj.idx(1) + 1;
 
-    % Shortcut empty dimension.
-    if (any (cellfun (@isempty, s.subs)))
-      c = zeros (1, 2);
-      for i = 1:2
-        if (~ isempty (s.subs{i}))
-          if (ischar (s.subs{i}) && strcmp (s.subs{i}, ':'))  % magic colon
-            c(i) = obj.dims(i);
-          else
-            c(i) = length (s.subs{i});
-          end
+    % Analyze indices.
+    if (length (s.subs) == 2)
+      s_dims = obj.dims;  % assume `obj(:,:) = b`
+    else
+      s_dims = [obj_numel, 1];  % assume `obj(:) = b`
+    end
+    subs = s.subs;
+    for i = 1:length (s.subs)
+      max_dim = s_dims(i);
+      % If not magic colon ':', override with length of accessed elements.
+      if (isnumeric (s.subs{i}))  % Also empty matrix '[]' is numeric.
+        s_dims(i) = length (s.subs{i});
+        if ((s_dims(i) > 0) ...
+            && ((min (s.subs{i}) < 1) || (max (s.subs{i}) > max_dim)))
+          error ('mpfr_t:subsref', ['Invalid index range.  Valid' ...
+                 'index range for dimension %d is [1 %d], ', ...
+                 'but [%d %d] was requested'], ...
+                 i, max_dim, min (s.subs{i}), max (s.subs{i}));
         end
+        subs{i} = s.subs{i};
+      elseif (ischar (s.subs{i}) && strcmp (s.subs{i}, ':'))
+        subs{i} = 1:max_dim;  % Convert magic colon ':' into ranges.
       end
+    end
+    if (length (s.subs) == 2)
+      columns = subs{2};
+    else
+      columns = 1;
+      % Fix absolutely empty indexing `obj([])`.
+      if (s_dims(1) == 0)
+        s_dims(2) = 0;
+      end
+    end
+    subs = subs{1};
+
+    % Shortcut empty dimension.
+    if (any (s_dims == 0))
+      c = zeros (s_dims);
       ret = 0;
-      c = zeros (c);
 
     % Shortcut ':' magic colon indexing.
     elseif (all (cellfun (@ischar, s.subs)) && all (strcmp (s.subs, ':')))
-      if (length (s.subs) == 2)
-        new_dims = obj.dims;
-      else
-        new_dims = [obj_numel, 1];
-      end
-      c = mpfr_t (zeros (new_dims), max (obj.prec));
+      c = mpfr_t (zeros (s_dims), max (obj.prec));
       ret = mpfr_set (c, obj, rnd);
 
     % 1D or 2D index, e.g. `obj(1:end)` or `obj(1:end,1:end)`.
     else
-      if (length (s.subs) == 2)
-        max_dim = @(i) obj.dims(i);
-      else
-        max_dim = @(i) obj_numel;
-      end
-      for i = 1:length (s.subs)
-        % Convert magic colon ':' into ranges.
-        if (ischar (s.subs{i}) && strcmp (s.subs{i}, ':'))
-          s.subs{i} = 1:max_dim(i);
-        end
-        % Check index range.
-        if ((min (s.subs{i}) < 1) || (max (s.subs{i}) > max_dim(i)))
-          error ('mpfr_t:subsref', ['Invalid index range. ' ...
-            ' Valid index range is [1 %d], but [%d %d] was requested'], ...
-            max_dim(i), min (s.subs{i}), max (s.subs{i}));
-        end
-      end
-      if (length (s.subs) == 2)
-        columns = s.subs{2};
-      else
-        columns = 1;
-      end
-      subs = s.subs{1};
-
-      c = mpfr_t (zeros (length (subs), length (columns)), ...
-                  max (obj.prec));
+      c = mpfr_t (zeros (length (subs), length (columns)), max (obj.prec));
       k = 1;
       for j = columns  % Iterate over all columns.
         c_col_offset = (k - 1) * c.dims(1);
         o_col_offset = (j - 1) * obj.dims(1);
-        %keyboard ();
+
         % Avoid nested for-loop if indices are contiguous.
         if (isequal (subs, (subs(1):subs(end))))
           cidx =   c.idx(1) + [1,    length(subs)] - 1 + c_col_offset;

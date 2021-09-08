@@ -115,6 +115,7 @@ function test_apa ()
     assert (isequal (double (Ampfr(i)), A(i)));
   end
   assert (isequal (double (Ampfr(:)), A(:)));
+  assert (isequal (double (Ampfr([])), A([])));
 
   % 2D indexing
   for i = 1:N

@@ -40,6 +40,10 @@ function obj = subsasgn (obj, s, b, rnd)
       columns = subs{2};
     else
       columns = 1;
+      % Fix absolutely empty indexing `obj([])`.
+      if (s_dims(1) == 0)
+        s_dims(2) = 0;
+      end
     end
     subs = subs{1};
 
