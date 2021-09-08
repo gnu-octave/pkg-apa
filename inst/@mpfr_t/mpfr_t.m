@@ -126,7 +126,11 @@ classdef mpfr_t
       obj.idx = mpfr_t.allocate (num_elems)';
       mpfr_set_prec (obj, prec);
       s.type = '()';
-      s.subs = {':'};
+      if (obj.dims(2) > 1)
+        s.subs = {':', ':'};
+      else
+        s.subs = {':'};
+      end
       obj.subsasgn (s, x, rnd);
 
       % Register destructor
