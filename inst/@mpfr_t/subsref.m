@@ -1,14 +1,19 @@
 function varargout = subsref (obj, s, rnd)
-% Subscripted reference `c = obj (s)`  using rounding mode `rnd`.
+% Subscripted reference `c = obj (s)` using rounding mode `rnd`.
 
   if (strcmp (s(1).type, '()'))
+    if (length (s.subs) > 2)
+      error ('mpfr_t:subsref', ...
+             'MPFR_T variables can only be indexed in two dimensions.');
+    end
+
     if (nargin < 3)
       rnd = mpfr_get_default_rounding_mode ();
     end
     obj_numel = obj.idx(2) - obj.idx(1) + 1;
 
     % Shortcut empty dimension.
-    if ((length (s.subs) <= 2) && any (cellfun (@isempty, s.subs)))
+    if (any (cellfun (@isempty, s.subs)))
       c = zeros (1, 2);
       for i = 1:2
         if (~ isempty (s.subs{i}))
@@ -23,8 +28,7 @@ function varargout = subsref (obj, s, rnd)
       c = zeros (c);
 
     % Shortcut ':' magic colon indexing.
-    elseif ((length (s.subs) <= 2) ...
-        && all (cellfun (@ischar, s.subs)) && all (strcmp (s.subs, ':')))
+    elseif (all (cellfun (@ischar, s.subs)) && all (strcmp (s.subs, ':')))
       if (length (s.subs) == 2)
         new_dims = obj.dims;
       else
@@ -33,44 +37,31 @@ function varargout = subsref (obj, s, rnd)
       c = mpfr_t (zeros (new_dims), max (obj.prec));
       ret = mpfr_set (c, obj, rnd);
 
-    % 1D index, e.g. `obj(1:end)`
-    elseif (length (s.subs) == 1)
-      subs = s.subs{1};
-      if ((min (subs) < 1) || (max (subs) > obj_numel))
-        error ('mpfr_t:subsref', ['Invalid index range. ' ...
-          ' Valid index range is [1 %d], but [%d %d] was requested'], ...
-          obj_numel, min (subs), max (subs));
-      end
-      c = mpfr_t (zeros (1, length (subs)), max (obj.prec));
-      % Avoid for-loop if indices are contiguous.
-      if (isequal (subs, (subs(1):subs(end))))
-        ret = mpfr_set (c, obj.idx(1) + [subs(1), subs(end)] - 1, rnd);
+    % 1D or 2D index, e.g. `obj(1:end)` or `obj(1:end,1:end)`.
+    else
+      if (length (s.subs) == 2)
+        max_dim = @(i) obj.dims(i);
       else
-        ret = zeros (length (subs), 1);
-        cidx = @(i)   c.idx(1) + [i, i] - 1;
-        oidx = @(i) obj.idx(1) + [i, i] - 1;
-        for i = 1:length (subs)
-          ret(i) = mpfr_set (cidx(i), oidx(i), rnd);
-        end
+        max_dim = @(i) obj_numel;
       end
-
-    % 2D index, e.g. `obj(1:end,1:end)`
-    elseif (length (s.subs) == 2)
-      subs = s.subs;
-      for i = 1:2
+      for i = 1:length (s.subs)
         % Convert magic colon ':' into ranges.
-        if (ischar (subs{i}) && strcmp (subs{i}, ':'))
-          subs{i} = 1:obj.dims(i);
+        if (ischar (s.subs{i}) && strcmp (s.subs{i}, ':'))
+          s.subs{i} = 1:max_dim(i);
         end
         % Check index range.
-        if ((min (subs{i}) < 1) || (max (subs{i}) > obj.dims(i)))
+        if ((min (s.subs{i}) < 1) || (max (s.subs{i}) > max_dim(i)))
           error ('mpfr_t:subsref', ['Invalid index range. ' ...
             ' Valid index range is [1 %d], but [%d %d] was requested'], ...
-            obj.dims(i), min (subs{i}), max (subs{i}));
+            max_dim(i), min (s.subs{i}), max (s.subs{i}));
         end
       end
-      columns = subs{2};
-      subs    = subs{1};
+      if (length (s.subs) == 2)
+        columns = s.subs{2};
+      else
+        columns = 1;
+      end
+      subs = s.subs{1};
 
       c = mpfr_t (zeros (length (subs), length (columns)), ...
                   max (obj.prec));
@@ -94,9 +85,6 @@ function varargout = subsref (obj, s, rnd)
         end
         k = k + 1;
       end
-    else
-      error ('mpfr_t:subsref', ...
-             'MPFR_T variables can only be indexed in two dimensions.');
     end
     obj.warnInexactOperation (ret);
     varargout{1} = c;

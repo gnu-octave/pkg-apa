@@ -109,9 +109,14 @@ function test_apa ()
   N = 4;
   A = rand (N);
   Ampfr = mpfr_t (A);
+
+  % 1D indexing
   for i = 1:numel (A)
     assert (isequal (double (Ampfr(i)), A(i)));
   end
+  assert (isequal (double (Ampfr(:)), A(:)));
+
+  % 2D indexing
   for i = 1:N
     for j = 1:N
       assert (isequal (double (Ampfr(i,j)), A(i,j)));
