@@ -152,6 +152,7 @@ function test_apa ()
   to_str = @(i) cellfun (@num2str, num2cell (i), 'UniformOutput', false);
   for ops = {@(i) i, @(i) mpfr_t(i), to_str}
     op = ops{1};
+
     % 1D indexing
     for i = 1:numel (A)
       A(i)     = i;
@@ -171,6 +172,51 @@ function test_apa ()
     assert (isequal (double (Ampfr), A));
     A(1:4)     = 11:14;
     Ampfr(1:4) = op(11:14);
+    assert (isequal (double (Ampfr), A));
+
+    % 2D indexing
+    for i = 1:N
+      for j = 1:N
+        A(i,j)     = i*j;
+        Ampfr(i,j) = op(i*j);
+        assert (isequal (double (Ampfr), A));
+      end
+      A(i,:)     = i*j*10;
+      Ampfr(i,:) = op(i*j*10);
+      assert (isequal (double (Ampfr), A));
+      vec = (1:N) + 20;
+      A(i,:)     = vec;
+      Ampfr(i,:) = vec;
+      assert (isequal (double (Ampfr), A));
+      vec = vec + 20;
+      A(i,:)     = vec';
+      Ampfr(i,:) = vec';
+      assert (isequal (double (Ampfr), A));
+    end
+    for j = 1:N
+      vec = (1:N) + 50;
+      A(:,j)     = vec;
+      Ampfr(:,j) = vec;
+      assert (isequal (double (Ampfr), A));
+      vec = vec + 50;
+      A(:,j)     = vec';
+      Ampfr(:,j) = vec';
+      assert (isequal (double (Ampfr), A));
+    end
+    A([],[])     = 1;
+    Ampfr([],[]) = op(1);
+    assert (isequal (double (Ampfr), A));
+    A([],1)     = 1;
+    Ampfr([],1) = op(1);
+    assert (isequal (double (Ampfr), A));
+    A([],:)     = 1;
+    Ampfr([],:) = op(1);
+    assert (isequal (double (Ampfr), A));
+    A(1,[])     = 1;
+    Ampfr(1,[]) = op(1);
+    assert (isequal (double (Ampfr), A));
+    A(:,[])     = 1;
+    Ampfr(:,[]) = op(1);
     assert (isequal (double (Ampfr), A));
   end
 

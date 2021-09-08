@@ -119,22 +119,22 @@ function obj = subsasgn (obj, s, b, rnd)
             else
               op = b.idx(1) + [1, length(subs)] - 1 + b_col_offset;
             end
-            ret(ridx,j) = mpfr_set (oidx, op, rnd);
+            ret(ridx,k) = mpfr_set (oidx, op, rnd);
           elseif (isnumeric (b))
             if (isscalar (b))
-              op = @(i,j) b;
+              op = @(i,k) b;
             else
-              op = @(i,j) b(i,j);
+              op = @(i,k) b(i,k);
             end
-            ret(ridx,j) = mpfr_set_d (oidx, op(ridx,j), rnd);
+            ret(ridx,k) = mpfr_set_d (oidx, op(ridx,k), rnd);
           elseif (iscellstr (b))
             if (isscalar (b))
-              op = @(i,j) b;
+              op = @(i,k) b;
             else
-              op = @(i,j) b(i,j);
+              op = @(i,k) b(i,k);
             end
-            [ret(ridx,j), strpos] = mpfr_strtofr (oidx, op(ridx,j), 0, rnd);
-            bad_strs = (cellfun (@numel, b(ridx,j)) >= strpos);
+            [ret(ridx,k), strpos] = mpfr_strtofr (oidx, op(ridx,k), 0, rnd);
+            bad_strs = (cellfun (@numel, op(ridx,k)) >= strpos);
             if (any (bad_strs))
               warning ('mpfr_t:bad_conversion', ...
                        'Conversion of %d value(s) failed due to bad input.', ...
@@ -145,28 +145,28 @@ function obj = subsasgn (obj, s, b, rnd)
           oidx = @(i) obj.idx(1) + [i, i] - 1 + o_col_offset;
           if (isa (b, 'mpfr_t'))
             if (diff (b.idx) == 0)  % b is mpfr_t scalar
-              op = @(i,j) b;
+              op = @(i,k) b;
             else
-              op = @(i,j) b.idx(1) + [i, i] - 1 + b_col_offset;
+              op = @(i,k) b.idx(1) + [i, i] - 1 + b_col_offset;
             end
             for i = 1:length (subs)
-              ret(i,j) = mpfr_set (oidx(i), op(i), rnd);
+              ret(i,k) = mpfr_set (oidx(i), op(i), rnd);
             end
           elseif (isnumeric (b))
             if (isscalar (b))
-              op = @(i,j) b;
+              op = @(i,k) b;
             else
-              op = @(i,j) b(i,j);
+              op = @(i,k) b(i,k);
             end
-            ret(i,j) = mpfr_set_d (obj, op(i,j), rnd);
+            ret(i,k) = mpfr_set_d (obj, op(i,k), rnd);
           elseif (iscellstr (b))
             if (isscalar (b))
-              op = @(i,j) b;
+              op = @(i,k) b;
             else
-              op = @(i,j) b(i,j);
+              op = @(i,k) b(i,k);
             end
-            [ret(i,j), strpos] = mpfr_strtofr (obj, op(i,j), 0, rnd);
-            bad_strs = (cellfun (@numel, op(i,j)) >= strpos);
+            [ret(i,k), strpos] = mpfr_strtofr (obj, op(i,k), 0, rnd);
+            bad_strs = (cellfun (@numel, op(i,k)) >= strpos);
             if (any (bad_strs))
               warning ('mpfr_t:bad_conversion', ...
                        'Conversion of %d value(s) failed due to bad input.', ...
