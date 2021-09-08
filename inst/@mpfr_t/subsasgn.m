@@ -60,8 +60,20 @@ function obj = subsasgn (obj, s, b, rnd)
     else
       error ('mpfr_t:subsasgn', 'Input must be numeric, string, or mpfr_t.');
     end
+    
+    % Transpose b if vector and transposed to obj (s_dims).
+    if (~ all (b_dims == [1, 1]) ...
+        && (any (b_dims == [1, 1]) && any (s_dims == [1, 1])) ...
+        && ~any (s_dims(s_dims == b_dims) == 1))
+      if (isa (b, 'mpfr_t'))
+        b_dims = [b.dims(2), b.dims(1)];
+      else
+        b = b.';
+        b_dims = size (b);
+      end
+    end
 
-    % Print error message if `b` is not scalar and dimensions do not match.
+    % Error if `b` is not scalar or vector and dimensions do not match.
     if ((~ all (b_dims == [1, 1])) && any (s_dims ~= b_dims))
       error ('mpfr_t:subsasgn', ...
              'nonconformant arguments (op1 is %dx%d, op2 is %dx%d', ...
@@ -105,7 +117,7 @@ function obj = subsasgn (obj, s, b, rnd)
             if (diff (b.idx) == 0)  % b is mpfr_t scalar
               op = b;
             else
-              op = b.idx(1) + ridx - 1 + b_col_offset;
+              op = b.idx(1) + [1, length(subs)] - 1 + b_col_offset;
             end
             ret(ridx,j) = mpfr_set (oidx, op, rnd);
           elseif (isnumeric (b))

@@ -102,9 +102,9 @@ function test_apa ()
   mpfr_t.set_verbose (1);
 
 
-  % ===================
-  % Indexing operations
-  % ===================
+  % ==================================
+  % Indexing read operations (subsref)
+  % ==================================
 
   N = 4;
   A = rand (N);
@@ -140,6 +140,39 @@ function test_apa ()
   assert (isequal (double (Ampfr([],:)), A([],:)));
   assert (isequal (double (Ampfr(:,[])), A(:,[])));
 
+
+  % ====================================
+  % Indexing write operations (subsasgn)
+  % ====================================
+
+  N = 4;
+  A = rand (N);
+  Ampfr = mpfr_t (A);
+
+  to_str = @(i) cellfun (@num2str, num2cell (i), 'UniformOutput', false);
+  for ops = {@(i) i, @(i) mpfr_t(i), to_str}
+    op = ops{1};
+    % 1D indexing
+    for i = 1:numel (A)
+      A(i)     = i;
+      Ampfr(i) = op(i);
+      assert (isequal (double (Ampfr), A));
+    end
+    vec = numel (A):-1:1;
+    A(:)     = vec;
+    Ampfr(:) = op(vec);
+    assert (isequal (double (Ampfr), A));
+    vec = 1:numel (A);
+    A(:)     = vec';
+    Ampfr(:) = op(vec');
+    assert (isequal (double (Ampfr), A));
+    A([])     = 1;
+    Ampfr([]) = op(1);
+    assert (isequal (double (Ampfr), A));
+    A(1:4)     = 11:14;
+    Ampfr(1:4) = op(11:14);
+    assert (isequal (double (Ampfr), A));
+  end
 
   % =====================
   % Arithmetic operations
