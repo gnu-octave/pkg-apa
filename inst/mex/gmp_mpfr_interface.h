@@ -178,7 +178,7 @@ is_valid (idx_t *idx)
 inline size_t
 length (idx_t *idx)
 {
-  return ((*idx).end - (*idx).start + 1);
+  return (idx->end - idx->start + 1);
 }
 
 
@@ -205,12 +205,132 @@ mpfr_tidy_up (void)
 
 
 /**
- * Mark MPFR variables as no longer used.
+ * Remove the i-th entry from the pool of free MPFR variables.
+ *
+ * @param i index (0-based) to entry to remove from the pool.
+ */
+
+void
+free_list_remove (size_t i)
+{
+  for (; i < free_list_size; i++)
+    {
+      free_list[i].start = free_list[i + 1].start;
+      free_list[i].end   = free_list[i + 1].end;
+    }
+  free_list_size--;
+}
+
+
+/**
+ * Try to compress the pool of free MPFR variables.
+ */
+
+void
+free_list_compress ()
+{
+  int have_merge = 0;
+  do
+    {
+      have_merge = 0;
+      for (size_t i = 0; i < free_list_size; i++)
+        {
+          // Rule 1: If end index of entry matches `data_size` decrease.
+          if (free_list[i].end == data_size)
+            {
+              have_merge = 1;
+              DBG_PRINTF ("mmgr: Rule 1 for [%d:%d].\n",
+                          free_list[i].start, free_list[i].end);
+              data_size = free_list[i].start - 1;
+              free_list_remove (i);
+              break;
+            }
+          // Rule 2: Merge neighboring entries.
+          int do_break = 0;
+          for (size_t j = i + 1; j < free_list_size; j++)
+            {
+              if ((free_list[i].end + 1 == free_list[j].start)
+                  || (free_list[j].end + 1 == free_list[i].start))
+                {
+                  have_merge = 1;
+                  do_break = 1;
+                  DBG_PRINTF ("mmgr: Rule 2 for [%d:%d] + [%d:%d].\n",
+                              free_list[i].start, free_list[i].end,
+                              free_list[j].start, free_list[j].end);
+                  free_list[i].start = (free_list[i].start <= free_list[j].start
+                                       ? free_list[i].start
+                                       : free_list[j].start);
+                  free_list[i].end = (free_list[i].end >= free_list[j].end
+                                     ? free_list[i].end
+                                     : free_list[j].end);
+                  free_list_remove (j);
+                  break;
+                }
+            }
+          if (do_break)
+            break;
+        }
+    }
+  while (have_merge);
+  /* Very verbose debug output.
+  for (size_t i = 0; i < free_list_size; i++)
+    DBG_PRINTF ("mmgr: free_list[%d] = [%d:%d].\n", i,
+                free_list[i].start, free_list[i].end);
+  */
+}
+
+
+/**
+ * Mark MPFR variable as no longer used.
+ *
+ * @param[in] idx Pointer to index (1-based, idx_t) of MPFR variable to be no
+ *                longer used.
+ *
+ * @returns success of MPFR variables creation.
  */
 
 void
 mex_mpfr_mark_free (idx_t *idx)
 {
+  // Check for impossible start and end index.
+  if (! is_valid (idx))
+    {
+      DBG_PRINTF ("%s\n", "Bad indices");
+      return;
+    }
+
+  // Extend space if necessary.
+  if (free_list_size == free_list_capacity)
+    {
+      size_t new_capacity = free_list_capacity + DATA_CHUNK_SIZE;
+      DBG_PRINTF ("Increase capacity to '%d'.\n", new_capacity);
+      if (free_list == NULL)
+        {
+          free_list = (idx_t*) mxMalloc (new_capacity * sizeof (idx_t));
+          mexAtExit (mpfr_tidy_up);
+        }
+      else
+        free_list = (idx_t*) mxRealloc (free_list,
+                                        new_capacity * sizeof (idx_t));
+      if (free_list == NULL)
+        return;  // Memory allocation failed.
+      mexMakeMemoryPersistent (free_list);
+      free_list_capacity = new_capacity;
+    }
+
+  // Reinitialize MPFR variables (free significant memory).
+  for (size_t i = idx->start - 1; i < idx->end; i++)
+    {
+      mpfr_clear (data + i);
+      mpfr_init  (data + i);
+    }
+
+  // Append reinitialized variables to pool.
+  free_list[free_list_size].start = idx->start;
+  free_list[free_list_size].end   = idx->end;
+  free_list_size++;
+
+  free_list_compress ();
 }
 
 
@@ -222,7 +342,7 @@ mex_mpfr_mark_free (idx_t *idx)
  *                 of MPFR variables, otherwise the value of `idx` remains
  *                 unchanged.
  *
- * @returns success of MPFR variables creation.
+ * @returns success of MPFR variable creation.
  */
 
 int
@@ -231,6 +351,23 @@ mex_mpfr_allocate (size_t count, idx_t *idx)
   // Check for trivial case, failure as indices do not make sense.
   if (count == 0)
     return 0;
+
+  // Try to reuse a free marked variable from the pool.
+  for (size_t i = 0; i < free_list_size; i++)
+    {
+      if (count <= length (free_list + i))
+        {
+          idx->start = free_list[i].start;
+          idx->end   = free_list[i].start + count - 1;
+          DBG_PRINTF ("New MPFR variable [%d:%d] reused.\n",
+                      idx->start, idx->end);
+          if (count < length (free_list + i))
+            free_list[i].start += count;
+          else
+            free_list_remove (i);
+          return is_valid (idx);
+        }
+    }
 
   // Check if there is enough space to create new MPFR variables.
   if ((data_size + count) > data_capacity)
@@ -252,19 +389,18 @@ mex_mpfr_allocate (size_t count, idx_t *idx)
       if (data == NULL)
         return 0;  // Memory allocation failed.
       mexMakeMemoryPersistent (data);
+
+      // Initialize new MPFR variables.
+      for (size_t i = data_capacity; i < new_capacity; i++)
+        mpfr_init (data + i);
+
       data_capacity = new_capacity;
     }
 
-  // Initialize new MPFR variables and increase number of elements in `data`.
-  for (size_t i = 0; i < count; i++)
-    mpfr_init (&data[data_size + i]);
-
-  (*idx).start = data_size + 1;
+  idx->start = data_size + 1;
   data_size += count;
-  (*idx).end = data_size;
-  DBG_PRINTF ("New MPFR variables [%d:%d] allocated.\n",
-              (*idx).start, (*idx).end);
-
+  idx->end   = data_size;
+  DBG_PRINTF ("New MPFR variable [%d:%d] allocated.\n", idx->start, idx->end);
   return is_valid (idx);
 }
 

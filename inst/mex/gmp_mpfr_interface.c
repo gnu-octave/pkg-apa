@@ -107,12 +107,13 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
-      case 9005:  // void mpfr_t.mark_free (mpfr_t count)
+      case 9005:  // void mpfr_t.mark_free (mpfr_t idx)
       {
         MEX_NARGINCHK(2);
         MEX_MPFR_T(1, idx);
-        DBG_PRINTF ("cmd[%d]: [%d:%d] will be marked as free\n", cmd_code,
+        DBG_PRINTF ("cmd[mpfr_t.mark_free]: [%d:%d] will be marked as free\n",
                     idx.start, idx.end);
+        mex_mpfr_mark_free (&idx);
         break;
       }
 

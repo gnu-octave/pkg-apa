@@ -137,6 +137,10 @@ classdef mpfr_t
       end
       num_elems = prod (obj.dims);
       obj.idx = mpfr_t.allocate (num_elems)';
+
+      % Register destructor
+      obj.cleanupObj = onCleanup(@() delete (obj));
+
       mpfr_set_prec (obj, prec);
       s.type = '()';
       if (obj.dims(2) > 1)
@@ -145,9 +149,6 @@ classdef mpfr_t
         s.subs = {':'};
       end
       obj.subsasgn (s, x, rnd);
-
-      % Register destructor
-      obj.cleanupObj = onCleanup(@() delete (obj));
     end
 
 
