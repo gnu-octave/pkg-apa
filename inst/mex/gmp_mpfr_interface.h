@@ -236,23 +236,23 @@ mex_mpfr_allocate (size_t count, idx_t *idx)
   if ((data_size + count) > data_capacity)
     {
       // Determine new capacity.
-      size_t data_new_capacity = data_capacity;
-      while ((data_size + count) > data_new_capacity)
-        data_new_capacity += DATA_CHUNK_SIZE;
+      size_t new_capacity = data_capacity;
+      while ((data_size + count) > new_capacity)
+        new_capacity += DATA_CHUNK_SIZE;
 
-      DBG_PRINTF ("Increase capacity to '%d'.\n", data_new_capacity);
+      DBG_PRINTF ("Increase capacity to '%d'.\n", new_capacity);
       // Reallocate memory.
       if (data == NULL)
         {
-          data = (mpfr_ptr) mxMalloc (data_new_capacity * sizeof (mpfr_t));
+          data = (mpfr_ptr) mxMalloc (new_capacity * sizeof (mpfr_t));
           mexAtExit (mpfr_tidy_up);
         }
       else
-        data = (mpfr_ptr) mxRealloc (data, data_new_capacity * sizeof (mpfr_t));
+        data = (mpfr_ptr) mxRealloc (data, new_capacity * sizeof (mpfr_t));
       if (data == NULL)
         return 0;  // Memory allocation failed.
       mexMakeMemoryPersistent (data);
-      data_capacity = data_new_capacity;
+      data_capacity = new_capacity;
     }
 
   // Initialize new MPFR variables and increase number of elements in `data`.
