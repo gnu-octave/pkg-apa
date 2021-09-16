@@ -125,19 +125,6 @@ static int VERBOSE = 2;
         }
 
 
-// MPFR memory management
-// ======================
-//
-// Similar to C++ std::vector:
-// - data_capacity: number of elements that `data` has currently allocated
-//                  space for.
-// - data_size:     number of elements in `data`.
-
-static mpfr_ptr data = NULL;
-static size_t data_capacity = 0;
-static size_t data_size = 0;
-
-
 // Data type to handle index ranges.
 
 typedef struct
@@ -145,6 +132,23 @@ typedef struct
   size_t start;
   size_t end;
 } idx_t;
+
+
+// MPFR memory management
+// ======================
+//
+// Similar to C++ std::vector:
+// - xxx_capacity: number of elements that `xxx` has currently allocated
+//                 space for.
+// - xxx_size:     number of elements in `xxx`.
+
+static mpfr_ptr data = NULL;
+static size_t data_capacity = 0;
+static size_t data_size = 0;
+
+static idx_t* free_list = NULL;
+static size_t free_list_capacity = 0;
+static size_t free_list_size = 0;
 
 
 /**
@@ -193,6 +197,20 @@ mpfr_tidy_up (void)
   data = NULL;
   data_capacity = 0;
   data_size = 0;
+  mxFree (free_list);
+  free_list = NULL;
+  free_list_capacity = 0;
+  free_list_size = 0;
+}
+
+
+/**
+ * Mark MPFR variables as no longer used.
+ */
+
+void
+mex_mpfr_mark_free (idx_t *idx)
+{
 }
 
 

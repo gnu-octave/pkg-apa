@@ -47,6 +47,19 @@ classdef mpfr_t
 
       idx = gmp_mpfr_interface (9004, count);
     end
+
+
+    function mark_free (idx)
+      % [internal] Mark a MPFR variable or index range as free.  It is no
+      % longer safe to use that variable or index range after calling this
+      % method.
+
+      if (isa (idx, 'mpfr_t'))
+        idx = idx.idx;
+      end
+
+      gmp_mpfr_interface (9005, idx);
+    end
   end
 
 
@@ -139,6 +152,7 @@ classdef mpfr_t
 
 
     function delete (obj)
+      mpfr_t.mark_free (obj);
     end
 
 
