@@ -1,6 +1,8 @@
 function test_apa ()
 % Self-test for @mpfr_t class and MPFR-low-level interface.
 
+  default_verbosity_level = 1;
+
   % Check if @mpfr_t variables exist
   if (mpfr_t.get_data_size ())
     error ('apa:test:dirtyEnvironment', ...
@@ -26,7 +28,7 @@ function test_apa ()
       assert (strcmp (e.identifier, 'apa:mexFunction'));
     end
   end
-  mpfr_t.set_verbose (1);
+  mpfr_t.set_verbose (default_verbosity_level);
 
   % Good input
   for i = -1:3
@@ -44,7 +46,7 @@ function test_apa ()
       assert (strcmp (e.identifier, 'apa:mexFunction'));
     end
   end
-  mpfr_t.set_verbose (1);
+  mpfr_t.set_verbose (default_verbosity_level);
 
   % Good input
   DATA_CHUNK_SIZE = 1000;
@@ -69,7 +71,7 @@ function test_apa ()
       assert (mpfr_t.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
     end
   end
-  mpfr_t.set_verbose (1);
+  mpfr_t.set_verbose (default_verbosity_level);
 
   % Good input
   mpfr_set_default_prec (53);
@@ -88,7 +90,7 @@ function test_apa ()
       assert (strcmp (e.identifier, 'apa:mexFunction'));
     end
   end
-  mpfr_t.set_verbose (1);
+  mpfr_t.set_verbose (default_verbosity_level);
   % Bad input (rounding mode)
   mpfr_t.set_verbose (0);
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
@@ -99,7 +101,7 @@ function test_apa ()
       assert (strcmp (e.identifier, 'apa:mexFunction'));
     end
   end
-  mpfr_t.set_verbose (1);
+  mpfr_t.set_verbose (default_verbosity_level);
 
 
   % ==================================
