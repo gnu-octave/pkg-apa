@@ -70,7 +70,8 @@ mexFunction (int nlhs, mxArray *plhs[],
         if (extract_si (1, nrhs, prhs, &level) && (0 <= level) && (level <= 3))
           VERBOSE = (int) level;
         else
-          MEX_FCN_ERR ("cmd[%d]: VERBOSE must be 0, 1, 2, or 3.\n", cmd_code);
+          MEX_FCN_ERR ("cmd[%s]: VERBOSE must be 0, 1, 2, or 3.\n",
+                       "mpfr_t.set_verbose");
         break;
       }
 
@@ -87,8 +88,8 @@ mexFunction (int nlhs, mxArray *plhs[],
         uint64_t count = 0;
         if (! extract_ui (1, nrhs, prhs, &count))
           {
-            MEX_FCN_ERR ("cmd[%d]: Count must be a positive numeric scalar.\n",
-                         cmd_code);
+            MEX_FCN_ERR ("cmd[%s]: Count must be a positive numeric scalar.\n",
+                         "mpfr_t.allocate");
             break;
           }
 
@@ -741,7 +742,7 @@ mexFunction (int nlhs, mxArray *plhs[],
         MEX_NARGINCHK(3);
         MEX_MPFR_T(1, op);
         MEX_MPFR_RND_T(2, rnd);
-        DBG_PRINTF ("cmd[%d]: [%d:%d] (rnd = %d)\n", cmd_code, op.start,
+        DBG_PRINTF ("cmd[mpfr_get_d]: [%d:%d] (rnd = %d)\n", op.start,
                     op.end, (int) rnd);
 
         plhs[0] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
@@ -758,7 +759,7 @@ mexFunction (int nlhs, mxArray *plhs[],
         MEX_NARGINCHK(3);
         MEX_MPFR_T(1, op);
         MEX_MPFR_RND_T(2, rnd);
-        DBG_PRINTF ("cmd[%d]: [%d:%d] (rnd = %d)\n", cmd_code, op.start,
+        DBG_PRINTF ("cmd[mpfr_get_d_2exp]: [%d:%d] (rnd = %d)\n", op.start,
                     op.end, (int) rnd);
 
         plhs[0] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
@@ -786,12 +787,12 @@ mexFunction (int nlhs, mxArray *plhs[],
         MEX_MPFR_T(2, x);
         if (length (&y) != length (&x))
           {
-            MEX_FCN_ERR ("cmd[%d]:x and y must have the same size.\n",
-                         cmd_code);
+            MEX_FCN_ERR ("cmd[%s]:x and y must have the same size.\n",
+                         "mpfr_frexp");
             break;
           }
         MEX_MPFR_RND_T(3, rnd);
-        DBG_PRINTF ("cmd[%d]: [%d:%d] [%d:%d] (rnd = %d)\n", cmd_code,
+        DBG_PRINTF ("cmd[mpfr_frexp]: [%d:%d] [%d:%d] (rnd = %d)\n",
                     y.start, y.end, x.start, x.end, (int) rnd);
 
         plhs[0] = mxCreateNumericMatrix (length (&y), 1, mxDOUBLE_CLASS,
@@ -813,25 +814,26 @@ mexFunction (int nlhs, mxArray *plhs[],
       case 20:  // size_t mpfr_get_str_ndigits (int b, mpfr_prec_t p)
       {
       #if (MPFR_VERSION < MPFR_VERSION_NUM(4,1,0))
-        MEX_FCN_ERR ("cmd[%d]: Not supported in MPFR %s.\n",
-                      cmd_code, MPFR_VERSION_STRING);
+        MEX_FCN_ERR ("cmd[mpfr_get_str_ndigits]: Not supported in MPFR %s.\n",
+                     MPFR_VERSION_STRING);
       #else
         MEX_NARGINCHK(3);
         if (! mxIsDouble (prhs[1]) || ! mxIsDouble (prhs[2]))
           {
-            MEX_FCN_ERR ("cmd[%d]:b and p must be a numeric vectors\n.",
-                         cmd_code);
+            MEX_FCN_ERR ("cmd[%s]:b and p must be a numeric vectors\n.",
+                         "mpfr_get_str_ndigits");
             break;
           }
         size_t op1Dim = mxGetM (prhs[1]) * mxGetN (prhs[1]);
         size_t op2Dim = mxGetM (prhs[2]) * mxGetN (prhs[2]);
         if ((op1Dim != 1) && (op2Dim != 1) && (op1Dim != op2Dim))
           {
-            MEX_FCN_ERR ("cmd[%d]:b and p must be scalar or their dimensions "
-                         "must agree\n.",cmd_code);
+            MEX_FCN_ERR ("cmd[%s]:b and p must be scalar or their dimensions "
+                         "must agree\n.", "mpfr_get_str_ndigits");
             break;
           }
-        DBG_PRINTF ("cmd[%d]: dim(b) = %d, dim(p) = %d\n", op1Dim, op2Dim);
+        DBG_PRINTF ("cmd[mpfr_get_str_ndigits]: dim(b) = %d, dim(p) = %d\n",
+                    op1Dim, op2Dim);
 
         plhs[0] = mxCreateNumericMatrix (MAX(op1Dim, op2Dim), 1,
                                          mxDOUBLE_CLASS, mxREAL);
@@ -897,8 +899,8 @@ mexFunction (int nlhs, mxArray *plhs[],
         if (! mxIsDouble (prhs[1])
             || (((baseM * baseN) != length (&op)) && ((baseM * baseN) != 1)))
           {
-            MEX_FCN_ERR ("cmd[%d]:base must be a numeric vector "
-                         "of length 1 or %d\n.", cmd_code, length (&op));
+            MEX_FCN_ERR ("cmd[mpfr_get_str]:base must be a numeric vector "
+                         "of length 1 or %d\n.", length (&op));
             break;
           }
         size_t nSigM = mxGetM (prhs[2]);
@@ -906,12 +908,12 @@ mexFunction (int nlhs, mxArray *plhs[],
         if (! mxIsDouble (prhs[2])
             || (((nSigM * nSigN) != length (&op)) && ((nSigM * nSigN) != 1)))
           {
-            MEX_FCN_ERR ("cmd[%d]:n must be a numeric vector "
-                         "of length 1 or %d\n.", cmd_code, length (&op));
+            MEX_FCN_ERR ("cmd[mpfr_get_str]:n must be a numeric vector "
+                         "of length 1 or %d\n.", length (&op));
             break;
           }
         MEX_MPFR_RND_T(4, rnd);
-        DBG_PRINTF ("cmd[%d]: [%d:%d]\n", cmd_code, op.start, op.end);
+        DBG_PRINTF ("cmd[mpfr_get_str]: [%d:%d]\n", op.start, op.end);
 
         plhs[0] = mxCreateCellMatrix (length (&op), 1);
         plhs[1] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
