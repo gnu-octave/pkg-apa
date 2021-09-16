@@ -67,10 +67,10 @@ mexFunction (int nlhs, mxArray *plhs[],
       {
         MEX_NARGINCHK(2);
         int64_t level = 1;
-        if (extract_si (1, nrhs, prhs, &level) && (0 <= level) && (level <= 2))
+        if (extract_si (1, nrhs, prhs, &level) && (0 <= level) && (level <= 3))
           VERBOSE = (int) level;
         else
-          MEX_FCN_ERR ("cmd[%d]: VERBOSE must be 0, 1, or 2.\n", cmd_code);
+          MEX_FCN_ERR ("cmd[%d]: VERBOSE must be 0, 1, 2, or 3.\n", cmd_code);
         break;
       }
 
