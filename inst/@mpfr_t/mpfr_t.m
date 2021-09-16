@@ -706,7 +706,7 @@ classdef mpfr_t
 
       bb = mpfr_t (zeros (a.dims), prec);
       ret = mpfr_sqrt (bb, a, rnd);
-      obj.warnInexactOperation (ret);
+      a.warnInexactOperation (ret);
       b = bb;  % Do not assign b before calculation succeeded!
     end
 
@@ -727,7 +727,7 @@ classdef mpfr_t
 
       bb = mpfr_t (zeros (a.dims), prec);
       ret = mpfr_abs (bb, a, rnd);
-      obj.warnInexactOperation (ret);
+      a.warnInexactOperation (ret);
       b = bb;  % Do not assign b before calculation succeeded!
     end
 
