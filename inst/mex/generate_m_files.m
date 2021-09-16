@@ -56,10 +56,16 @@ function generate_m_files ()
 
     fprintf (' %3d/%3d: (%4d) %s\n', i, length (matches), fcn.number, fcn.name);
 
+    % Those functions are called by the mpfr_t class.
+    if (fcn.number >= 9000)
+      disp ('                 skipped');
+      continue;
+    end
+
     % Patch changes to C function definition
     switch (fcn.number)
       case 21
-        % char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base, 
+        % char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base,
         %                      size_t n, mpfr_t op, mpfr_rnd_t rnd)
         % [significant, expptr] = mpfr_get_str (base, n, op, rnd)
         fcn.in_args(1:2) = [];
@@ -83,10 +89,6 @@ function generate_m_files ()
         fcn.in_args(2).name = 'nptr';
         fcn.in_args(3) = [];
         fcn.out_arg = '[ret, endptr] = ';
-      case {9000, 9001, 9002, 9003}
-        % Those functions are called by the mpfr_t class.
-        disp ('                 skipped');
-        continue;
     end
 
     % Generate Octave/Matlab function
@@ -107,7 +109,7 @@ function generate_m_files ()
     else
       fcn_str_args2 = strjoin({num2str(fcn.number), fcn_str_args}, ', ');
     end
-    
+
     % Write function signature.
     fcn_str = ['function ', fcn_str_ret, fcn.name, ' (', fcn_str_args, ')\n'];
 
