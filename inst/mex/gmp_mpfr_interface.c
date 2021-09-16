@@ -138,6 +138,19 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
+      case 218:  // void mpfr_init (mpfr_t x)
+      {
+        MEX_NARGINCHK(2);
+        MEX_MPFR_T(1, idx);
+        DBG_PRINTF ("cmd[mpfr_init]: [%d:%d]\n", idx.start, idx.end);
+        for (size_t i = 0; i < length (&idx); i++)
+          {
+            mpfr_clear (&data[(idx.start - 1) + i]);
+            mpfr_init  (&data[(idx.start - 1) + i]);
+          }
+        break;
+      }
+
       case 1:  // void mpfr_set_default_prec (mpfr_prec_t prec)
       {
         MEX_NARGINCHK(2);
