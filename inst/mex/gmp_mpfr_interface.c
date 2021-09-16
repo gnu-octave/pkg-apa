@@ -123,6 +123,21 @@ mexFunction (int nlhs, mxArray *plhs[],
       ====================
       */
 
+      case 0:  // void mpfr_init2 (mpfr_t x, mpfr_prec_t prec)
+      {
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, idx);
+        MEX_MPFR_PREC_T(2, prec);
+        DBG_PRINTF ("cmd[mpfr_init2]: [%d:%d] (prec = %d)\n",
+                    idx.start, idx.end, (int) prec);
+        for (size_t i = 0; i < length (&idx); i++)
+          {
+            mpfr_clear (&data[(idx.start - 1) + i]);
+            mpfr_init2 (&data[(idx.start - 1) + i], prec);
+          }
+        break;
+      }
+
       case 1:  // void mpfr_set_default_prec (mpfr_prec_t prec)
       {
         MEX_NARGINCHK(2);
@@ -135,6 +150,18 @@ mexFunction (int nlhs, mxArray *plhs[],
       {
         MEX_NARGINCHK(1);
         plhs[0] = mxCreateDoubleScalar ((double) mpfr_get_default_prec ());
+        break;
+      }
+
+      case 3:  // void mpfr_set_prec (mpfr_t x, mpfr_prec_t prec)
+      {
+        MEX_NARGINCHK(3);
+        MEX_MPFR_T(1, idx);
+        MEX_MPFR_PREC_T(2, prec);
+        DBG_PRINTF ("cmd[mpfr_set_prec]: [%d:%d] (prec = %d)\n",
+                    idx.start, idx.end, (int) prec);
+        for (size_t i = 0; i < length (&idx); i++)
+          mpfr_set_prec (&data[(idx.start - 1) + i], prec);
         break;
       }
 
@@ -641,21 +668,6 @@ mexFunction (int nlhs, mxArray *plhs[],
 
         for (size_t i = 0; i < length (&idx); i++)
           fcn (&data[(idx.start - 1) + i], (int) sign_ptr[i * sign_stride]);
-        break;
-      }
-
-      case 0:  // void mpfr_init2 (mpfr_t x, mpfr_prec_t prec)
-      case 3:  // void mpfr_set_prec (mpfr_t x, mpfr_prec_t prec)
-      {
-        // Note combined, as due to this MEX interface, there are no
-        // uninitialized MPFR variables.
-        MEX_NARGINCHK(3);
-        MEX_MPFR_T(1, idx);
-        MEX_MPFR_PREC_T(2, prec);
-        DBG_PRINTF ("cmd[%d]: [%d:%d] (prec = %d)\n",
-                    cmd_code, idx.start, idx.end, (int) prec);
-        for (size_t i = 0; i < length (&idx); i++)
-          mpfr_set_prec (&data[(idx.start - 1) + i], prec);
         break;
       }
 
