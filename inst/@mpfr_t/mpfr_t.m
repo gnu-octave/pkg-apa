@@ -58,7 +58,9 @@ classdef mpfr_t
         idx = idx.idx;
       end
 
-      gmp_mpfr_interface (9005, idx);
+      if (mpfr_t.get_data_capacity () && mpfr_t.get_data_size ())
+        gmp_mpfr_interface (9005, idx);
+      end
     end
   end
 
@@ -139,7 +141,7 @@ classdef mpfr_t
       obj.idx = mpfr_t.allocate (num_elems)';
 
       % Register destructor
-      obj.cleanupObj = onCleanup(@() delete (obj));
+      obj.cleanupObj = onCleanup(@() mpfr_t.mark_free (obj));
 
       mpfr_set_prec (obj, prec);
       s.type = '()';
@@ -149,11 +151,6 @@ classdef mpfr_t
         s.subs = {':'};
       end
       obj.subsasgn (s, x, rnd);
-    end
-
-
-    function delete (obj)
-      mpfr_t.mark_free (obj);
     end
 
 
