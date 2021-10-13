@@ -144,6 +144,13 @@ classdef mpfr_t
       obj.cleanupObj = onCleanup(@() mpfr_t.mark_free (obj));
 
       mpfr_set_prec (obj, prec);
+
+      % Shortcut: fresh allocated mpfr variable is nan.
+      if (all (all (isnan (x))))
+        return;
+      end
+
+      % Assign x to mpfr variable.
       s.type = '()';
       if (obj.dims(2) > 1)
         s.subs = {':', ':'};
@@ -639,14 +646,29 @@ classdef mpfr_t
     end
 
 
-%    function ctranspose(a)
-%    % Complex conjugate transpose `a'`
-%    end
+    function b = ctranspose (a, rnd)
+      % Complex conjugate matrix transpose `b = a'` using rounding mode `rnd`.
+
+      if (nargin < 2)
+        rnd = mpfr_get_default_rounding_mode ();
+      end
+
+      b = transpose (a, rnd);
+    end
 
 
-%    function transpose(a)
-%    % Matrix transpose a.'`
-%    end
+    function b = transpose (a, rnd)
+      % Matrix transpose `b = a.'` using rounding mode `rnd`.
+
+      if (nargin < 2)
+        rnd = mpfr_get_default_rounding_mode ();
+      end
+
+      % Allocate memory for b.
+      b = mpfr_t (nan (fliplr (a.dims)), max (mpfr_get_prec (a)), rnd);
+
+      ret = gmp_mpfr_interface (9006, b.idx, a.idx, rnd, b.dims(1));
+    end
 
 
     function c = horzcat (a, b, varargin)

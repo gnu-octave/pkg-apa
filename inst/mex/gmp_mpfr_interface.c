@@ -118,6 +118,45 @@ mexFunction (int nlhs, mxArray *plhs[],
         break;
       }
 
+      case 9006:  // void mpfr_t.transpose (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd, uint64_t ropM)
+      {
+        MEX_NARGINCHK(5);
+        MEX_MPFR_T(1, rop);
+        MEX_MPFR_T(2,  op);
+        if (length (&rop) != length (&op))
+          {
+            MEX_FCN_ERR ("%s.\n", "cmd[mpfr_t.transpose]:op Invalid size");
+            break;
+          }
+        MEX_MPFR_RND_T(3, rnd);
+        uint64_t ropM = 0;
+        if (! extract_ui (4, nrhs, prhs, &ropM) || (ropM == 0))
+          {
+            MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.transpose]:ropM must be a"
+                         "positive numeric scalar.");
+            break;
+          }
+        DBG_PRINTF ("cmd[mpfr_t.transpose]: rop = [%d:%d], op = [%d:%d], "
+                    "rnd = %d, ropM = %d\n", rop.start, rop.end,
+                    op.start, op.end, (int) rnd, (int) ropM);
+
+        uint64_t ropN = length (&rop) / ropM;
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double*  ret_ptr = mxGetPr (plhs[0]);
+        mpfr_ptr rop_ptr = &data[rop.start - 1];
+        mpfr_ptr  op_ptr = &data[ op.start - 1];
+        size_t ret_stride = (nlhs) ? 1 : 0;
+
+        for (uint64_t i = 0; i < ropM; i++)
+          for (uint64_t j = 0; j < ropN; j++)
+            ret_ptr[i * ret_stride] = (double) mpfr_set (rop_ptr + j * ropM + i,
+                                                          op_ptr + i * ropN + j,
+                                                         rnd);
+        break;
+      }
+
 
       /*
       ====================
