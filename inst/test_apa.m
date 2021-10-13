@@ -3,8 +3,8 @@ function test_apa ()
 
   default_verbosity_level = 1;
 
-  % Check if @mpfr_t variables exist
-  if (mpfr_t.get_data_size ())
+  % Check if @mpfr_t variables exist(ed).
+  if (mpfr_t.get_data_size () || mpfr_t.get_data_capacity ())
     error ('apa:test:dirtyEnvironment', ...
       ['Existing @mpfr_t variables detected.  Please run the test suite ', ...
        'in a clean Octave/Matlab session.\n\nRun:\n  clear all; test_apa']);
