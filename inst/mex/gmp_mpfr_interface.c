@@ -86,7 +86,7 @@ mexFunction (int nlhs, mxArray *plhs[],
       {
         MEX_NARGINCHK(2);
         uint64_t count = 0;
-        if (! extract_ui (1, nrhs, prhs, &count))
+        if (! extract_ui (1, nrhs, prhs, &count) || (count == 0))
           {
             MEX_FCN_ERR ("cmd[%s]: Count must be a positive numeric scalar.\n",
                          "mpfr_t.allocate");
@@ -1831,7 +1831,7 @@ mexFunction (int nlhs, mxArray *plhs[],
         uint64_t n = 0;
         if (! extract_ui (3, nrhs, prhs, &n))
           {
-            MEX_FCN_ERR ("cmd[%d]:n must be a positive numeric scalar.\n",
+            MEX_FCN_ERR ("cmd[%d]:n must be a non-negative numeric scalar.\n",
                          cmd_code);
             break;
           }
@@ -1878,7 +1878,7 @@ mexFunction (int nlhs, mxArray *plhs[],
         uint64_t n = 0;
         if (! extract_ui (4, nrhs, prhs, &n))
           {
-            MEX_FCN_ERR ("cmd[%d]:n must be a positive numeric scalar.\n",
+            MEX_FCN_ERR ("cmd[%d]:n must be a non-negative numeric scalar.\n",
                          cmd_code);
             break;
           }
