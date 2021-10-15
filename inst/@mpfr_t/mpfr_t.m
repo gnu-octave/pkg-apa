@@ -720,7 +720,7 @@ classdef mpfr_t
       ii = cumsum ([0, all_dims(dim,:)]);
       all_dims = all_dims(:,1);
       all_dims(dim) = ii(end);
-      
+
       % Create output variable.
       c = mpfr_t (zeros (all_dims(:)'), prec);
 
@@ -734,7 +734,7 @@ classdef mpfr_t
       end
     end
 
-    
+
     function c = vertcat (varargin)
       % Vertical concatenation `c = [a; b; ...]`.
       %
@@ -743,8 +743,8 @@ classdef mpfr_t
 
       c = cat (1, varargin{:});
     end
-    
-    
+
+
     function c = horzcat (varargin)
       % Horizontal concatenation `c = [a, b, ...]`.
       %
@@ -754,7 +754,7 @@ classdef mpfr_t
       c = cat (2, varargin{:});
     end
 
-    
+
     function c = end (varargin)
       % Return last object index `obj(1:end)`.
 
