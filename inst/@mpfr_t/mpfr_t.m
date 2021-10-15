@@ -80,7 +80,10 @@ classdef mpfr_t
       % corresponds to an exact return value.  The opposite of a returned
       % ternary value is guaranteed to be representable in an int.
 
-      if (any (ret) && (obj.get_verbose () > 1))
+      for i = 1:length (size (ret))
+        ret = any (ret);
+      end
+      if (ret && (obj.get_verbose () > 1))
         warning ('mpfr_t:inexactOperation', ...
                  ['mpfr_t: The last operation was reported as inexact.\n', ...
                   'Supress this message with `mpfr_t.set_verbose(1)`.']);
@@ -151,6 +154,13 @@ classdef mpfr_t
       end
 
       % Assign x to mpfr variable.
+      %
+      % https://www.mathworks.com/help/matlab/ref/subsasgn.html (2021b, Tips)
+      %
+      % > Within the subsasgn method defined by a class, MATLAB calls the
+      % > built-in subsasgn.  Calling the built-in enables you to use the
+      % > default indexing behavior when defining specialized indexing.
+      %
       s.type = '()';
       if (obj.dims(2) > 1)
         s.subs = {':', ':'};
@@ -668,25 +678,83 @@ classdef mpfr_t
       b = mpfr_t (nan (fliplr (a.dims)), max (mpfr_get_prec (a)), rnd);
 
       ret = gmp_mpfr_interface (9006, b.idx, a.idx, rnd, b.dims(1));
+      a.warnInexactOperation (ret);
     end
 
 
-    function c = horzcat (a, b, varargin)
-      %TODO Horizontal concatenation `c = [a, b]`.
-      error ('mpfr_t:horzcat', ...
-        ['Arrays of MPFR_T variables are not supported.  ', ...
-         'Use cell arrays {a, b} instead.']);
+    function c = cat (dim, varargin)
+      % Concatenate arrays along dimension `dim`.
+      %
+      % The resulting matrix has the maximal used precision from the input
+      % arrays `a, b, ...` and copies the data using the default rounding mode.
+
+      N = length (varargin);
+      is_mpfrt_t = cellfun (@(x) isa (x, 'mpfr_t'), varargin);
+      all_dims = cell (size (varargin));
+      all_dims(is_mpfrt_t) = cellfun (@(x) x.dims', varargin(is_mpfrt_t), ...
+                                      'UniformOutput', false);
+      all_dims(~is_mpfrt_t) = cellfun (@(x) size(x)', varargin(~is_mpfrt_t), ...
+                                       'UniformOutput', false);
+
+      % Check dimension length consistency.
+      dim_len = cellfun (@length, all_dims);
+      if (~ all (dim_len == dim_len(1)))
+        error ('mpfr_t:cat:badDimensions', ...
+               'Arguments have different dimensions.');
+      end
+      dim_len = dim_len(1);
+
+      % Check dim-dimension consistency.
+      all_dims = [all_dims{:}];
+      all_dims_cons = all (all_dims == repmat (all_dims(:,1), 1, N), 2);
+      all_dims_cons(dim) = true;
+      if (~ all (all_dims_cons))
+        error ('mpfr_t:cat:badDimensions', ...
+               'Arguments differ in dimension %d.', find (~all_dims_cons, 1));
+      end
+
+      % Determine maximal precision.
+      prec = max (cellfun (@(x) max (mpfr_get_prec (x)), varargin(is_mpfrt_t)));
+
+      % Determine subsasgn indices.
+      ii = cumsum ([0, all_dims(dim,:)]);
+      all_dims = all_dims(:,1);
+      all_dims(dim) = ii(end);
+      
+      % Create output variable.
+      c = mpfr_t (zeros (all_dims(:)'), prec);
+
+      % Copy elements to concatenate.
+      s.type = '()';
+      s.subs = repmat ({':'}, 1, dim_len);
+      rnd = mpfr_get_default_rounding_mode ();
+      for i = 1:N
+        s.subs{dim} = (ii(i) + 1):ii(i+1);
+        c.subsasgn (s, varargin{i}, rnd);
+      end
     end
 
+    
+    function c = vertcat (varargin)
+      % Vertical concatenation `c = [a; b; ...]`.
+      %
+      % The resulting matrix has the maximal used precision from the input
+      % arrays `a; b; ...` and copies the data using the default rounding mode.
 
-    function c = vertcat (a, b, varargin)
-      %TODO Vertical concatenation `c = [a; b]`.
-      error ('mpfr_t:vertcat', ...
-        ['Arrays of MPFR_T variables are not supported.  ', ...
-         'Use cell arrays {a; b} instead.']);
+      c = cat (1, varargin{:});
+    end
+    
+    
+    function c = horzcat (varargin)
+      % Horizontal concatenation `c = [a, b, ...]`.
+      %
+      % The resulting matrix has the maximal used precision from the input
+      % arrays `a, b, ...` and copies the data using the default rounding mode.
+
+      c = cat (2, varargin{:});
     end
 
-
+    
     function c = end (varargin)
       % Return last object index `obj(1:end)`.
 
