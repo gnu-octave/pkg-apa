@@ -10,6 +10,11 @@ function test_apa ()
        'in a clean Octave/Matlab session.\n\nRun:\n  clear all; test_apa']);
   end
 
+
+  % =====================
+  % mpfr_set_default_prec
+  % =====================
+
   % Good input
   % The value `intmax ("int32") - 256` is taken from "mpfr.h" and should work
   % for 32- and 64-bit precision types.
@@ -17,36 +22,40 @@ function test_apa ()
     mpfr_set_default_prec (i);
     assert (mpfr_get_default_prec () == i);
   end
+
   % Bad input
   mpfr_set_default_prec (42)
   mpfr_t.set_verbose (0);
   for i = {0, inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
-    try
-      mpfr_set_default_prec (i{1});
-      error ('apa:test:missed', 'Should never be reached');
-    catch e
-      assert (strcmp (e.identifier, 'apa:mexFunction'));
-    end
+    assert (strcmp (check_error ('mpfr_set_default_prec (i{1})'), ...
+                    'apa:mexFunction'));
   end
   mpfr_t.set_verbose (default_verbosity_level);
+
+
+  % ==============================
+  % mpfr_set_default_rounding_mode
+  % ==============================
 
   % Good input
   for i = -1:3
     mpfr_set_default_rounding_mode (i);
     assert (mpfr_get_default_rounding_mode () == i);
   end
+
   % Bad input
   mpfr_set_default_rounding_mode (0);
   mpfr_t.set_verbose (0);
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
-    try
-      mpfr_set_default_rounding_mode (i{1});
-      error ('apa:test:missed', 'Should never be reached');
-    catch e
-      assert (strcmp (e.identifier, 'apa:mexFunction'));
-    end
+    assert (strcmp (check_error ('mpfr_set_default_rounding_mode (i{1})'), ...
+                    'apa:mexFunction'));
   end
   mpfr_t.set_verbose (default_verbosity_level);
+
+
+  % ===============
+  % mpfr_t.allocate
+  % ===============
 
   % Good input
   DATA_CHUNK_SIZE = 1000;
@@ -59,19 +68,20 @@ function test_apa ()
   assert (isequal (obj.idx, [2, N^2 + 1]));
   assert (mpfr_t.get_data_size () == N^2 + 1);
   assert (mpfr_t.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
-  % Bad input non-MPFR function "mpfr_t.allocate"
+
+  % Bad input
   mpfr_t.set_verbose (0);
   for i = {1/2, inf, -42, -1, -2, nan, 'c', eye(3)}
-    try
-      mpfr_t.allocate (i{1});
-      error ('apa:test:missed', 'Should never be reached');
-    catch e
-      assert (strcmp (e.identifier, 'apa:mexFunction'));
-      assert (mpfr_t.get_data_size () == N^2 + 1);
-      assert (mpfr_t.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
-    end
+    assert (strcmp (check_error ('mpfr_t.allocate (i{1})'), 'apa:mexFunction'));
+    assert (mpfr_t.get_data_size () == N^2 + 1);
+    assert (mpfr_t.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
   end
   mpfr_t.set_verbose (default_verbosity_level);
+
+
+  % ==================
+  % mpfr_t constructor
+  % ==================
 
   % Good input
   mpfr_set_default_prec (53);
@@ -80,21 +90,18 @@ function test_apa ()
   for i = vals
     assert (isequaln (double (mpfr_t (i{1})), i{1}));
   end
+
   % Bad input (precision)
   mpfr_t.set_verbose (0);
   for i = {inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
-    try
-      mpfr_t (1, i{1});
-      error ('apa:test:missed', 'Should never be reached');
-    catch e
-      assert (strcmp (e.identifier, 'apa:mexFunction'));
-    end
+    assert (strcmp (check_error ('mpfr_t (1, i{1})'), 'apa:mexFunction'));
   end
   mpfr_t.set_verbose (default_verbosity_level);
+
   % Bad input (rounding mode)
   mpfr_t.set_verbose (0);
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
-    assert (strcmp (check_error (' mpfr_t (1, 53, i{1})'), 'apa:mexFunction'));
+    assert (strcmp (check_error ('mpfr_t (1, 53, i{1})'), 'apa:mexFunction'));
   end
   mpfr_t.set_verbose (default_verbosity_level);
 
@@ -217,6 +224,7 @@ function test_apa ()
     assert (isequal (double (Ampfr), A));
   end
 
+
   % ================
   % (C)Transposition
   % ================
@@ -231,44 +239,64 @@ function test_apa ()
     end
   end
 
+
   % =============
   % Concatenation
   % =============
 
+  % vertcat (X) == cat (1, X)
   % horzcat (X) == cat (2, X)
-  op = @horzcat;
+  ops = {@vertcat, @horzcat};
+  for i = 1:length (ops)
+    op = ops{i};
+    op_str = char (op);
+    op_str = op_str(2:end);
 
-  a = 1:3;
-  am = mpfr_t (a);
-  b = 4:6;
-  bm = mpfr_t (b);
-  assert (isequal (double (op (am)), op (a)));
-  assert (isequal (double (op (am, am)), op (a, a)));
-  assert (isequal (double (op (am, bm)), op (a, b)));
-  assert (isequal (double (op (bm, am)), op (b, a)));
-  assert (isequal (double (op (bm, bm)), op (b, b)));
-  assert (isequal (double (op (a, am)), op (a, a)));
-  assert (isequal (double (op (a, bm)), op (a, b)));
-  assert (isequal (double (op (bm, a)), op (b, a)));
-  assert (isequal (double (op (bm, b)), op (b, b)));
-  assert (isequal (double (op (am, b, a, bm)), op (a, b, a, b)));
-  assert (isequal (double (op (a, bm, am, b)), op (a, b, a, b)));
+    if (i == 1)  % vertcat
+      a = (1:3)';
+      b = (4:6)';
+      aa = [a, a];
+      bb = [b, b];
+    else  % horzcat
+      a = 1:3;
+      b = 4:6;
+      aa = [a; a];
+      bb = [b; b];
 
-  aa = [a; a];
-  aam = mpfr_t (aa);
-  bb = [b; b];
-  bbm = mpfr_t (bb);
-  assert (isequal (double (op (aam)), op (aa)));
-  assert (isequal (double (op (aam, aam)), op (aa, aa)));
-  assert (isequal (double (op (aam, bbm)), op (aa, bb)));
-  assert (isequal (double (op (bbm, aam)), op (bb, aa)));
-  assert (isequal (double (op (bbm, bbm)), op (bb, bb)));
-  assert (isequal (double (op (aa, aam)), op (aa, aa)));
-  assert (isequal (double (op (aa, bbm)), op (aa, bb)));
-  assert (isequal (double (op (bbm, aa)), op (bb, aa)));
-  assert (isequal (double (op (bbm, bb)), op (bb, bb)));
-  assert (isequal (double (op (aam, bb, aa, bbm)), op (aa, bb, aa, bb)));
-  assert (isequal (double (op (aa, bbm, aam, bb)), op (aa, bb, aa, bb)));
+    end
+
+    am = mpfr_t (a);
+    bm = mpfr_t (b);
+    aam = mpfr_t (aa);
+    bbm = mpfr_t (bb);
+    assert (isequal (double (op (am)), op (a)));
+    assert (isequal (double (op (am, am)), op (a, a)));
+    assert (isequal (double (op (am, bm)), op (a, b)));
+    assert (isequal (double (op (bm, am)), op (b, a)));
+    assert (isequal (double (op (bm, bm)), op (b, b)));
+    assert (isequal (double (op (a, am)), op (a, a)));
+    assert (isequal (double (op (a, bm)), op (a, b)));
+    assert (isequal (double (op (bm, a)), op (b, a)));
+    assert (isequal (double (op (bm, b)), op (b, b)));
+    assert (isequal (double (op (am, b, a, bm)), op (a, b, a, b)));
+    assert (isequal (double (op (a, bm, am, b)), op (a, b, a, b)));
+
+    assert (isequal (double (op (aam)), op (aa)));
+    assert (isequal (double (op (aam, aam)), op (aa, aa)));
+    assert (isequal (double (op (aam, bbm)), op (aa, bb)));
+    assert (isequal (double (op (bbm, aam)), op (bb, aa)));
+    assert (isequal (double (op (bbm, bbm)), op (bb, bb)));
+    assert (isequal (double (op (aa, aam)), op (aa, aa)));
+    assert (isequal (double (op (aa, bbm)), op (aa, bb)));
+    assert (isequal (double (op (bbm, aa)), op (bb, aa)));
+    assert (isequal (double (op (bbm, bb)), op (bb, bb)));
+    assert (isequal (double (op (aam, bb, aa, bbm)), op (aa, bb, aa, bb)));
+    assert (isequal (double (op (aa, bbm, aam, bb)), op (aa, bb, aa, bb)));
+
+    % Bad example
+    assert (strcmp (check_error ('op (aam, a)'), 'mpfr_t:cat:badDimensions'));
+  end
+
 
   % =====================
   % Arithmetic operations
@@ -314,6 +342,11 @@ function test_apa ()
     assert (isequal (double (op ((1:3), mpfr_t (1:3))), op ((1:3), (1:3))));
   end
 
+
+  % ==========================
+  % Error test helper function
+  % ==========================
+  
   function err_identifier = check_error (check_error_code)
     try
       eval (check_error_code);
