@@ -80,13 +80,14 @@ classdef mpfr_t
       % corresponds to an exact return value.  The opposite of a returned
       % ternary value is guaranteed to be representable in an int.
 
-      for i = 1:length (size (ret))
-        ret = any (ret);
-      end
-      if (ret && (obj.get_verbose () > 1))
+      if (any (ret(:)) && (obj.get_verbose () > 1))
+        fcn = dbstack ();
+        fcn = fcn(2);  % caller
+        [~, fname, fext] = fileparts (fcn.file);
+        fcn = sprintf ('%s%s (%s at line %d)', fname, fext, fcn.name, fcn.line);
         warning ('mpfr_t:inexactOperation', ...
-                 ['mpfr_t: The last operation was reported as inexact.\n', ...
-                  'Supress this message with `mpfr_t.set_verbose(1)`.']);
+                 ['%s: Inexact operation.\n\tSuppress warning messages ', ...
+                  'with `mpfr_t.set_verbose(1)`.\n'], fcn);
       end
     end
   end
