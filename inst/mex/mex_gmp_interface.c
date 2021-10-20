@@ -16,6 +16,8 @@ mex_gmp_interface (int nlhs, mxArray *plhs[],
                    int nrhs, const mxArray *prhs[],
                    uint64_t cmd_code)
 {
+  nlhs += (prhs - prhs);  // FIXME: Avoid unused variable warning.
+
   #if (! defined(__GNU_MP_VERSION) || (__GNU_MP_VERSION < 6))
   # error "Oldest supported GMP version is 6."
   #endif

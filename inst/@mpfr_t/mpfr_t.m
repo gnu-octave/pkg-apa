@@ -11,14 +11,14 @@ classdef mpfr_t
     function num = get_data_capacity ()
       % [internal] Return the number of pre-allocated MPFR variables.
 
-      num = gmp_mpfr_interface (9000);
+      num = mex_apa_interface (2000);
     end
 
 
     function num = get_data_size ()
       % [internal] Return the number of currently used MPFR variables.
 
-      num = gmp_mpfr_interface (9001);
+      num = mex_apa_interface (2001);
     end
 
 
@@ -29,7 +29,7 @@ classdef mpfr_t
       % - level = 2: show error messages and precision warnings [default]
       % - level = 3: very verbose debug output.
 
-      gmp_mpfr_interface (9002, level);
+      mex_apa_interface (9000, level);
     end
 
 
@@ -37,7 +37,7 @@ classdef mpfr_t
       % [internal] Get the output verbosity `level` of the GMP MPFR interface.
       % See also `mpfr_t.set_verbose`.
 
-      level = gmp_mpfr_interface (9003);
+      level = mex_apa_interface (9001);
     end
 
 
@@ -45,7 +45,7 @@ classdef mpfr_t
       % [internal] Return the start and end index of a newly created MPFR
       % variable for `count` elements.
 
-      idx = gmp_mpfr_interface (9004, count);
+      idx = mex_apa_interface (2002, count);
     end
 
 
@@ -59,7 +59,7 @@ classdef mpfr_t
       end
 
       if (mpfr_t.get_data_capacity () && mpfr_t.get_data_size ())
-        gmp_mpfr_interface (9005, idx);
+        mex_apa_interface (2003, idx);
       end
     end
   end
@@ -678,7 +678,7 @@ classdef mpfr_t
       % Allocate memory for b.
       b = mpfr_t (nan (fliplr (a.dims)), max (mpfr_get_prec (a)), rnd);
 
-      ret = gmp_mpfr_interface (9006, b.idx, a.idx, rnd, b.dims(1));
+      ret = mex_apa_interface (2004, b.idx, a.idx, rnd, b.dims(1));
       a.warnInexactOperation (ret);
     end
 

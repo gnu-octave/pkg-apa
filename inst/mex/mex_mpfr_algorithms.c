@@ -441,7 +441,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
       return;
     }
 
-    case 2004:  // idx_t mpfr_t.allocate (size_t count)
+    case 2002:  // idx_t mpfr_t.allocate (size_t count)
     {
       MEX_NARGINCHK(2);
       uint64_t count = 0;
@@ -461,7 +461,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
       return;
     }
 
-    case 2005:  // void mpfr_t.mark_free (mpfr_t idx)
+    case 2003:  // void mpfr_t.mark_free (mpfr_t idx)
     {
       MEX_NARGINCHK(2);
       MEX_MPFR_T(1, idx);
@@ -471,7 +471,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
       return;
     }
 
-    case 2006:  // void mpfr_t.transpose (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd, uint64_t ropM)
+    case 2004:  // void mpfr_t.transpose (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd, uint64_t ropM)
     {
       MEX_NARGINCHK(5);
       MEX_MPFR_T(1, rop);

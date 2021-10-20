@@ -17,7 +17,8 @@ mexFunction (int nlhs, mxArray *plhs[],
   if (! extract_ui (0, nrhs, prhs, &cmd_code))
     MEX_FCN_ERR ("%s\n", "First argument must be a command code (non-negative integer).");
 
-  DBG_PRINTF ("Command: code = %d, nlhs = %d, nrhs = %d\n", cmd_code, nlhs, nrhs);
+  DBG_PRINTF ("Command: code = %d, nlhs = %d, nrhs = %d\n", (int) cmd_code,
+              nlhs, nrhs);
 
   /**
    * Branch to specialized interface.
@@ -29,7 +30,7 @@ mexFunction (int nlhs, mxArray *plhs[],
   else if ((2000 <= cmd_code) && (cmd_code < 3000))
     mex_mpfr_algorithms (nlhs, plhs, nrhs, prhs, cmd_code);
 
-  if ((3000 <= cmd_code) && (cmd_code < 4000))
+  else if ((3000 <= cmd_code) && (cmd_code < 4000))
     mex_gmp_interface (nlhs, plhs, nrhs, prhs, cmd_code);
 
   else if (cmd_code == 9000)  // void mpfr_t.set_verbose (int level)

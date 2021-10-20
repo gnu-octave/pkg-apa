@@ -1,7 +1,7 @@
 # The APA Octave/Matlab MEX interface
 
-The APA Octave/Matlab MEX-interface consists of the source file
-`inst/mex/gmp_mpfr_interface.c` (and header file) and in the released package
+The APA Octave/Matlab MEX-interface consists of several source files in the
+`inst/mex` directory (C and header files) and in the released package
 version with pre-compiled static GMP and MPFR libraries for MS Windows, macOS,
 and UNIX (Linux).
 

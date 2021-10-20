@@ -132,7 +132,7 @@ function generate_m_files ()
       end
     end
 
-    % Write gmp_mpfr_interface function call.
+    % Write mex_apa_interface function call.
     fcn_str = [fcn_str, '  ', fcn_str_ret, 'mex_apa_interface (', ...
                               fcn_str_args2, ');\n'];
 
