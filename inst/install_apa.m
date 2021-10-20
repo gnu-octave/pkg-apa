@@ -12,14 +12,18 @@ function install_apa (cmd)
 
   old_dir = cd (apa_dir);
 
-  if (strcmp (cmd, 'rebuild') || exist ('gmp_mpfr_interface', 'file') ~= 3)
-    
+  if (strcmp (cmd, 'rebuild') || exist ('mex_apa_interface', 'file') ~= 3)
+
     cd (fullfile (apa_dir, 'mex'));
 
     header = {'gmp.h', 'mpfr.h', 'mpf2mpfr.h'};
     libs = {'libmpfr.a', 'libgmp.a'};
     cflags = {'--std=c99', '-Wall', '-Wextra'};
-    
+    cfiles = {'mex_apa_interface.c', ...
+              'mex_gmp_interface.c', ...
+              'mex_mpfr_interface.c', ...
+              'mex_mpfr_algorithms.c'};
+
     if (is_complete (pwd (), [header, libs]))
       cflags{end+1} = '-I.';
       ldflags = libs;
@@ -39,12 +43,12 @@ function install_apa (cmd)
 
     try
       if (exist('OCTAVE_VERSION', 'builtin') == 5)
-        mex (cflags{:}, 'gmp_mpfr_interface.c', ldflags{:});
+        mex (cflags{:}, cfiles{:}, ldflags{:});
       else
         mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], ...
-            'gmp_mpfr_interface.c', ldflags{:});
+            cfiles{:}, ldflags{:});
       end
-      movefile (['gmp_mpfr_interface.', mexext()], '..');
+      movefile (['mex_apa_interface.', mexext()], '..');
     catch
       cd (old_dir);
       error ('MEX interface creation failed.  APA cannot be used.');

@@ -1,6 +1,6 @@
 function generate_m_files ()
 % This function automatically (re-)generates the m-files corresponding to
-% "gmp_mpfr_interface.c".
+% "mex_mpfr_interface.c".
 
   % Parse "mpfr.info" for help strings.
   help_strings = parse_mpfr_info_file ();
@@ -8,7 +8,7 @@ function generate_m_files ()
   show_error = @(i, s) error (['generate_m_files: failed on input i = %d:', ...
     '\n\n%s\n\n'], i, s);
 
-  str = fileread ('gmp_mpfr_interface.c');
+  str = fileread ('mex_mpfr_interface.c');
   matches = regexp (str, ' case.*?\n', 'match');
   for i = 1:length (matches)
     str = matches{i};
@@ -64,25 +64,25 @@ function generate_m_files ()
 
     % Patch changes to C function definition
     switch (fcn.number)
-      case 21
+      case 1021
         % char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base,
         %                      size_t n, mpfr_t op, mpfr_rnd_t rnd)
         % [significant, expptr] = mpfr_get_str (base, n, op, rnd)
         fcn.in_args(1:2) = [];
         fcn.out_arg = '[significant, expptr] = ';
-      case 124
+      case 1124
         % int mpfr_lgamma (mpfr_t rop, int *signp, mpfr_t op, mpfr_rnd_t rnd)
         % [ret, signp] = mpfr_lgamma (rop, op, rnd)
         fcn.in_args(2) = [];
         fcn.out_arg = '[ret, signp] = ';
-      case {157, 159}
+      case {1157, 1159}
         % int mpfr_fmodquo (mpfr_t r, long* q, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)
         % [ret, q] = mpfr_fmodquo (r, x, y, rnd)
         % int mpfr_remquo (mpfr_t r, long* q, mpfr_t x, mpfr_t y, mpfr_rnd_t rnd)
         % [ret, q] = mpfr_remquo (r, x, y, rnd)
         fcn.in_args(2) = [];
         fcn.out_arg = '[ret, q] = ';
-      case 217
+      case 1217
         % int mpfr_strtofr (mpfr_t rop, const char *nptr, char **endptr,
         %                   int base, mpfr_rnd_t rnd)
         % [ret, endptr] = mpfr_strtofr (rop, nptr, base, rnd)
@@ -133,7 +133,7 @@ function generate_m_files ()
     end
 
     % Write gmp_mpfr_interface function call.
-    fcn_str = [fcn_str, '  ', fcn_str_ret, 'gmp_mpfr_interface (', ...
+    fcn_str = [fcn_str, '  ', fcn_str_ret, 'mex_apa_interface (', ...
                               fcn_str_args2, ');\n'];
 
     % Write EOF.

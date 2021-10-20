@@ -1,4 +1,4 @@
-% mpfr_interface.m  Help file for mpfr_interface MEX-file.
+% Help file for the GMP and MPFR MEX-interface.
 %
 % Octave/Matlab MEX interface for MPFR (Version 4.1.0).
 %
