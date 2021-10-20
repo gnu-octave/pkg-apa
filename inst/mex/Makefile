@@ -22,6 +22,8 @@ CURL_OPTS = --fail --location --silent --show-error --output
 HEADER = gmp.h mpfr.h mpf2mpfr.h
 STATIC_LIBS = libgmp.a libmpfr.a
 
+UNCRUSTIFY_FILES = $(wildcard *.c) $(wildcard *.h)
+
 all: $(patsubst %,${BUILD_DIR}/lib/%,${STATIC_LIBS})
 	cp $(patsubst %,${BUILD_DIR}/lib/%,${STATIC_LIBS}) ${INST_DIR}
 	cp $(patsubst %,${BUILD_DIR}/include/%,${HEADER})  ${INST_DIR}
@@ -55,3 +57,8 @@ ${BUILD_DIR}/lib/libmpfr.a: ${BUILD_DIR}/${MPFR_TAR} ${BUILD_DIR}/lib/libgmp.a
 	cd ${MPFR_PATH} && $(MAKE)
 	cd ${MPFR_PATH} && $(MAKE) check
 	cd ${MPFR_PATH} && $(MAKE) install
+
+format:
+	for i in ${UNCRUSTIFY_FILES}; do \
+	  uncrustify -c uncrustify.cfg --no-backup $$i; \
+	done

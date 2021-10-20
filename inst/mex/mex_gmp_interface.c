@@ -26,9 +26,9 @@ mex_gmp_interface (int nlhs, mxArray *plhs[],
     {
       case 3000:  // const char * const gmp_version
       {
-        MEX_NARGINCHK(1);
-        char* output_buf = (char*) mxCalloc (strlen (gmp_version),
-                                             sizeof(char));
+        MEX_NARGINCHK (1);
+        char *output_buf = (char *) mxCalloc (strlen (gmp_version),
+                                              sizeof(char));
         strcpy (output_buf, gmp_version);
         plhs[0] = mxCreateString (output_buf);
         return;
@@ -37,5 +37,5 @@ mex_gmp_interface (int nlhs, mxArray *plhs[],
       default:
         MEX_FCN_ERR ("Unknown command code '%d'\n", cmd_code);
     }
-
 }
+

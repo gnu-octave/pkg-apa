@@ -16,8 +16,8 @@
 // - xxx_size:     number of elements in `xxx`.
 
 extern mpfr_ptr mpfr_data;
-extern size_t mpfr_data_capacity;
-extern size_t mpfr_data_size;
+extern size_t   mpfr_data_capacity;
+extern size_t   mpfr_data_size;
 
 
 /**
@@ -59,11 +59,11 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
  * @param name    Desired variable name.
  */
 
-#define MEX_MPFR_T(mex_rhs, name) \
-        idx_t name; \
-        if (! extract_idx ((mex_rhs), nrhs, prhs, &name)) \
-          MEX_FCN_ERR ("cmd[%d]:"#name" Invalid MPFR variable indices.\n", \
-                       cmd_code);
+#define MEX_MPFR_T(mex_rhs, name)                                     \
+  idx_t name;                                                         \
+  if (! extract_idx ((mex_rhs), nrhs, prhs, &name))                   \
+    MEX_FCN_ERR ("cmd[%d]:"#name " Invalid MPFR variable indices.\n", \
+                 cmd_code);
 
 
 /**
@@ -73,11 +73,11 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
  * @param name    Desired variable name.
  */
 
-#define MEX_MPFR_RND_T(mex_rhs, name) \
-        mpfr_rnd_t name = mpfr_get_default_rounding_mode (); \
-        if (! extract_rounding_mode ((mex_rhs), nrhs, prhs, &name)) \
-          MEX_FCN_ERR ("cmd[%d]:"#name" Rounding must be a numeric scalar " \
-                       "between -1 and 3.\n", cmd_code);
+#define MEX_MPFR_RND_T(mex_rhs, name)                                  \
+  mpfr_rnd_t name = mpfr_get_default_rounding_mode ();                 \
+  if (! extract_rounding_mode ((mex_rhs), nrhs, prhs, &name))          \
+    MEX_FCN_ERR ("cmd[%d]:"#name " Rounding must be a numeric scalar " \
+                 "between -1 and 3.\n", cmd_code);
 
 
 /**
@@ -87,12 +87,12 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
  * @param name    Desired variable name.
  */
 
-#define MEX_MPFR_PREC_T(mex_rhs, name) \
-        mpfr_prec_t name = mpfr_get_default_prec (); \
-        if (! extract_prec ((mex_rhs), nrhs, prhs, &name)) \
-          MEX_FCN_ERR ("cmd[%d]:"#name" Precision must be a numeric " \
-                       "scalar between %ld and %ld.\n", cmd_code, \
-                       MPFR_PREC_MIN, MPFR_PREC_MAX);
+#define MEX_MPFR_PREC_T(mex_rhs, name)                           \
+  mpfr_prec_t name = mpfr_get_default_prec ();                   \
+  if (! extract_prec ((mex_rhs), nrhs, prhs, &name))             \
+    MEX_FCN_ERR ("cmd[%d]:"#name " Precision must be a numeric " \
+                 "scalar between %ld and %ld.\n", cmd_code,      \
+                 MPFR_PREC_MIN, MPFR_PREC_MAX);
 
 
 /**
@@ -102,16 +102,16 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
  * @param name    Desired variable name.
  */
 
-#define MEX_MPFR_EXP_T(mex_rhs, name) \
-        mpfr_exp_t name = mpfr_get_emin (); \
-        { \
-        int64_t si = 0; \
-        if (! extract_si ((mex_rhs), nrhs, prhs, &si)) \
-          MEX_FCN_ERR ("cmd[%d]:"#name" Exponent must be a numeric " \
-                       "scalar between %ld and %ld.\n", cmd_code, \
-                       mpfr_get_emin (), mpfr_get_emax ()); \
-        name = (mpfr_exp_t) si; \
-        }
+#define MEX_MPFR_EXP_T(mex_rhs, name)                             \
+  mpfr_exp_t name = mpfr_get_emin ();                             \
+  {                                                               \
+    int64_t si = 0;                                               \
+    if (! extract_si ((mex_rhs), nrhs, prhs, &si))                \
+      MEX_FCN_ERR ("cmd[%d]:"#name " Exponent must be a numeric " \
+                   "scalar between %ld and %ld.\n", cmd_code,     \
+                   mpfr_get_emin (), mpfr_get_emax ());           \
+    name = (mpfr_exp_t) si;                                       \
+  }
 
 
 /**
@@ -128,7 +128,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
  */
 
 int
-extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t* idx_vec);
+extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t *idx_vec);
 
 
 // Rounding mode translation
@@ -171,7 +171,8 @@ export_rounding_mode (mpfr_rnd_t rnd);
  */
 
 int
-extract_rounding_mode (int idx, int nrhs, const mxArray *prhs[], mpfr_rnd_t *rnd);
+extract_rounding_mode (int idx, int nrhs, const mxArray *prhs[],
+                       mpfr_rnd_t *rnd);
 
 
 /**
@@ -191,3 +192,4 @@ int
 extract_prec (int idx, int nrhs, const mxArray *prhs[], mpfr_prec_t *prec);
 
 #endif  // MEX_MPFR_INTERFACE_H_
+

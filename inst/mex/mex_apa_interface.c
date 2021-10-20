@@ -14,8 +14,10 @@ mexFunction (int nlhs, mxArray *plhs[],
 {
   // Read command code.
   uint64_t cmd_code = 0;
+
   if (! extract_ui (0, nrhs, prhs, &cmd_code))
-    MEX_FCN_ERR ("%s\n", "First argument must be a command code (non-negative integer).");
+    MEX_FCN_ERR ("%s\n",
+                 "First argument must be a command code (non-negative integer).");
 
   DBG_PRINTF ("Command: code = %d, nlhs = %d, nrhs = %d\n", (int) cmd_code,
               nlhs, nrhs);
@@ -35,7 +37,7 @@ mexFunction (int nlhs, mxArray *plhs[],
 
   else if (cmd_code == 9000)  // void mpfr_t.set_verbose (int level)
     {
-      MEX_NARGINCHK(2);
+      MEX_NARGINCHK (2);
       int64_t level = 1;
       if (extract_si (1, nrhs, prhs, &level) && (0 <= level) && (level <= 3))
         VERBOSE = (int) level;
@@ -46,7 +48,7 @@ mexFunction (int nlhs, mxArray *plhs[],
 
   else if (cmd_code == 9001)  // int mpfr_t.get_verbose (void)
     {
-      MEX_NARGINCHK(1);
+      MEX_NARGINCHK (1);
       plhs[0] = mxCreateDoubleScalar ((double) VERBOSE);
     }
 
@@ -74,10 +76,10 @@ extract_d (int idx, int nrhs, const mxArray *prhs[], double *d)
   if ((nrhs > idx) && mxIsScalar (prhs[idx]) && mxIsNumeric (prhs[idx]))
     {
       *d = (double) mxGetScalar (prhs[idx]);
-      return 1;
+      return (1);
     }
   DBG_PRINTF ("%s\n", "Failed.");
-  return 0;
+  return (0);
 }
 
 
@@ -98,13 +100,14 @@ int
 extract_si (int idx, int nrhs, const mxArray *prhs[], int64_t *si)
 {
   double d = 0.0;
+
   if (extract_d (idx, nrhs, prhs, &d) && mxIsFinite (d) && (floor (d) == d))
     {
       *si = (int64_t) d;
-      return 1;
+      return (1);
     }
   DBG_PRINTF ("%s\n", "Failed.");
-  return 0;
+  return (0);
 }
 
 
@@ -125,13 +128,14 @@ int
 extract_ui (int idx, int nrhs, const mxArray *prhs[], uint64_t *ui)
 {
   int64_t si = 0.0;
+
   if (extract_si (idx, nrhs, prhs, &si) && (si >= 0))
     {
       *ui = (uint64_t) si;
-      return 1;
+      return (1);
     }
   DBG_PRINTF ("%s\n", "Failed.");
-  return 0;
+  return (0);
 }
 
 
@@ -156,8 +160,8 @@ extract_ui_vector (int idx, int nrhs, const mxArray *prhs[], uint64_t **ui,
   if ((nrhs > idx) && mxIsNumeric (prhs[idx])
       && ((mxGetM (prhs[idx]) * mxGetN (prhs[idx]) >= len)))
     {
-      double* vec = mxGetPr(prhs[idx]);
-      *ui = (uint64_t*) mxMalloc (len * sizeof (uint64_t));
+      double *vec = mxGetPr (prhs[idx]);
+      *ui = (uint64_t *) mxMalloc (len * sizeof(uint64_t));
       int good = 1;
       for (size_t i = 0; i < len; i++)
         {
@@ -171,11 +175,12 @@ extract_ui_vector (int idx, int nrhs, const mxArray *prhs[], uint64_t **ui,
             }
         }
       if (good)
-        return 1;
+        return (1);
+
       mxFree (*ui);  // In case of an error free space.
       *ui = NULL;
     }
   DBG_PRINTF ("%s\n", "Failed.");
-  return 0;
+  return (0);
 }
 

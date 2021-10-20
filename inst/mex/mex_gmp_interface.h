@@ -21,3 +21,4 @@ mex_gmp_interface (int nlhs, mxArray *plhs[],
                    uint64_t cmd_code);
 
 #endif  // MEX_GMP_INTERFACE_H_
+

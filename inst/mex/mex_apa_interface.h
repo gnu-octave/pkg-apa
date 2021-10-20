@@ -9,7 +9,7 @@
 #include "mex.h"
 
 
-#define DATA_CHUNK_SIZE 1000  // Allocate variables in chunks.
+#define DATA_CHUNK_SIZE    1000 // Allocate variables in chunks.
 
 
 // State deciding about the output verbosity level
@@ -23,18 +23,18 @@ static int VERBOSE = 2;
 // Macro to immediately return from current function.
 // Depending on `VERBOSE` variable an error message is printed.
 
-#define MEX_FCN_ERR(fmt, ...) \
-        { if (VERBOSE > 0) \
-            mexErrMsgIdAndTxt ("apa:mexFunction", \
-                               "%s:%d:%s():" fmt, __FILE__, __LINE__, \
-                               __func__, __VA_ARGS__); \
-          return; }
+#define MEX_FCN_ERR(fmt, ...)                                   \
+  { if (VERBOSE > 0)                                            \
+      mexErrMsgIdAndTxt ("apa:mexFunction",                     \
+                         "%s:%d:%s():" fmt, __FILE__, __LINE__, \
+                         __func__, __VA_ARGS__);                \
+    return; }
 
 // Macro to print very verbose debug output, depends on `VERBOSE` variable.
-#define DBG_PRINTF(fmt, ...) \
-        { if (VERBOSE > 2) \
-            mexPrintf ("DBG %s:%d:%s():" fmt, __FILE__, __LINE__, \
-                       __func__, __VA_ARGS__); }
+#define DBG_PRINTF(fmt, ...)                                \
+  { if (VERBOSE > 2)                                        \
+      mexPrintf ("DBG %s:%d:%s():" fmt, __FILE__, __LINE__, \
+                 __func__, __VA_ARGS__); }
 
 
 /**
@@ -44,8 +44,8 @@ static int VERBOSE = 2;
  */
 
 #define MEX_NARGINCHK(num) \
-        if (nrhs != (num)) \
-          MEX_FCN_ERR ("cmd[%d]: Invalid number of arguments.\n", cmd_code);
+  if (nrhs != (num))       \
+    MEX_FCN_ERR ("cmd[%d]: Invalid number of arguments.\n", cmd_code);
 
 
 // Data type to handle index ranges.
@@ -144,13 +144,15 @@ extract_ui_vector (int idx, int nrhs, const mxArray *prhs[], uint64_t **ui,
 
 // Dirty hack for MS Windows Matlab, as the used MinGW is outdated.
 #if defined(MX_API_VER) && (defined(_WIN32) || defined(WIN32))
-FILE *__cdecl __acrt_iob_func(unsigned index)
+FILE * __cdecl __acrt_iob_func (unsigned index)
 {
-    return &(__iob_func()[index]);
+  return (&(__iob_func ()[index]));
 }
 
+
 typedef FILE *__cdecl (*_f__acrt_iob_func)(unsigned index);
-_f__acrt_iob_func __MINGW_IMP_SYMBOL(__acrt_iob_func) = __acrt_iob_func;
+_f__acrt_iob_func __MINGW_IMP_SYMBOL (__acrt_iob_func) = __acrt_iob_func;
 #endif
 
 #endif  // MEX_APA_INTERFACE_H_
+

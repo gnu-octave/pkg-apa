@@ -8,13 +8,13 @@
 //                 space for.
 // - xxx_size:     number of elements in `xxx`.
 
-mpfr_ptr mpfr_data = NULL;
-size_t mpfr_data_capacity = 0;
-size_t mpfr_data_size = 0;
+mpfr_ptr mpfr_data          = NULL;
+size_t   mpfr_data_capacity = 0;
+size_t   mpfr_data_size     = 0;
 
-idx_t* mpfr_free_list = NULL;
+idx_t *mpfr_free_list          = NULL;
 size_t mpfr_free_list_capacity = 0;
-size_t mpfr_free_list_size = 0;
+size_t mpfr_free_list_size     = 0;
 
 
 /**
@@ -45,13 +45,13 @@ mpfr_tidy_up (void)
   for (size_t i = 0; i < mpfr_data_size; i++)
     mpfr_clear (&mpfr_data[i]);
   mxFree (mpfr_data);
-  mpfr_data = NULL;
+  mpfr_data          = NULL;
   mpfr_data_capacity = 0;
-  mpfr_data_size = 0;
+  mpfr_data_size     = 0;
   mxFree (mpfr_free_list);
-  mpfr_free_list = NULL;
+  mpfr_free_list          = NULL;
   mpfr_free_list_capacity = 0;
-  mpfr_free_list_size = 0;
+  mpfr_free_list_size     = 0;
 }
 
 
@@ -81,6 +81,7 @@ void
 mpfr_free_list_compress ()
 {
   int have_merge = 0;
+
   do
     {
       have_merge = 0;
@@ -99,35 +100,35 @@ mpfr_free_list_compress ()
           // Rule 2: Merge neighboring entries.
           int do_break = 0;
           for (size_t j = i + 1; j < mpfr_free_list_size; j++)
-            {
-              if ((mpfr_free_list[i].end + 1 == mpfr_free_list[j].start)
-                  || (mpfr_free_list[j].end + 1 == mpfr_free_list[i].start))
-                {
-                  have_merge = 1;
-                  do_break = 1;
-                  DBG_PRINTF ("mmgr: Rule 2 for [%d:%d] + [%d:%d].\n",
-                              mpfr_free_list[i].start, mpfr_free_list[i].end,
-                              mpfr_free_list[j].start, mpfr_free_list[j].end);
-                  mpfr_free_list[i].start = (mpfr_free_list[i].start <= mpfr_free_list[j].start
-                                       ? mpfr_free_list[i].start
-                                       : mpfr_free_list[j].start);
-                  mpfr_free_list[i].end = (mpfr_free_list[i].end >= mpfr_free_list[j].end
-                                     ? mpfr_free_list[i].end
-                                     : mpfr_free_list[j].end);
-                  mpfr_free_list_remove (j);
-                  break;
-                }
-            }
+            if ((mpfr_free_list[i].end + 1 == mpfr_free_list[j].start)
+                || (mpfr_free_list[j].end + 1 == mpfr_free_list[i].start))
+              {
+                have_merge = 1;
+                do_break   = 1;
+                DBG_PRINTF ("mmgr: Rule 2 for [%d:%d] + [%d:%d].\n",
+                            mpfr_free_list[i].start, mpfr_free_list[i].end,
+                            mpfr_free_list[j].start, mpfr_free_list[j].end);
+                mpfr_free_list[i].start =
+                  (mpfr_free_list[i].start <= mpfr_free_list[j].start
+                   ? mpfr_free_list[i].start
+                   : mpfr_free_list[j].start);
+                mpfr_free_list[i].end =
+                  (mpfr_free_list[i].end >= mpfr_free_list[j].end
+                   ? mpfr_free_list[i].end
+                   : mpfr_free_list[j].end);
+                mpfr_free_list_remove (j);
+                break;
+              }
           if (do_break)
             break;
         }
-    }
-  while (have_merge);
+    } while (have_merge);
+
   /* Very verbose debug output.
-  for (size_t i = 0; i < mpfr_free_list_size; i++)
-    DBG_PRINTF ("mmgr: mpfr_free_list[%d] = [%d:%d].\n", i,
-                mpfr_free_list[i].start, mpfr_free_list[i].end);
-  */
+   * for (size_t i = 0; i < mpfr_free_list_size; i++)
+   * DBG_PRINTF ("mmgr: mpfr_free_list[%d] = [%d:%d].\n", i,
+   *            mpfr_free_list[i].start, mpfr_free_list[i].end);
+   */
 }
 
 
@@ -157,14 +158,15 @@ mex_mpfr_mark_free (idx_t *idx)
       DBG_PRINTF ("Increase capacity to '%d'.\n", new_capacity);
       if (mpfr_free_list == NULL)
         {
-          mpfr_free_list = (idx_t*) mxMalloc (new_capacity * sizeof (idx_t));
+          mpfr_free_list = (idx_t *) mxMalloc (new_capacity * sizeof(idx_t));
           mexAtExit (mpfr_tidy_up);
         }
       else
-        mpfr_free_list = (idx_t*) mxRealloc (mpfr_free_list,
-                                        new_capacity * sizeof (idx_t));
+        mpfr_free_list = (idx_t *) mxRealloc (mpfr_free_list,
+                                              new_capacity * sizeof(idx_t));
       if (mpfr_free_list == NULL)
         return;  // Memory allocation failed.
+
       mexMakeMemoryPersistent (mpfr_free_list);
       mpfr_free_list_capacity = new_capacity;
     }
@@ -173,7 +175,7 @@ mex_mpfr_mark_free (idx_t *idx)
   for (size_t i = idx->start - 1; i < idx->end; i++)
     {
       mpfr_clear (mpfr_data + i);
-      mpfr_init  (mpfr_data + i);
+      mpfr_init (mpfr_data + i);
     }
 
   // Append reinitialized variables to pool.
@@ -201,24 +203,22 @@ mex_mpfr_allocate (size_t count, idx_t *idx)
 {
   // Check for trivial case, failure as indices do not make sense.
   if (count == 0)
-    return 0;
+    return (0);
 
   // Try to reuse a free marked variable from the pool.
   for (size_t i = 0; i < mpfr_free_list_size; i++)
-    {
-      if (count <= length (mpfr_free_list + i))
-        {
-          idx->start = mpfr_free_list[i].start;
-          idx->end   = mpfr_free_list[i].start + count - 1;
-          DBG_PRINTF ("New MPFR variable [%d:%d] reused.\n",
-                      idx->start, idx->end);
-          if (count < length (mpfr_free_list + i))
-            mpfr_free_list[i].start += count;
-          else
-            mpfr_free_list_remove (i);
-          return is_valid (idx);
-        }
-    }
+    if (count <= length (mpfr_free_list + i))
+      {
+        idx->start = mpfr_free_list[i].start;
+        idx->end   = mpfr_free_list[i].start + count - 1;
+        DBG_PRINTF ("New MPFR variable [%d:%d] reused.\n",
+                    idx->start, idx->end);
+        if (count < length (mpfr_free_list + i))
+          mpfr_free_list[i].start += count;
+        else
+          mpfr_free_list_remove (i);
+        return (is_valid (idx));
+      }
 
   // Check if there is enough space to create new MPFR variables.
   if ((mpfr_data_size + count) > mpfr_data_capacity)
@@ -232,13 +232,15 @@ mex_mpfr_allocate (size_t count, idx_t *idx)
       // Reallocate memory.
       if (mpfr_data == NULL)
         {
-          mpfr_data = (mpfr_ptr) mxMalloc (new_capacity * sizeof (mpfr_t));
+          mpfr_data = (mpfr_ptr) mxMalloc (new_capacity * sizeof(mpfr_t));
           mexAtExit (mpfr_tidy_up);
         }
       else
-        mpfr_data = (mpfr_ptr) mxRealloc (mpfr_data, new_capacity * sizeof (mpfr_t));
+        mpfr_data =
+          (mpfr_ptr) mxRealloc (mpfr_data, new_capacity * sizeof(mpfr_t));
       if (mpfr_data == NULL)
-        return 0;  // Memory allocation failed.
+        return (0); // Memory allocation failed.
+
       mexMakeMemoryPersistent (mpfr_data);
 
       // Initialize new MPFR variables.
@@ -248,11 +250,11 @@ mex_mpfr_allocate (size_t count, idx_t *idx)
       mpfr_data_capacity = new_capacity;
     }
 
-  idx->start = mpfr_data_size + 1;
+  idx->start      = mpfr_data_size + 1;
   mpfr_data_size += count;
-  idx->end   = mpfr_data_size;
+  idx->end        = mpfr_data_size;
   DBG_PRINTF ("New MPFR variable [%d:%d] allocated.\n", idx->start, idx->end);
-  return is_valid (idx);
+  return (is_valid (idx));
 }
 
 
@@ -270,20 +272,22 @@ mex_mpfr_allocate (size_t count, idx_t *idx)
  */
 
 int
-extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t* idx_vec)
+extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t *idx_vec)
 {
   uint64_t *ui = NULL;
+
   if (extract_ui_vector (idx, nrhs, prhs, &ui, 2))
     {
       (*idx_vec).start = ui[0];
       (*idx_vec).end   = ui[1];
       mxFree (ui);
       if (is_valid (idx_vec))
-        return 1;
+        return (1);
+
       DBG_PRINTF ("Invalid index [%d:%d].\n", (*idx_vec).start, (*idx_vec).end);
     }
   DBG_PRINTF ("%s\n", "Failed.");
-  return 0;
+  return (0);
 }
 
 
@@ -313,29 +317,35 @@ double
 export_rounding_mode (mpfr_rnd_t rnd)
 {
   double d = FP_NAN;
+
   switch (rnd)
     {
       case MPFR_RNDD:
         d = -1.0;
         break;
+
       case MPFR_RNDN:
         d = 0.0;
         break;
+
       case MPFR_RNDU:
         d = 1.0;
         break;
+
       case MPFR_RNDZ:
         d = 2.0;
         break;
+
       case MPFR_RNDA:
         d = 3.0;
         break;
+
       default:
         DBG_PRINTF ("%s\n", "Failed.");
         d = FP_NAN;
         break;
     }
-  return d;
+  return (d);
 }
 
 
@@ -353,33 +363,38 @@ export_rounding_mode (mpfr_rnd_t rnd)
  */
 
 int
-extract_rounding_mode (int idx, int nrhs, const mxArray *prhs[], mpfr_rnd_t *rnd)
+extract_rounding_mode (int idx, int nrhs, const mxArray *prhs[],
+                       mpfr_rnd_t *rnd)
 {
   int64_t si = 0;
+
   if (extract_si (idx, nrhs, prhs, &si))
-    {
-      switch (si)
-        {
-          case -1:
-            *rnd = MPFR_RNDD;
-            return 1;
-          case 0:
-            *rnd = MPFR_RNDN;
-            return 1;
-          case 1:
-            *rnd = MPFR_RNDU;
-            return 1;
-          case 2:
-            *rnd = MPFR_RNDZ;
-            return 1;
-          case 3:
-            *rnd = MPFR_RNDA;
-            return 1;
-          default:
-            break;
-        }
-    }
-  return 0;
+    switch (si)
+      {
+        case -1:
+          *rnd = MPFR_RNDD;
+          return (1);
+
+        case 0:
+          *rnd = MPFR_RNDN;
+          return (1);
+
+        case 1:
+          *rnd = MPFR_RNDU;
+          return (1);
+
+        case 2:
+          *rnd = MPFR_RNDZ;
+          return (1);
+
+        case 3:
+          *rnd = MPFR_RNDA;
+          return (1);
+
+        default:
+          break;
+      }
+  return (0);
 }
 
 
@@ -400,13 +415,14 @@ int
 extract_prec (int idx, int nrhs, const mxArray *prhs[], mpfr_prec_t *prec)
 {
   uint64_t ui = 0;
+
   if (extract_ui (idx, nrhs, prhs, &ui) && (MPFR_PREC_MIN < ui)
       && (ui < MPFR_PREC_MAX))
     {
       *prec = (mpfr_prec_t) ui;
-      return 1;
+      return (1);
     }
-  return 0;
+  return (0);
 }
 
 
@@ -426,86 +442,86 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
                      uint64_t cmd_code)
 {
   switch (cmd_code)
-  {
-    case 2000:  // size_t mpfr_t.get_data_capacity (void)
     {
-      MEX_NARGINCHK(1);
-      plhs[0] = mxCreateDoubleScalar ((double) mpfr_data_capacity);
-      return;
+      case 2000: // size_t mpfr_t.get_data_capacity (void)
+      {
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) mpfr_data_capacity);
+        return;
+      }
+
+      case 2001: // size_t mpfr_t.get_data_size (void)
+      {
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) mpfr_data_size);
+        return;
+      }
+
+      case 2002: // idx_t mpfr_t.allocate (size_t count)
+      {
+        MEX_NARGINCHK (2);
+        uint64_t count = 0;
+        if (! extract_ui (1, nrhs, prhs, &count) || (count == 0))
+          MEX_FCN_ERR ("cmd[%s]: Count must be a positive numeric scalar.\n",
+                       "mpfr_t.allocate");
+
+        DBG_PRINTF ("allocate '%d' new MPFR variables\n", (int) count);
+        idx_t idx;
+        if (! mex_mpfr_allocate ((size_t) count, &idx))
+          MEX_FCN_ERR ("%s\n", "Memory allocation failed.");
+        // Return start and end indices (1-based).
+        plhs[0] = mxCreateNumericMatrix (2, 1, mxDOUBLE_CLASS, mxREAL);
+        double *ptr = mxGetPr (plhs[0]);
+        ptr[0] = (double) idx.start;
+        ptr[1] = (double) idx.end;
+        return;
+      }
+
+      case 2003: // void mpfr_t.mark_free (mpfr_t idx)
+      {
+        MEX_NARGINCHK (2);
+        MEX_MPFR_T (1, idx);
+        DBG_PRINTF ("cmd[mpfr_t.mark_free]: [%d:%d] will be marked as free\n",
+                    idx.start, idx.end);
+        mex_mpfr_mark_free (&idx);
+        return;
+      }
+
+      case 2004: // void mpfr_t.transpose (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd, uint64_t ropM)
+      {
+        MEX_NARGINCHK (5);
+        MEX_MPFR_T (1, rop);
+        MEX_MPFR_T (2, op);
+        if (length (&rop) != length (&op))
+          MEX_FCN_ERR ("%s.\n", "cmd[mpfr_t.transpose]:op Invalid size");
+        MEX_MPFR_RND_T (3, rnd);
+        uint64_t ropM = 0;
+        if (! extract_ui (4, nrhs, prhs, &ropM) || (ropM == 0))
+          MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.transpose]:ropM must be a"
+                       "positive numeric scalar.");
+        DBG_PRINTF ("cmd[mpfr_t.transpose]: rop = [%d:%d], op = [%d:%d], "
+                    "rnd = %d, ropM = %d\n", rop.start, rop.end,
+                    op.start, op.end, (int) rnd, (int) ropM);
+
+        uint64_t ropN = length (&rop) / ropM;
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop) : 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        double * ret_ptr    = mxGetPr (plhs[0]);
+        mpfr_ptr rop_ptr    = &mpfr_data[rop.start - 1];
+        mpfr_ptr op_ptr     = &mpfr_data[op.start - 1];
+        size_t   ret_stride = (nlhs) ? 1 : 0;
+
+        for (uint64_t i = 0; i < ropM; i++)
+          for (uint64_t j = 0; j < ropN; j++)
+            ret_ptr[i * ret_stride] = (double) mpfr_set (rop_ptr + j * ropM + i,
+                                                         op_ptr + i * ropN + j,
+                                                         rnd);
+        return;
+      }
+
+      default:
+        MEX_FCN_ERR ("Unknown command code '%d'\n", cmd_code);
     }
-
-    case 2001:  // size_t mpfr_t.get_data_size (void)
-    {
-      MEX_NARGINCHK(1);
-      plhs[0] = mxCreateDoubleScalar ((double) mpfr_data_size);
-      return;
-    }
-
-    case 2002:  // idx_t mpfr_t.allocate (size_t count)
-    {
-      MEX_NARGINCHK(2);
-      uint64_t count = 0;
-      if (! extract_ui (1, nrhs, prhs, &count) || (count == 0))
-        MEX_FCN_ERR ("cmd[%s]: Count must be a positive numeric scalar.\n",
-                     "mpfr_t.allocate");
-
-      DBG_PRINTF ("allocate '%d' new MPFR variables\n", (int) count);
-      idx_t idx;
-      if (! mex_mpfr_allocate ((size_t) count, &idx))
-        MEX_FCN_ERR ("%s\n", "Memory allocation failed.");
-      // Return start and end indices (1-based).
-      plhs[0] = mxCreateNumericMatrix (2, 1, mxDOUBLE_CLASS, mxREAL);
-      double* ptr = mxGetPr (plhs[0]);
-      ptr[0] = (double) idx.start;
-      ptr[1] = (double) idx.end;
-      return;
-    }
-
-    case 2003:  // void mpfr_t.mark_free (mpfr_t idx)
-    {
-      MEX_NARGINCHK(2);
-      MEX_MPFR_T(1, idx);
-      DBG_PRINTF ("cmd[mpfr_t.mark_free]: [%d:%d] will be marked as free\n",
-                  idx.start, idx.end);
-      mex_mpfr_mark_free (&idx);
-      return;
-    }
-
-    case 2004:  // void mpfr_t.transpose (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd, uint64_t ropM)
-    {
-      MEX_NARGINCHK(5);
-      MEX_MPFR_T(1, rop);
-      MEX_MPFR_T(2,  op);
-      if (length (&rop) != length (&op))
-        MEX_FCN_ERR ("%s.\n", "cmd[mpfr_t.transpose]:op Invalid size");
-      MEX_MPFR_RND_T(3, rnd);
-      uint64_t ropM = 0;
-      if (! extract_ui (4, nrhs, prhs, &ropM) || (ropM == 0))
-        MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.transpose]:ropM must be a"
-                        "positive numeric scalar.");
-      DBG_PRINTF ("cmd[mpfr_t.transpose]: rop = [%d:%d], op = [%d:%d], "
-                  "rnd = %d, ropM = %d\n", rop.start, rop.end,
-                  op.start, op.end, (int) rnd, (int) ropM);
-
-      uint64_t ropN = length (&rop) / ropM;
-
-      plhs[0] = mxCreateNumericMatrix (nlhs ? length (&rop): 1, 1,
-                                        mxDOUBLE_CLASS, mxREAL);
-      double*  ret_ptr = mxGetPr (plhs[0]);
-      mpfr_ptr rop_ptr = &mpfr_data[rop.start - 1];
-      mpfr_ptr  op_ptr = &mpfr_data[ op.start - 1];
-      size_t ret_stride = (nlhs) ? 1 : 0;
-
-      for (uint64_t i = 0; i < ropM; i++)
-        for (uint64_t j = 0; j < ropN; j++)
-          ret_ptr[i * ret_stride] = (double) mpfr_set (rop_ptr + j * ropM + i,
-                                                        op_ptr + i * ropN + j,
-                                                        rnd);
-      return;
-    }
-
-    default:
-      MEX_FCN_ERR ("Unknown command code '%d'\n", cmd_code);
-  }
-
 }
+
