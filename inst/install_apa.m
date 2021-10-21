@@ -17,25 +17,29 @@ function install_apa (cmd)
     cd (fullfile (apa_dir, 'mex'));
 
     header = {'gmp.h', 'mpfr.h', 'mpf2mpfr.h'};
-    libs = {'libmpfr.a', 'libgmp.a'};
-    cflags = {'--std=c99', '-Wall', '-Wextra'};
+    static_libs = {'libmpfr.a', 'libgmp.a'};
+    dynamic_libs = {'-lgomp'};
+    cflags = {'--std=c99', '-Wall', '-Wextra', '-fopenmp'};
     cfiles = {'mex_apa_interface.c', ...
               'mex_gmp_interface.c', ...
               'mex_mpfr_interface.c', ...
               'mex_mpfr_algorithms.c'};
 
-    if (is_complete (pwd (), [header, libs]))
+    if (is_complete (pwd (), [header, static_libs]))
       cflags{end+1} = '-I.';
-      ldflags = libs;
-    elseif (ismac () && is_complete (fullfile (pwd (), 'macos'), [header, libs]))
+      ldflags = static_libs;
+    elseif (ismac () && is_complete (fullfile (pwd (), 'macos'), ...
+                                     [header, static_libs]))
       cflags{end+1} = '-Imacos';
-      ldflags = fullfile ('macos', libs);
-    elseif (ispc () && is_complete (fullfile (pwd (), 'mswin'), [header, libs]))
+      ldflags = [fullfile('macos', static_libs), dynamic_libs];
+    elseif (ispc () && is_complete (fullfile (pwd (), 'mswin'), ...
+                                    [header, static_libs]))
       cflags{end+1} = '-Imswin';
-      ldflags = fullfile ('mswin', libs);
-    elseif (isunix () && is_complete (fullfile (pwd (), 'unix'), [header, libs]))
+      ldflags = [fullfile('mswin', static_libs), dynamic_libs];
+    elseif (isunix () && is_complete (fullfile (pwd (), 'unix'), ...
+                                      [header, static_libs]))
       cflags{end+1} = '-Iunix';
-      ldflags = fullfile ('unix', libs);
+      ldflags = [fullfile('unix', static_libs), dynamic_libs];
     else
       error (['Could not find pre-built GMP or MPFR libraries.  ', ...
         'Please run the Makefile in the "mex" directory.']);

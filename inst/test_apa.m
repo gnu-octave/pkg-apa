@@ -249,8 +249,6 @@ function test_apa ()
   ops = {@vertcat, @horzcat};
   for i = 1:length (ops)
     op = ops{i};
-    op_str = char (op);
-    op_str = op_str(2:end);
 
     if (i == 1)  % vertcat
       a = (1:3)';
@@ -262,7 +260,6 @@ function test_apa ()
       b = 4:6;
       aa = [a; a];
       bb = [b; b];
-
     end
 
     am = mpfr_t (a);
@@ -298,9 +295,9 @@ function test_apa ()
   end
 
 
-  % =====================
-  % Arithmetic operations
-  % =====================
+  % ====================================
+  % Arithmetic operations (element-wise)
+  % ====================================
 
   for ops = {@uminus}
     op = ops{1};
@@ -330,6 +327,23 @@ function test_apa ()
     assert (isequal (double (op (mpfr_t (1:3), 1)),     op ((1:3), 1)));
   end
 
+
+  % =================
+  % Matrix operations
+  % =================
+
+  op = @mtimes;
+  for m = 1:8
+    for n = 1:8
+      for k = 1:8
+        a = 0.5 * ones (m, k);
+        b = 0.5 * ones (k, n);
+        assert (isequal (double (op (mpfr_t (a), mpfr_t (b))), op (a, b)));
+        assert (isequal (double (op (a, mpfr_t (b))), op (a, b)));
+        assert (isequal (double (op (mpfr_t (a), b)), op (a, b)));
+      end
+    end
+  end
 
   % ====================
   % Comparison functions

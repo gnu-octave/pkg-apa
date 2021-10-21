@@ -6,6 +6,8 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <omp.h>
+
 #include "mex.h"
 
 
