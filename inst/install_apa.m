@@ -25,18 +25,24 @@ function install_apa (cmd)
               'mex_mpfr_interface.c', ...
               'mex_mpfr_algorithms.c'};
 
+    if (ismac ())
+      cflags = {'--std=c99', '-Wall', '-Wextra', '-Xpreprocessor', '-fopenmp'};
+      dynamic_libs = {'-lomp'};
+      % Matlab crashes when `gomp` is linked, use omp shipped with Matlab.
+      if (exist('OCTAVE_VERSION', 'builtin') ~= 5)
+        cflags{end+1} = '-Imacos/matlab';  % Provides omp.h.
+        dynamic_libs = fullfile (matlabroot (), 'sys', 'os', computer ('arch'));
+        dynamic_libs = {['-L', dynamic_libs], '-liomp5'};
+      end
+    end
+
     if (is_complete (pwd (), [header, static_libs]))
       cflags{end+1} = '-I.';
       ldflags = static_libs;
     elseif (ismac () && is_complete (fullfile (pwd (), 'macos'), ...
                                      [header, static_libs]))
-      cflags(end) = [];
-      cflags = [cflags, {'-Xpreprocessor', '-fopenmp', '-Imacos'}];
-      dynamic_libs = {'-lomp'};
+      cflags{end+1} = '-Imacos';
       ldflags = [fullfile('macos', static_libs), dynamic_libs];
-      if (exist('OCTAVE_VERSION', 'builtin') ~= 5)  % If Matlab.
-        [cflags, ldflags] = patch_matlab_macos (cflags, ldflags);
-      end
     elseif (ispc () && is_complete (fullfile (pwd (), 'mswin'), ...
                                     [header, static_libs]))
       cflags{end+1} = '-Imswin';
@@ -98,42 +104,6 @@ function add_to_path_if_not_exists (p)
   if (~ bool)
     addpath (p);
   end
-
-end
-
-
-function [cflags, ldflags] = patch_matlab_macos (cflags, ldflags)
-
-  % Detect Homebrew.
-  brew_cmd = 'brew';
-  [status, ~] = system ([brew_cmd, ' --version']);
-  if (status)
-    % One more try with default directory.
-    brew_cmd = '/usr/local/bin/brew';
-    [status, ~] = system ([brew_cmd, ' --version']);
-    if (status)
-      error (sprintf(['install_apa: Could not find the Homebrew ', ...
-        'installation.  For details see:\n\n', ...
-        '    https://www.mathworks.com/help/coder/ug/', ...
-        'install-openmp-library-on-macos-platform.html\n\n', ...
-        'MEX interface creation failed.  APA cannot be used.']));
-    end
-  end
-
-  [status, omp_path] = system ([brew_cmd, ' --prefix libomp']);
-  omp_path(omp_path == newline()) = [];
-  if (status)
-    error (sprintf(['install_apa: Could not find the "libomp" ', ...
-      'installation.  For details see:\n\n', ...
-      '    https://www.mathworks.com/help/coder/ug/', ...
-      'install-openmp-library-on-macos-platform.html\n\n', ...
-      'MEX interface creation failed.  APA cannot be used.']));
-  end
-
-  cflags = [cflags, {['-I', fullfile(omp_path, 'include')]}];
-
-  ldflags(strcmp (ldflags, '-lgomp')) = [];
-  ldflags = [ldflags, {['-L', fullfile(omp_path, 'lib')], '-lomp'}];
 
 end
 
