@@ -30,8 +30,13 @@ function install_apa (cmd)
       ldflags = static_libs;
     elseif (ismac () && is_complete (fullfile (pwd (), 'macos'), ...
                                      [header, static_libs]))
-      cflags{end+1} = '-Imacos';
+      cflags(end) = [];
+      cflags = [cflags, {'-Xpreprocessor', '-fopenmp', '-Imacos'}];
+      dynamic_libs = {'-lomp'};
       ldflags = [fullfile('macos', static_libs), dynamic_libs];
+      if (exist('OCTAVE_VERSION', 'builtin') ~= 5)  % If Matlab.
+        [cflags, ldflags] = patch_matlab_macos (cflags, ldflags);
+      end
     elseif (ispc () && is_complete (fullfile (pwd (), 'mswin'), ...
                                     [header, static_libs]))
       cflags{end+1} = '-Imswin';
@@ -41,8 +46,8 @@ function install_apa (cmd)
       cflags{end+1} = '-Iunix';
       ldflags = [fullfile('unix', static_libs), dynamic_libs];
     else
-      error (['Could not find pre-built GMP or MPFR libraries.  ', ...
-        'Please run the Makefile in the "mex" directory.']);
+      error (['install_apa: Could not find pre-built GMP or MPFR ', ...
+        'libraries.  Please run the Makefile in the "mex" directory.']);
     end
 
     try
@@ -96,6 +101,41 @@ function add_to_path_if_not_exists (p)
 
 end
 
+
+function [cflags, ldflags] = patch_matlab_macos (cflags, ldflags)
+
+  % Detect Homebrew.
+  brew_cmd = 'brew';
+  [status, ~] = system ([brew_cmd, ' --version']);
+  if (status)
+    % One more try with default directory.
+    brew_cmd = '/usr/local/bin/brew';
+    [status, ~] = system ([brew_cmd, ' --version']);
+    if (status)
+      error (sprintf(['install_apa: Could not find the Homebrew ', ...
+        'installation.  For details see:\n\n', ...
+        '    https://www.mathworks.com/help/coder/ug/', ...
+        'install-openmp-library-on-macos-platform.html\n\n', ...
+        'MEX interface creation failed.  APA cannot be used.']));
+    end
+  end
+
+  [status, omp_path] = system ([brew_cmd, ' --prefix libomp']);
+  omp_path(omp_path == newline()) = [];
+  if (status)
+    error (sprintf(['install_apa: Could not find the "libomp" ', ...
+      'installation.  For details see:\n\n', ...
+      '    https://www.mathworks.com/help/coder/ug/', ...
+      'install-openmp-library-on-macos-platform.html\n\n', ...
+      'MEX interface creation failed.  APA cannot be used.']));
+  end
+
+  cflags = [cflags, {['-I', fullfile(omp_path, 'include')]}];
+
+  ldflags(strcmp (ldflags, '-lgomp')) = [];
+  ldflags = [ldflags, {['-L', fullfile(omp_path, 'lib')], '-lomp'}];
+
+end
 
 
 % The following PKG_ADD directive is used for the Octave pkg-system, such that
