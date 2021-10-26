@@ -392,7 +392,7 @@ classdef mpfr_t
     end
 
 
-    function c = mtimes (a, b, rnd, prec)
+    function c = mtimes (a, b, rnd, prec, strategy)
       % Matrix multiplication `c = a * b` using rounding mode `rnd`.
       %
       % If no rounding mode `rnd` is given, the default rounding mode is used.
@@ -405,6 +405,9 @@ classdef mpfr_t
       end
       if (nargin < 4)
         prec = [];
+      end
+      if (nargin < 5)
+        strategy = 7;
       end
 
       % TODO: mpfr_t * double
@@ -428,7 +431,8 @@ classdef mpfr_t
       end
 
       c = mpfr_t (zeros (sizeA(1), sizeB(2)), prec, rnd);
-      ret = mex_apa_interface (2005, c.idx, a.idx, b.idx, rnd, sizeA(1));
+      ret = mex_apa_interface (2005, c.idx, a.idx, b.idx, prec, rnd, ...
+                               sizeA(1), strategy);
       c.warnInexactOperation (ret);
     end
 

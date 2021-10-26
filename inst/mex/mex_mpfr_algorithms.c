@@ -1,4 +1,5 @@
 #include "mex_mpfr_interface.h"
+#include "mex_mpfr_algorithms_mmm.h"
 
 // MPFR memory management
 // ======================
@@ -520,36 +521,41 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 2005: // int mpfr_t.mtimes (mpfr_t C, mpfr_t A, mpfr_t B, mpfr_rnd_t rnd, uint64_t M)
+      case 2005: // int mpfr_t.mtimes (mpfr_t C, mpfr_t A, mpfr_t B, mpfr_prec_t prec, mpfr_rnd_t rnd, uint64_t M, int strategy)
       {
-        MEX_NARGINCHK (6);
+        MEX_NARGINCHK (8);
         MEX_MPFR_T (1, C);
         MEX_MPFR_T (2, A);
         MEX_MPFR_T (3, B);
-        MEX_MPFR_RND_T (4, rnd);
+        MEX_MPFR_PREC_T (4, prec);
+        MEX_MPFR_RND_T (5, rnd);
         uint64_t M = 0;
-        if (! extract_ui (5, nrhs, prhs, &M) || (M == 0))
+        if (! extract_ui (6, nrhs, prhs, &M) || (M == 0))
           MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.mtimes]:M must be a positive "
                        "numeric scalar denoting the rows of input rop.");
-        DBG_PRINTF ("cmd[mpfr_t.mtimes]: rop = [%d:%d], op1 = [%d:%d], "
-                    "op2 = [%d:%d], rnd = %d, M = %d\n", C.start, C.end,
-                    A.start, A.end, A.start, A.end,
-                    (int) rnd, (int) M);
+        uint64_t strategy = 0;
+        if (! extract_ui (7, nrhs, prhs, &strategy))
+          MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.mtimes]:strategy must be a "
+                       "positive numeric scalar.");
+        DBG_PRINTF ("cmd[mpfr_t.mtimes]: C = [%d:%d], A = [%d:%d], "
+                    "B = [%d:%d], prec = %d, rnd = %d, M = %d, strategy = %d\n",
+                    C.start, C.end, A.start, A.end, B.start, B.end,
+                    (int) prec, (int) rnd, (int) M);
 
         // Check matrix dimensions to be sane.
-        //   C [M x N]  (i,j)
-        //   A [M x K]  (i,k)
-        //   B [K x N]  (k,j)
+        //   C [M x N]
+        //   A [M x K]
+        //   B [K x N]
         uint64_t N = length (&C) / M;
         if (length (&C) != (M * N))
-          MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.mtimes]:M does not denote the rows "
-                       "of input rop.");
+          MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.mtimes]:M does not denote the "
+                       "number of rows of input matrix C.");
         uint64_t K = length (&A) / M;
         if (length (&A) != (M * K))
           MEX_FCN_ERR ("cmd[mpfr_t.mtimes]:Incompatible matrix A.  Expected "
                        "a [%d x %d] matrix\n", M, K);
         if (length (&B) != (K * N))
-          MEX_FCN_ERR ("cmd[mpfr_t.mtimes]:Incompatible matrix A.  Expected "
+          MEX_FCN_ERR ("cmd[mpfr_t.mtimes]:Incompatible matrix B.  Expected "
                        "a [%d x %d] matrix\n", K, N);
 
         plhs[0] = mxCreateNumericMatrix (nlhs ? length (&C) : 1, 1,
@@ -560,18 +566,9 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         mpfr_ptr B_ptr      = &mpfr_data[B.start - 1];
         size_t   ret_stride = (nlhs) ? 1 : 0;
 
-        #pragma omp parallel for
-        for (uint64_t j = 0; j < N; j++)
-          for (uint64_t i = 0; i < M; i++)
-            {
-              int ret = 0;
-              for (uint64_t k = 0; k < K; k++)
-                ret |= mpfr_fma (C_ptr + (M * j) + i,
-                                 B_ptr + k + (K * j),
-                                 A_ptr + i + (M * k),
-                                 C_ptr + (M * j) + i, rnd);
-              ret_ptr[((M * j) + i) * ret_stride] = (double) ret;
-            }
+        mpfr_mmm (C_ptr, A_ptr, B_ptr, prec, rnd, M, N, K, ret_ptr, ret_stride,
+                  strategy);
+
         return;
       }
 
