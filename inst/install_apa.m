@@ -17,40 +17,48 @@ function install_apa (cmd)
     cd (fullfile (apa_dir, 'mex'));
 
     header = {'gmp.h', 'mpfr.h', 'mpf2mpfr.h'};
-    static_libs = {'libmpfr.a', 'libgmp.a'};
-    dynamic_libs = {'-lgomp'};
-    cflags = {'--std=c99', '-Wall', '-Wextra', '-fopenmp'};
+    static_libs = {'libmpfr.a', 'libgmp.a'};  
     cfiles = {'mex_apa_interface.c', ...
               'mex_gmp_interface.c', ...
               'mex_mpfr_interface.c', ...
               'mex_mpfr_algorithms.c'};
 
+    % Set cflags and ldflags according to OS and Octave/Matlab.
+    cflags = {'--std=c99', '-Wall', '-Wextra'};
     if (ismac ())
-      cflags = {'--std=c99', '-Wall', '-Wextra', '-Xpreprocessor', '-fopenmp'};
-      dynamic_libs = {'-lomp'};
-      % Matlab crashes when `gomp` is linked, use omp shipped with Matlab.
-      if (exist('OCTAVE_VERSION', 'builtin') ~= 5)
+      cflags = [cflags, {'-Xpreprocessor', '-fopenmp'}];
+      if (exist('OCTAVE_VERSION', 'builtin') == 5)
+        ldflags = {'-lomp'};
+      else
+        % Matlab crashes when `gomp` is linked, use omp shipped with Matlab.
         cflags{end+1} = '-Imacos/matlab';  % Provides omp.h.
-        dynamic_libs = fullfile (matlabroot (), 'sys', 'os', computer ('arch'));
-        dynamic_libs = {['-L', dynamic_libs], '-liomp5'};
+        ldflags = fullfile (matlabroot (), 'sys', 'os', computer ('arch'));
+        ldflags = {['-L', ldflags], '-liomp5'};
       end
+    elseif (ispc ())
+      cflags = [cflags, {'-fopenmp'}];
+      ldflags = {'-lgomp'};
+    elseif (isunix ())
+      cflags = [cflags, {'-fopenmp'}];
+      ldflags = {'-lgomp'};
     end
 
+    % Add static GMP and MPFR library to compiler flags.
     if (is_complete (pwd (), [header, static_libs]))
       cflags{end+1} = '-I.';
       ldflags = static_libs;
     elseif (ismac () && is_complete (fullfile (pwd (), 'macos'), ...
                                      [header, static_libs]))
       cflags{end+1} = '-Imacos';
-      ldflags = [fullfile('macos', static_libs), dynamic_libs];
+      ldflags = [fullfile('macos', static_libs), ldflags];
     elseif (ispc () && is_complete (fullfile (pwd (), 'mswin'), ...
                                     [header, static_libs]))
       cflags{end+1} = '-Imswin';
-      ldflags = [fullfile('mswin', static_libs), dynamic_libs];
+      ldflags = [fullfile('mswin', static_libs), ldflags];
     elseif (isunix () && is_complete (fullfile (pwd (), 'unix'), ...
                                       [header, static_libs]))
       cflags{end+1} = '-Iunix';
-      ldflags = [fullfile('unix', static_libs), dynamic_libs];
+      ldflags = [fullfile('unix', static_libs), ldflags];
     else
       error (['install_apa: Could not find pre-built GMP or MPFR ', ...
         'libraries.  Please run the Makefile in the "mex" directory.']);
@@ -61,7 +69,7 @@ function install_apa (cmd)
         mex (cflags{:}, cfiles{:}, ldflags{:});
       else
         mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], ...
-            cfiles{:}, ldflags{:});
+             cfiles{:}, ldflags{:});
       end
       movefile (['mex_apa_interface.', mexext()], '..');
     catch
