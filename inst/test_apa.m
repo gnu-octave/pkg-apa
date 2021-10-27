@@ -336,8 +336,8 @@ function test_apa ()
   for m = 1:8
     for n = 1:8
       for k = 1:8
-        a = 0.5 * ones (m, k);
-        b = 0.5 * ones (k, n);
+        a = reshape (1:m*k, m, k);
+        b = reshape (1:k*n, k, n);
         assert (isequal (double (op (mpfr_t (a), mpfr_t (b))), op (a, b)));
         assert (isequal (double (op (a, mpfr_t (b))), op (a, b)));
         assert (isequal (double (op (mpfr_t (a), b)), op (a, b)));

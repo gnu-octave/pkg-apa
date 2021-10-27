@@ -566,8 +566,8 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         mpfr_ptr B_ptr      = &mpfr_data[B.start - 1];
         size_t   ret_stride = (nlhs) ? 1 : 0;
 
-        mpfr_mmm (C_ptr, A_ptr, B_ptr, prec, rnd, M, N, K, ret_ptr, ret_stride,
-                  strategy);
+        mpfr_apa_mmm (C_ptr, A_ptr, B_ptr, prec, rnd, M, N, K, ret_ptr,
+                      ret_stride, strategy);
 
         return;
       }
