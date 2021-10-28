@@ -27,7 +27,7 @@ function install_apa (cmd)
     cflags = {'--std=c99', '-Wall', '-Wextra'};
     if (ismac ())
       cflags = [cflags, {'-Xpreprocessor', '-fopenmp'}];
-      if (exist('OCTAVE_VERSION', 'builtin') == 5)
+      if (exist ('OCTAVE_VERSION', 'builtin') == 5)
         ldflags = {'-lomp'};
       else
         % Matlab crashes when `gomp` is linked, use omp shipped with Matlab.
