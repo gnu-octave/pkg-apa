@@ -37,7 +37,12 @@ function install_apa (cmd)
       end
     elseif (ispc ())
       cflags = [cflags, {'-fopenmp'}];
-      ldflags = {'-lgomp'};
+      if (exist('OCTAVE_VERSION', 'builtin') == 5)
+        ldflags = {'-lgomp'};
+      else
+        static_libs = [static_libs, {'libgomp.a'}];
+        ldflags = {};
+      end
     elseif (isunix ())
       cflags = [cflags, {'-fopenmp'}];
       ldflags = {'-lgomp'};

@@ -75,8 +75,9 @@ cd mxe-octave
   --enable-octave=release \
   --enable-static \
   --disable-shared
-make JOBS=8 mpfr
-cp ./usr/x86_64-w64-mingw32/lib/libgmp.a \
+make JOBS=8 mpfr libgomp
+cp ./usr/x86_64-w64-mingw32/lib/gcc/x86_64-w64-mingw32/11.2.0/libgomp.a \
+   ./usr/x86_64-w64-mingw32/lib/libgmp.a \
    ./usr/x86_64-w64-mingw32/lib/libmpfr.a \
    ./usr/x86_64-w64-mingw32/include/gmp.h \
    ./usr/x86_64-w64-mingw32/include/mpfr.h \

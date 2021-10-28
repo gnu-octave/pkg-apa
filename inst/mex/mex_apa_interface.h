@@ -143,18 +143,5 @@ int
 extract_ui_vector (int idx, int nrhs, const mxArray *prhs[], uint64_t **ui,
                    size_t len);
 
-
-// Dirty hack for MS Windows Matlab, as the used MinGW is outdated.
-#if defined(MX_API_VER) && (defined(_WIN32) || defined(WIN32))
-FILE * __cdecl __acrt_iob_func (unsigned index)
-{
-  return (&(__iob_func ()[index]));
-}
-
-
-typedef FILE *__cdecl (*_f__acrt_iob_func)(unsigned index);
-_f__acrt_iob_func __MINGW_IMP_SYMBOL (__acrt_iob_func) = __acrt_iob_func;
-#endif
-
 #endif  // MEX_APA_INTERFACE_H_
 
