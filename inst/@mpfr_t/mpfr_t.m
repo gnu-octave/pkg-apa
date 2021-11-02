@@ -197,27 +197,74 @@ classdef mpfr_t
 
     function disp (obj)
       % Object display.
+      
+      inner_padding = 3;
+      break_at_col  = 80;
 
       if (isscalar (obj))
-        if (prod (obj.dims) == 1)
-          dim_str = 'scalar';
-        else
-          dim_str = sprintf ('%dx%d matrix', obj.dims(1), obj.dims(2));
-        end
-        prec = obj.prec;
-        prec = [min(prec), max(prec)];
-        if (prec(1) == prec(2))
-          prec_str = num2str (prec(1));
-        else
-          prec_str = sprintf ('between %d and %d', prec(1), prec(2));
-        end
-        fprintf (1, '  MPFR %s (precision %s binary digits)\n\n', dim_str, ...
-                                                                  prec_str);
-        if (prod (obj.dims) == 1)
-          fprintf (1, '  Double approximation: %f\n', double (obj));
-        elseif ((obj.dims(1) <= 5) && (obj.dims(2) <= 5))
-          fprintf (1, '  Double approximation:\n\n');
-          disp (double (obj));
+        rnd = mpfr_get_default_rounding_mode ();
+        [significant, exp] = mpfr_get_str (10, 0, obj.idx, rnd);
+        
+        % Add leading zeros.
+        zeropad = 1 - exp;
+        exp(zeropad >= 0) = 1;
+        zeropad(zeropad < 0) = 0;
+        zeropad = num2cell (zeropad);
+        zeropad = cellfun (@(num) repmat('0', 1, num), zeropad, ...
+                           'UniformOutput', false);
+        significant = strcat (zeropad, significant);
+        
+        % Add decimal point.
+        significant = cellfun ( ...
+          @(str,exp) [str(1:exp), '.', str(exp+1:end)], ...
+          significant, num2cell(exp), 'UniformOutput', false);
+        
+        % Remove trailing zeros.
+        significant = cellfun (@(str) regexprep (str, '[0]+$', ''), ...
+          significant, 'UniformOutput', false);
+        
+        % Remove trailing '.' signs.
+        significant = cellfun (@(str) regexprep (str, '\.$', ''), ...
+          significant, 'UniformOutput', false);
+        
+        % Adapt to size of obj.
+        [M, N] = deal (obj.dims(1), obj.dims(2));
+        significant = reshape (significant, M, N);
+        
+        % Right align columns.
+        spacepad = cellfun (@length, significant);
+        spacepad = repmat (max (spacepad, [], 1), size (spacepad, 1), 1) ...
+                 - spacepad;
+        spacepad = num2cell (spacepad);
+        spacepad = cellfun (@(num) repmat(' ', 1, num), spacepad, ...
+                            'UniformOutput', false);
+        significant = strcat (spacepad, significant);
+        
+        % Determine column paging.
+        col_lengths = sort (cellfun (@length, significant(1,:)), 'descend');
+        col_lengths = col_lengths + inner_padding;
+        disp_max_cols = find (cumsum (col_lengths) < break_at_col, 1, 'last');
+        disp_max_cols = max ([1, disp_max_cols]);
+                
+        % Final output.
+        inner_padding = repmat (' ', 1, inner_padding);
+        ofun = @(cols) fprintf ( ...
+          [repmat([inner_padding, '%s'], 1, size (cols, 1)), '\n'], cols{:});
+        
+        if (disp_max_cols == N)
+          ofun (significant');
+        else  % Output with column paging.
+          for i = 1:disp_max_cols:N
+            if ((length (i:N) == 1) || (disp_max_cols == 1))
+              fprintf ('  Column %d\n\n', i);
+              j = i;
+            else
+              j = min (N, i + disp_max_cols - 1);
+              fprintf ('  Columns %d through %d\n\n', i, j);
+            end
+            ofun (significant(:,i:j)');
+            fprintf ('\n');
+          end
         end
       else
         builtin ('disp', obj);
