@@ -58,9 +58,7 @@ classdef mpfr_t
         idx = idx.idx;
       end
 
-      if (mpfr_t.get_data_capacity () && mpfr_t.get_data_size ())
-        mex_apa_interface (2003, idx);
-      end
+      mex_apa_interface (2003, idx);
     end
   end
 

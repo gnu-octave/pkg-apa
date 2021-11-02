@@ -480,6 +480,10 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
 
       case 2003: // void mpfr_t.mark_free (mpfr_t idx)
       {
+        // Check if MPFR memory is (already) cleared.
+        if ((mpfr_data_capacity <= 0) && (mpfr_data_size <= 0))
+          return;
+
         MEX_NARGINCHK (2);
         MEX_MPFR_T (1, idx);
         DBG_PRINTF ("cmd[mpfr_t.mark_free]: [%d:%d] will be marked as free\n",
