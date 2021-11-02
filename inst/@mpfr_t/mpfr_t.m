@@ -1,8 +1,8 @@
 classdef mpfr_t
 
   properties (SetAccess = protected)
-    dims  % Original object dimensions.
-    idx   % MPFR variable indices.
+    dims  % Object dimensions.
+    idx   % Internal MPFR variable indices.
     cleanupObj  % Destructor object.
   end
 
