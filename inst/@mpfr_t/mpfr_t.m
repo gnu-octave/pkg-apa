@@ -64,7 +64,7 @@ classdef mpfr_t
 
 
   methods (Access = private)
-    function warnInexactOperation (obj, ret)
+    function warnInexactOperation (~, ret)
       % [internal] MPFR functions returning an int return a ternary value.
       % If the ternary value is zero, it means that the value stored in the
       % destination variable is the exact result of the corresponding
@@ -78,14 +78,15 @@ classdef mpfr_t
       % corresponds to an exact return value.  The opposite of a returned
       % ternary value is guaranteed to be representable in an int.
 
-      if (any (ret(:)) && (obj.get_verbose () > 1))
+      if (any (ret(:)))
         fcn = dbstack ();
         fcn = fcn(2);  % caller
         [~, fname, fext] = fileparts (fcn.file);
         fcn = sprintf ('%s%s (%s at line %d)', fname, fext, fcn.name, fcn.line);
         warning ('mpfr_t:inexactOperation', ...
-                 ['%s: Inexact operation.\n\tSuppress warning messages ', ...
-                  'with `mpfr_t.set_verbose(1)`.\n'], fcn);
+                 ['%s: Inexact operation.\n\n', ...
+                  'Suppress MPFR_T inexactness warning messages with:\n\n', ...
+                  '\twarning (''off'', ''mpfr_t:inexactOperation'')\n'], fcn);
       end
     end
   end

@@ -305,6 +305,8 @@ function test_apa ()
     assert (isequal (double (op (mpfr_t (1:3))), op (1:3)));
   end
 
+  % Suppress warning for `ldivide (1:3, 1)` and `rdivide (1, 1:3)`.
+  S = warning ('off', 'mpfr_t:inexactOperation');
   for ops = {@plus, @minus, @times, @ldivide, @rdivide}
     op = ops{1};
     assert (isequal (double (op (mpfr_t (1:3), mpfr_t (1:3))), op ((1:3), (1:3))));
@@ -316,6 +318,7 @@ function test_apa ()
     assert (isequal (double (op (mpfr_t (1:3), 1)), op ((1:3), 1)));
     assert (isequal (double (op (1, mpfr_t (1:3))), op (1, (1:3))));
   end
+  warning (S);
 
   for ops = {@power}
     op = ops{1};
