@@ -111,9 +111,16 @@ classdef mpfr_t
 
 
   methods
+    % More information about class methods.
+    % https://octave.org/doc/v6.4.0/Operator-Overloading.html
+    % https://www.mathworks.com/help/matlab/matlab_oop/implementing-operators-for-your-class.html
+    % https://www.mathworks.com/help/matlab/matlab_oop/methods-that-modify-default-behavior.html
+
+
     % Defined in extra files.
     varargout = subsref (obj, s, rnd)
     obj = subsasgn (obj, s, b, rnd)
+
 
     function obj = mpfr_t (x, prec, rnd)
       % Construct a mpfr_t variable of precision `prec` from `x` using rounding
@@ -189,59 +196,114 @@ classdef mpfr_t
     end
 
 
-    % More information about class methods.
-    % https://octave.org/doc/v6.3.0/Operator-Overloading.html
-    % https://www.mathworks.com/help/matlab/matlab_oop/implementing-operators-for-your-class.html
-    % https://www.mathworks.com/help/matlab/matlab_oop/methods-that-modify-default-behavior.html
+    function cstr = cellstr (obj, fmt, base, rnd)
+      % Return a cell array of character vectors of `obj` using digits in base
+      % `base` and rounding mode `rnd`.
+      %
+      % `fmt`:
+      %   - 'fixed-point': e.g. "0.125"
+      %   - 'scientific':  e.g. "1.25e-01"
+      %
+      % `base`: scalar integer from 2 to 62 (default: 10 [decimal]).
+      %
+      % `rnd`: scalar integer (default: `mpfr_get_default_rounding_mode()`)
+      %
+
+      if (nargin < 4)
+        rnd = mpfr_get_default_rounding_mode ();
+      end
+      if (nargin < 3)
+        base = 10;
+      end
+      if (nargin < 2)
+        fmt = 'fixed-point';
+      else
+        fmt = validatestring (fmt, {'fixed-point', 'scientific'});
+      end
+
+      % Get string representation of all elements.
+      [significant, exp] = mpfr_get_str (base, 0, obj.idx, rnd);
+
+      switch (fmt)
+        case 'fixed-point'
+          % Add leading zeros.
+          zeropad = 1 - exp;
+          exp(zeropad >= 0) = 1;
+          zeropad(zeropad < 0) = 0;
+          zeropad = num2cell (zeropad);
+          zeropad = cellfun (@(num) repmat('0', 1, num), zeropad, ...
+                             'UniformOutput', false);
+          significant = strcat (zeropad, significant);
+
+          % Add decimal point.
+          significant = cellfun ( ...
+            @(str,exp) [str(1:exp), '.', str(exp+1:end)], ...
+            significant, num2cell(exp), 'UniformOutput', false);
+
+        case 'scientific'
+          % Add decimal point.
+          significant = cellfun ( ...
+            @(str) [str(1), '.', str(2:end)], significant, ...
+            'UniformOutput', false);
+          exp = exp - 1;
+
+        otherwise
+          error ('mpfr_t:cellstr', 'Invalid output format.');
+      end
+
+      % Remove trailing zeros.
+      significant = cellfun (@(str) regexprep (str, '[0]+$', ''), ...
+        significant, 'UniformOutput', false);
+
+      % Remove trailing '.' signs.
+      significant = cellfun (@(str) regexprep (str, '\.$', ''), ...
+        significant, 'UniformOutput', false);
+      
+      if (strcmp (fmt, 'scientific'))
+        % Add base and exponent.
+        if (base == 10)
+          significant = cellfun ( ...
+            @(str,exp) sprintf ('%se%+03d' , str, exp), ...
+            significant, num2cell(exp), 'UniformOutput', false);
+        else
+          significant = cellfun ( ...
+            @(str,exp) sprintf ('%s * %d^(%d)' , str, base, exp), ...
+            significant, num2cell(exp), 'UniformOutput', false);
+        end
+      end
+      
+      % Adapt to size of obj.
+      [M, N] = deal (obj.dims(1), obj.dims(2));
+      cstr = reshape (significant, M, N);
+    end
 
 
     function disp (obj)
       % Object display.
-      
-      inner_padding = 3;
-      break_at_col  = 80;
 
       if (isscalar (obj))
+        % Get display format parameters.
+        fmt = 'fixed-point';
+        base = 10;
+        inner_padding = 3;
+        break_at_col  = 80;
         rnd = mpfr_get_default_rounding_mode ();
-        [significant, exp] = mpfr_get_str (10, 0, obj.idx, rnd);
-        
-        % Add leading zeros.
-        zeropad = 1 - exp;
-        exp(zeropad >= 0) = 1;
-        zeropad(zeropad < 0) = 0;
-        zeropad = num2cell (zeropad);
-        zeropad = cellfun (@(num) repmat('0', 1, num), zeropad, ...
-                           'UniformOutput', false);
-        significant = strcat (zeropad, significant);
-        
-        % Add decimal point.
-        significant = cellfun ( ...
-          @(str,exp) [str(1:exp), '.', str(exp+1:end)], ...
-          significant, num2cell(exp), 'UniformOutput', false);
-        
-        % Remove trailing zeros.
-        significant = cellfun (@(str) regexprep (str, '[0]+$', ''), ...
-          significant, 'UniformOutput', false);
-        
-        % Remove trailing '.' signs.
-        significant = cellfun (@(str) regexprep (str, '\.$', ''), ...
-          significant, 'UniformOutput', false);
-        
-        % Adapt to size of obj.
-        [M, N] = deal (obj.dims(1), obj.dims(2));
-        significant = reshape (significant, M, N);
-        
+        N = obj.dims(2);
+
+        % Get cellstr representation.
+        cstr = cellstr (obj, fmt, base, rnd);
+
         % Right align columns.
-        spacepad = cellfun (@length, significant);
+        spacepad = cellfun (@length, cstr);
         spacepad = repmat (max (spacepad, [], 1), size (spacepad, 1), 1) ...
                  - spacepad;
         spacepad = num2cell (spacepad);
         spacepad = cellfun (@(num) repmat(' ', 1, num), spacepad, ...
                             'UniformOutput', false);
-        significant = strcat (spacepad, significant);
+        cstr = strcat (spacepad, cstr);
         
         % Determine column paging.
-        col_lengths = sort (cellfun (@length, significant(1,:)), 'descend');
+        col_lengths = sort (cellfun (@length, cstr(1,:)), 'descend');
         col_lengths = col_lengths + inner_padding;
         disp_max_cols = find (cumsum (col_lengths) < break_at_col, 1, 'last');
         disp_max_cols = max ([1, disp_max_cols]);
@@ -252,7 +314,7 @@ classdef mpfr_t
           [repmat([inner_padding, '%s'], 1, size (cols, 1)), '\n'], cols{:});
         
         if (disp_max_cols == N)
-          ofun (significant');
+          ofun (cstr');
         else  % Output with column paging.
           for i = 1:disp_max_cols:N
             if ((length (i:N) == 1) || (disp_max_cols == 1))
@@ -262,7 +324,7 @@ classdef mpfr_t
               j = min (N, i + disp_max_cols - 1);
               fprintf ('  Columns %d through %d\n\n', i, j);
             end
-            ofun (significant(:,i:j)');
+            ofun (cstr(:,i:j)');
             fprintf ('\n');
           end
         end
