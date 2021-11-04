@@ -9,7 +9,7 @@ function settings = apa (key, val)
   %   3 : very verbose debug output.
   %
   %  'format.fmt' (string): ['fixed-point'], 'scientific'
-  %  'format.base'          (integer scalar): 2 ... [10] ... 36
+  %  'format.base'          (integer scalar): 2 ... [10] ... 62
   %  'format.inner_padding' (integer scalar): positive
   %  'format.break_at_col'  (integer scalar): positive
   %
@@ -113,8 +113,8 @@ function bool = validate_apa_struct (s)
   end
   
   fval = s.format.base;
-  if (~ (isnumeric (fval) && isscalar (fval) && (2 <= fval) && (fval <= 36)))
-    error ('apa:badInput', 'apa: "format.base" invalid value (2 to 36)');
+  if (~ (isnumeric (fval) && isscalar (fval) && (2 <= fval) && (fval <= 62)))
+    error ('apa:badInput', 'apa: "format.base" invalid value (2 to 62)');
   end
 
   fval = s.format.inner_padding;
