@@ -123,6 +123,9 @@ classdef mpfr_t
         rnd = mpfr_get_default_rounding_mode ();
       end
 
+      if (ischar (x))
+        x = {x};
+      end
       if (isa (x, 'mpfr_t'))
         obj.dims = x.dims;
       else
@@ -137,7 +140,7 @@ classdef mpfr_t
       mpfr_set_prec (obj, prec);
 
       % Shortcut: fresh allocated mpfr variable is nan.
-      if (all (all (isnan (x))))
+      if (isnumeric (x) && all (all (isnan (x))))
         return;
       end
 

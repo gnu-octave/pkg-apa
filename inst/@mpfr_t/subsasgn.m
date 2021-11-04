@@ -95,6 +95,9 @@ function obj = subsasgn (obj, s, b, rnd)
         [ret, strpos] = mpfr_strtofr (obj, b(:), 0, rnd);
         bad_strs = (cellfun (@numel, b(:)) >= strpos);
         if (any (bad_strs))
+          bad_strs = try_eval (obj.idx, b, rnd, bad_strs);
+        end
+        if (any (bad_strs))
           warning ('mpfr_t:bad_conversion', ...
                    'Conversion of %d value(s) failed due to bad input.', ...
                    sum (bad_strs));
@@ -136,6 +139,9 @@ function obj = subsasgn (obj, s, b, rnd)
             [ret(ridx,k), strpos] = mpfr_strtofr (oidx, op(ridx,k), 0, rnd);
             bad_strs = (cellfun (@numel, op(ridx,k)) >= strpos);
             if (any (bad_strs))
+              bad_strs = try_eval (oidx, op(ridx,k), rnd, bad_strs);
+            end
+            if (any (bad_strs))
               warning ('mpfr_t:bad_conversion', ...
                        'Conversion of %d value(s) failed due to bad input.', ...
                        sum (bad_strs));
@@ -158,19 +164,26 @@ function obj = subsasgn (obj, s, b, rnd)
             else
               op = @(i,k) b(i,k);
             end
-            ret(i,k) = mpfr_set_d (obj, op(i,k), rnd);
+            for i = 1:length (subs)
+              ret(i,k) = mpfr_set_d (oidx(i), op(i,k), rnd);
+            end
           elseif (iscellstr (b))
             if (isscalar (b))
               op = @(i,k) b;
             else
               op = @(i,k) b(i,k);
             end
-            [ret(i,k), strpos] = mpfr_strtofr (obj, op(i,k), 0, rnd);
-            bad_strs = (cellfun (@numel, op(i,k)) >= strpos);
-            if (any (bad_strs))
-              warning ('mpfr_t:bad_conversion', ...
-                       'Conversion of %d value(s) failed due to bad input.', ...
-                       sum (bad_strs));
+            for i = 1:length (subs)
+              [ret(i,k), strpos] = mpfr_strtofr (obj, op(i,k), 0, rnd);
+              bad_strs = (cellfun (@numel, op(i,k)) >= strpos);
+              if (any (bad_strs))
+                bad_strs = try_eval (oidx(i), op(i,k), rnd, bad_strs);
+              end
+              if (any (bad_strs))
+                warning ('mpfr_t:bad_conversion', ...
+                         ['Conversion of %d value(s) failed due to bad ', ...
+                         'input.'], sum (bad_strs));
+              end
             end
           end
         end
@@ -181,5 +194,31 @@ function obj = subsasgn (obj, s, b, rnd)
   else
     % Permit things like assignment to attributes.
     obj = builtin ('subsasgn', obj, s, b);
+  end
+end
+
+
+function bad_strs = try_eval (mpfr_t_idx, b, rnd, bad_strs)
+  % Evaluate numeric constants.
+
+  if (isscalar (b))
+    op = @(i) b{1};
+  else
+    op = @(i) b{i};
+  end
+  for i = find (bad_strs)'
+    oidx = mpfr_t_idx(1) + [i i] - 1;
+    switch (op(i))
+      case 'catalan'
+        bad_strs(i) = (mpfr_const_catalan (oidx, rnd) == 0);
+      case 'euler'
+        bad_strs(i) = (mpfr_const_euler (oidx, rnd) == 0);
+      case 'log2'
+        bad_strs(i) = (mpfr_const_log2 (oidx, rnd) == 0);
+      case 'pi'
+        bad_strs(i) = (mpfr_const_pi (oidx, rnd) == 0);
+      otherwise
+        % do nothing
+    end
   end
 end
