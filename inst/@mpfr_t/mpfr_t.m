@@ -22,25 +22,6 @@ classdef mpfr_t
     end
 
 
-    function set_verbose (level)
-      % [internal] Set the output verbosity `level` of the GMP MPFR interface.
-      % - level = 0: no output at all (including no error messages)
-      % - level = 1: show error messages
-      % - level = 2: show error messages and precision warnings [default]
-      % - level = 3: very verbose debug output.
-
-      mex_apa_interface (9000, level);
-    end
-
-
-    function level = get_verbose ()
-      % [internal] Get the output verbosity `level` of the GMP MPFR interface.
-      % See also `mpfr_t.set_verbose`.
-
-      level = mex_apa_interface (9001);
-    end
-
-
     function idx = allocate (count)
       % [internal] Return the start and end index of a newly created MPFR
       % variable for `count` elements.
@@ -283,10 +264,10 @@ classdef mpfr_t
 
       if (isscalar (obj))
         % Get display format parameters.
-        fmt = 'fixed-point';
-        base = 10;
-        inner_padding = 3;
-        break_at_col  = 80;
+        fmt = apa ('format.fmt');
+        base = apa ('format.base');
+        inner_padding = apa ('format.inner_padding');
+        break_at_col  = apa ('format.break_at_col');
         rnd = mpfr_get_default_rounding_mode ();
         N = obj.dims(2);
 
