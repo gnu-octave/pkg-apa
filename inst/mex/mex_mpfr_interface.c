@@ -100,7 +100,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
       case 1181:  // const char * mpfr_get_version (void)
       {
         MEX_NARGINCHK (1);
-        char *output_buf = (char *) mxCalloc (strlen (mpfr_get_version ()),
+        char *output_buf = (char *) mxCalloc (strlen (mpfr_get_version ()) + 1,
                                               sizeof(char));
         strcpy (output_buf, mpfr_get_version ());
         plhs[0] = mxCreateString (output_buf);
@@ -148,7 +148,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
       {
         MEX_NARGINCHK (1);
         char *output_buf = (char *) mxCalloc (
-          strlen (mpfr_buildopt_tune_case ()), sizeof(char));
+          strlen (mpfr_buildopt_tune_case ()) + 1, sizeof(char));
         strcpy (output_buf, mpfr_buildopt_tune_case ());
         plhs[0] = mxCreateString (output_buf);
         return;
@@ -791,11 +791,14 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
                                               rnd);
             if (str != NULL)
               {
-                char *significant = (char *) mxCalloc (strlen (str),
+                char *significant = (char *) mxCalloc (strlen (str) + 1,
                                                        sizeof(char));
-                strcpy (significant, str);
+                if (significant != NULL)
+                  {
+                    strcpy (significant, str);
+                    mxSetCell (plhs[0], i, mxCreateString (significant));
+                  }
                 mpfr_free_str (str);
-                mxSetCell (plhs[0], i, mxCreateString (significant));
               }
             exp_ptr[i] = (double) expptr;
           }
