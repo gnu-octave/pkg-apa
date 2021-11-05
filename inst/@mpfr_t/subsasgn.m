@@ -156,7 +156,7 @@ function obj = subsasgn (obj, s, b, rnd)
               op = @(i,k) b.idx(1) + [i, i] - 1 + b_col_offset;
             end
             for i = 1:length (subs)
-              ret(i,k) = mpfr_set (oidx(i), op(i), rnd);
+              ret(i,k) = mpfr_set (oidx(subs(i)), op(i), rnd);
             end
           elseif (isnumeric (b))
             if (isscalar (b))
@@ -165,7 +165,7 @@ function obj = subsasgn (obj, s, b, rnd)
               op = @(i,k) b(i,k);
             end
             for i = 1:length (subs)
-              ret(i,k) = mpfr_set_d (oidx(i), op(i,k), rnd);
+              ret(i,k) = mpfr_set_d (oidx(subs(i)), op(i,k), rnd);
             end
           elseif (iscellstr (b))
             if (isscalar (b))
@@ -174,10 +174,11 @@ function obj = subsasgn (obj, s, b, rnd)
               op = @(i,k) b(i,k);
             end
             for i = 1:length (subs)
-              [ret(i,k), strpos] = mpfr_strtofr (obj, op(i,k), 0, rnd);
+              [ret(subs(i),k), strpos] = mpfr_strtofr (oidx(subs(i)), ...
+                op(i,k), 0, rnd);
               bad_strs = (cellfun (@numel, op(i,k)) >= strpos);
               if (any (bad_strs))
-                bad_strs = try_eval (oidx(i), op(i,k), rnd, bad_strs);
+                bad_strs = try_eval (oidx(subs(i)), op(i,k), rnd, bad_strs);
               end
               if (any (bad_strs))
                 warning ('mpfr_t:bad_conversion', ...

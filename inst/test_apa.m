@@ -113,6 +113,7 @@ function test_apa ()
   N = 4;
   A = rand (N);
   Ampfr = mpfr_t (A);
+  nc_idx_4 = [4, 1, 3, 2];  % non-consecutive index
 
   % 1D indexing
   for i = 1:numel (A)
@@ -120,6 +121,8 @@ function test_apa ()
   end
   assert (isequal (double (Ampfr(:)), A(:)));
   assert (isequal (double (Ampfr([])), A([])));
+  assert (isequal (double (Ampfr(nc_idx_4 )), A(nc_idx_4 )));
+  assert (isequal (double (Ampfr(nc_idx_4')), A(nc_idx_4')));
 
   % 2D indexing
   for i = 1:N
@@ -136,13 +139,16 @@ function test_apa ()
     end
     assert (isequal (double (Ampfr(i,:)), A(i,:)));
     assert (isequal (double (Ampfr(i,[])), A(i,[])));
+    assert (isequal (double (Ampfr(i,nc_idx_4)), A(i,nc_idx_4)));
   end
   for j = 1:N
     assert (isequal (double (Ampfr(:,j)), A(:,j)));
     assert (isequal (double (Ampfr([],j)), A([],j)));
+    assert (isequal (double (Ampfr(nc_idx_4,j)), A(nc_idx_4,j)));
   end
   assert (isequal (double (Ampfr([],:)), A([],:)));
   assert (isequal (double (Ampfr(:,[])), A(:,[])));
+  assert (isequal (double (Ampfr(nc_idx_4,nc_idx_4)), A(nc_idx_4,nc_idx_4)));
 
 
   % ====================================
@@ -152,6 +158,7 @@ function test_apa ()
   N = 4;
   A = rand (N);
   Ampfr = mpfr_t (A);
+  nc_idx_4 = [4, 1, 3, 2];  % non-consecutive index
 
   to_str = @(i) cellfun (@num2str, num2cell (i), 'UniformOutput', false);
   for ops = {@(i) i, @(i) mpfr_t(i), to_str}
@@ -163,22 +170,41 @@ function test_apa ()
       Ampfr(i) = op(i);
       assert (isequal (double (Ampfr), A));
     end
+    A = rand (N);
+    Ampfr = mpfr_t (A);
     vec = numel (A):-1:1;
     A(:)     = vec;
     Ampfr(:) = op(vec);
     assert (isequal (double (Ampfr), A));
+
+    A = rand (N);
+    Ampfr = mpfr_t (A);
     vec = 1:numel (A);
     A(:)     = vec';
     Ampfr(:) = op(vec');
     assert (isequal (double (Ampfr), A));
+
+    A = rand (N);
+    Ampfr = mpfr_t (A);
     A([])     = 1;
     Ampfr([]) = op(1);
     assert (isequal (double (Ampfr), A));
+
+    A = rand (N);
+    Ampfr = mpfr_t (A);
     A(1:4)     = 11:14;
     Ampfr(1:4) = op(11:14);
     assert (isequal (double (Ampfr), A));
 
+    A = rand (N);
+    Ampfr = mpfr_t (A);
+    A(nc_idx_4)     = 11:14;
+    Ampfr(nc_idx_4) = op(11:14);
+    assert (isequal (double (Ampfr), A));
+
     % 2D indexing
+    A = rand (N);
+    Ampfr = mpfr_t (A);
     for i = 1:N
       for j = 1:N
         A(i,j)     = i*j;
@@ -196,7 +222,16 @@ function test_apa ()
       A(i,:)     = vec';
       Ampfr(i,:) = vec';
       assert (isequal (double (Ampfr), A));
+      A(i,1:4)     = (11:14) + 30;
+      Ampfr(i,1:4) = op((11:14) + 30);
+      assert (isequal (double (Ampfr), A));
+      A(i,nc_idx_4)     = (11:14) - 50;
+      Ampfr(i,nc_idx_4) = op((11:14) - 50);
+      assert (isequal (double (Ampfr), A));
     end
+
+    A = rand (N);
+    Ampfr = mpfr_t (A);
     for j = 1:N
       vec = (1:N) + 50;
       A(:,j)     = vec;
@@ -206,7 +241,16 @@ function test_apa ()
       A(:,j)     = vec';
       Ampfr(:,j) = vec';
       assert (isequal (double (Ampfr), A));
+      A(1:4,j)     = (11:14) - 80;
+      Ampfr(1:4,j) = op((11:14) - 80);
+      assert (isequal (double (Ampfr), A));
+      A(nc_idx_4,j)     = (11:14) + 3;
+      Ampfr(nc_idx_4,j) = op((11:14) + 3);
+      assert (isequal (double (Ampfr), A));
     end
+
+    A = rand (N);
+    Ampfr = mpfr_t (A);
     A([],[])     = 1;
     Ampfr([],[]) = op(1);
     assert (isequal (double (Ampfr), A));
@@ -216,11 +260,23 @@ function test_apa ()
     A([],:)     = 1;
     Ampfr([],:) = op(1);
     assert (isequal (double (Ampfr), A));
+    A([],1:4)     = 1;
+    Ampfr([],1:4) = op(1);
+    assert (isequal (double (Ampfr), A));
+    A([],nc_idx_4)     = 1;
+    Ampfr([],nc_idx_4) = op(1);
+    assert (isequal (double (Ampfr), A));
     A(1,[])     = 1;
     Ampfr(1,[]) = op(1);
     assert (isequal (double (Ampfr), A));
     A(:,[])     = 1;
     Ampfr(:,[]) = op(1);
+    assert (isequal (double (Ampfr), A));
+    A(1:4,[])     = 1;
+    Ampfr(1:4,[]) = op(1);
+    assert (isequal (double (Ampfr), A));
+    A(nc_idx_4,[])     = 1;
+    Ampfr(nc_idx_4,[]) = op(1);
     assert (isequal (double (Ampfr), A));
   end
 

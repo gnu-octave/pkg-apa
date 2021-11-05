@@ -14,9 +14,9 @@ function varargout = subsref (obj, s, rnd)
 
     % Analyze indices.
     if (length (s.subs) == 2)
-      s_dims = obj.dims;  % assume `obj(:,:) = b`
+      s_dims = obj.dims;  % assume `obj(:,:)`
     else
-      s_dims = [obj_numel, 1];  % assume `obj(:) = b`
+      s_dims = [obj_numel, 1];  % assume `obj(:)`
     end
     subs = s.subs;
     for i = 1:length (s.subs)
@@ -75,13 +75,16 @@ function varargout = subsref (obj, s, rnd)
           cidx = @(i)   c.idx(1) + [i, i] - 1 + c_col_offset;
           oidx = @(i) obj.idx(1) + [i, i] - 1 + o_col_offset;
           for i = 1:length (subs)
-            ret(i) = mpfr_set (cidx(i), oidx(i), rnd);
+            ret(i) = mpfr_set (cidx(i), oidx(subs(i)), rnd);
           end
         end
         k = k + 1;
       end
     end
     obj.warnInexactOperation (ret);
+    if ((length (s.subs) == 1) && isnumeric (s.subs{1}) && ~isempty (s.subs{1}))
+      c.dims = size (s.subs{1});
+    end
     varargout{1} = c;
   else
     % Permit things like function calls or attribute access.
