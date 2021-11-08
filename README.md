@@ -37,15 +37,77 @@ rop = op1 + 1
 ```
 
     rop =
-
-      MPFR 3x3 matrix (precision 53 binary digits)
-
-      Double approximation:
-
+    
        5   1   1
        1   5   1
        1   1   5
+    
 
+
+However, you can adjust the binary precision.
+
+The default Octave/Matlab data type **(double)** has a precision of 53 binary digits.
+Thus the following calculation exceeds the given precision:
+
+
+```octave
+format long
+too_small = (2 ^ (-60))
+A = ones (3);
+A(3,3) = A(3,3) + too_small
+```
+
+    too_small = 8.673617379884035e-19
+    A =
+    
+       1   1   1
+       1   1   1
+       1   1   1
+    
+
+
+
+```octave
+B = A - ones (3)
+```
+
+    B =
+    
+       0   0   0
+       0   0   0
+       0   0   0
+    
+
+
+The same calculation using APA and quadruple precision (113 binary digits):
+
+
+```octave
+A = mpfr_t (ones (3), 113);
+A(3,3) = A(3,3) + too_small
+```
+
+    A =
+    
+       1   1                                       1
+       1   1                                       1
+       1   1   1.00000000000000000086736173798840355
+    
+
+
+
+```octave
+apa ('format.fmt', 'scientific')
+apa ('format.base', 2)
+B = A - ones (3)
+```
+
+    B =
+    
+       0 * 2^(-1)   0 * 2^(-1)    0 * 2^(-1)
+       0 * 2^(-1)   0 * 2^(-1)    0 * 2^(-1)
+       0 * 2^(-1)   0 * 2^(-1)   1 * 2^(-60)
+    
 
 
 The high-level MPFR interface is the preferred choice for quick numerical
@@ -82,6 +144,9 @@ can be called from Octave/Matlab with scalar, vector, or matrix quantities:
 
 
 ```octave
+% Reset to default APA output.
+clear apa
+
 % Prepare input and output variables.
 rop = mpfr_t (zeros (3));
 op1 = mpfr_t (eye (3) * 4);
@@ -96,15 +161,11 @@ rop  % Note rop vs. ret!
 ```
 
     rop =
-
-      MPFR 3x3 matrix (precision 53 binary digits)
-
-      Double approximation:
-
+    
        6   2   2
        2   6   2
        2   2   6
-
+    
 
 
 In the low-level interface the type checks are stricter,
