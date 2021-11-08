@@ -4,6 +4,7 @@
 
 From the Octave command-line run:
 
+
 ```octave
 pkg install 'https://github.com/gnu-octave/apa/releases/download/v0.1.5/apa-0.1.5.zip'
 pkg load apa
@@ -12,7 +13,8 @@ pkg test apa
 
 From the Matlab command-line run (also works for Octave):
 
-```matlab
+
+```octave
 urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.5/apa-0.1.5.zip', ...
           'apa-0.1.5.zip');
 unzip ('apa-0.1.5.zip');
@@ -27,23 +29,24 @@ The high-level MPFR interface is given through the `@mpfr_t` class.
 A variable of that type "behaves" like a "normal" built-in Octave/Matlab
 data type.
 
+
 ```octave
 op1 = mpfr_t (eye (3) * 4);
 
 rop = op1 + 1
 ```
 
-```
-rop =
+    rop =
+    
+      MPFR 3x3 matrix (precision 53 binary digits)
+    
+      Double approximation:
+    
+       5   1   1
+       1   5   1
+       1   1   5
+    
 
-  MPFR 3x3 matrix (precision 53 binary digits)
-
-  Double approximation:
-
-   5   1   1
-   1   5   1
-   1   1   5
-```
 
 The high-level MPFR interface is the preferred choice for quick numerical
 experiments.
@@ -57,7 +60,6 @@ interface (explained below) and vectorization wherever possible.
 >
 > If performance is highly-critical, use this tool for initial experiments
 > and translate the developed algorithm to native MPFR C-code.
-
 
 ## Low-level MPFR Interface
 
@@ -78,6 +80,7 @@ int mpfr_add (mpfr_t rop, mpfr_t op1, mpfr_t op2, mpfr_rnd_t rnd)
 
 can be called from Octave/Matlab with scalar, vector, or matrix quantities:
 
+
 ```octave
 % Prepare input and output variables.
 rop = mpfr_t (zeros (3));
@@ -92,23 +95,25 @@ ret = mpfr_add (rop, op1, op2, rnd);
 rop  % Note rop vs. ret!
 ```
 
-```
-rop =
+    rop =
+    
+      MPFR 3x3 matrix (precision 53 binary digits)
+    
+      Double approximation:
+    
+       6   2   2
+       2   6   2
+       2   2   6
+    
 
-  MPFR 3x3 matrix (precision 53 binary digits)
-
-  Double approximation:
-
-   6   2   2
-   2   6   2
-   2   2   6
-```
 
 In the low-level interface the type checks are stricter,
 but scalar and matrix quantities can still be mixed.
 
 Another benefit of using the low-level MPFR interface is that **in-place**
 operations are permitted, which do not create new (temporary) variables:
+
+
 ```octave
 ret = mpfr_add (op1, op1, op1, rnd);  % op1 += op1
 ```
