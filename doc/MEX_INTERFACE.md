@@ -1,5 +1,7 @@
 # The APA Octave/Matlab MEX interface
 
+For general installation instructions, please read `README.md`.
+
 The APA Octave/Matlab MEX-interface consists of several source files in the
 `inst/mex` directory (C and header files) and in the released package
 version with pre-compiled static GMP and MPFR libraries for MS Windows, macOS,
@@ -7,21 +9,10 @@ and UNIX (Linux).
 
 If those pre-compiled libraries are missing or not working, please read below.
 
-From the Octave/Matlab command-line run:
-
-```matlab
-urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.5/apa-0.1.5.zip', ...
-          'apa-0.1.5.zip');
-unzip ('apa-0.1.5.zip');
-cd (fullfile ('apa-0.1.5', 'inst'))
-install_apa
-test_apa
-```
-
 The APA MEX interface is known to work and tested for
 
 - GNU Octave
-  - Version 6.3.0
+  - Version 6.4.0
     - MS Windows 10: <https://www.gnu.org/software/octave/download#ms-windows>
     - macOS 11 (Big Sur): <https://formulae.brew.sh/formula/octave>
     - Linux (openSUSE 15.3): <https://github.com/gnu-octave/docker>

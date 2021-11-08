@@ -6,7 +6,7 @@ From the Octave command-line run:
 
 
 ```octave
-pkg install 'https://github.com/gnu-octave/apa/releases/download/v0.1.5/apa-0.1.5.zip'
+pkg install 'https://github.com/gnu-octave/apa/releases/download/v0.1.6/apa-0.1.6.zip'
 pkg load apa
 pkg test apa
 ```
@@ -15,10 +15,10 @@ From the Matlab command-line run (also works for Octave):
 
 
 ```octave
-urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.5/apa-0.1.5.zip', ...
-          'apa-0.1.5.zip');
-unzip ('apa-0.1.5.zip');
-cd (fullfile ('apa-0.1.5', 'inst'))
+urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.6/apa-0.1.6.zip', ...
+          'apa-0.1.6.zip');
+unzip ('apa-0.1.6.zip');
+cd (fullfile ('apa-0.1.6', 'inst'))
 install_apa
 test_apa
 ```
@@ -37,15 +37,15 @@ rop = op1 + 1
 ```
 
     rop =
-    
+
       MPFR 3x3 matrix (precision 53 binary digits)
-    
+
       Double approximation:
-    
+
        5   1   1
        1   5   1
        1   1   5
-    
+
 
 
 The high-level MPFR interface is the preferred choice for quick numerical
@@ -96,15 +96,15 @@ rop  % Note rop vs. ret!
 ```
 
     rop =
-    
+
       MPFR 3x3 matrix (precision 53 binary digits)
-    
+
       Double approximation:
-    
+
        6   2   2
        2   6   2
        2   2   6
-    
+
 
 
 In the low-level interface the type checks are stricter,

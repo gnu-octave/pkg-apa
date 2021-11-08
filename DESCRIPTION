@@ -1,6 +1,6 @@
 name: apa
-version: 0.1.5
-date: 2021-10-28
+version: 0.1.6
+date: 2021-11-08
 author: Kai T. Ohlhus <k.ohlhus@gmail.com>
 maintainer: Kai T. Ohlhus <k.ohlhus@gmail.com>
 title: Octave/Matlab arbitrary precision arithmetic.
