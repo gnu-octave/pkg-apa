@@ -208,41 +208,43 @@ classdef mpfr_t
       % Get string representation of all elements.
       [significant, exp] = mpfr_get_str (base, 0, obj.idx, rnd);
 
-      switch (fmt)
-        case 'fixed-point'
-          % Add leading zeros.
-          zeropad = 1 - exp;
-          exp(zeropad >= 0) = 1;
-          zeropad(zeropad < 0) = 0;
-          zeropad = num2cell (zeropad);
-          zeropad = cellfun (@(num) repmat('0', 1, num), zeropad, ...
-                             'UniformOutput', false);
-          significant = strcat (zeropad, significant);
+      if (strcmp (fmt, 'scientific'))
+        % Add decimal point.
+        significant = cellfun ( ...
+          @(str) [str(1), '.', str(2:end)], significant, ...
+          'UniformOutput', false);
+        exp = exp - 1;
+      else
+        % Add leading zeros.
+        zeropad = 1 - exp;
+        exp(zeropad >= 0) = 1;
+        zeropad(zeropad < 0) = 0;
+        zeropad = num2cell (zeropad);
+        zeropad = cellfun (@(num) repmat('0', 1, num), zeropad, ...
+                           'UniformOutput', false);
+        significant = strcat (zeropad, significant);
 
-          % Add decimal point.
-          significant = cellfun ( ...
-            @(str,exp) [str(1:exp), '.', str(exp+1:end)], ...
-            significant, num2cell(exp), 'UniformOutput', false);
-
-        case 'scientific'
-          % Add decimal point.
-          significant = cellfun ( ...
-            @(str) [str(1), '.', str(2:end)], significant, ...
-            'UniformOutput', false);
-          exp = exp - 1;
-
-        otherwise
-          error ('mpfr_t:cellstr', 'Invalid output format.');
+        % Add decimal point.
+        significant = cellfun ( ...
+          @(str,exp) [str(1:exp), '.', str(exp+1:end)], ...
+          significant, num2cell(exp), 'UniformOutput', false);
       end
 
       % Remove trailing zeros.
       significant = cellfun (@(str) regexprep (str, '[0]+$', ''), ...
         significant, 'UniformOutput', false);
 
+      if (strcmp (fmt, 'scientific'))
+        % Handle created zeros '0.'.
+        idxs = strcmp (significant, '0.');
+        significant(idxs) = {'0'};
+        exp(idxs) = 0;
+      end
+
       % Remove trailing '.' signs.
       significant = cellfun (@(str) regexprep (str, '\.$', ''), ...
         significant, 'UniformOutput', false);
-      
+
       if (strcmp (fmt, 'scientific'))
         % Add base and exponent.
         if (base == 10)
@@ -255,7 +257,7 @@ classdef mpfr_t
             significant, num2cell(exp), 'UniformOutput', false);
         end
       end
-      
+
       % Adapt to size of obj.
       [M, N] = deal (obj.dims(1), obj.dims(2));
       cstr = reshape (significant, M, N);
@@ -285,18 +287,18 @@ classdef mpfr_t
         spacepad = cellfun (@(num) repmat(' ', 1, num), spacepad, ...
                             'UniformOutput', false);
         cstr = strcat (spacepad, cstr);
-        
+
         % Determine column paging.
         col_lengths = sort (cellfun (@length, cstr(1,:)), 'descend');
         col_lengths = col_lengths + inner_padding;
         disp_max_cols = find (cumsum (col_lengths) < break_at_col, 1, 'last');
         disp_max_cols = max ([1, disp_max_cols]);
-                
+
         % Final output.
         inner_padding = repmat (' ', 1, inner_padding);
         ofun = @(cols) fprintf ( ...
           [repmat([inner_padding, '%s'], 1, size (cols, 1)), '\n'], cols{:});
-        
+
         if (disp_max_cols == N)
           ofun (cstr');
         else  % Output with column paging.
