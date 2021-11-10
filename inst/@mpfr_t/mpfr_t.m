@@ -11,14 +11,14 @@ classdef mpfr_t
     function num = get_data_capacity ()
       % [internal] Return the number of pre-allocated MPFR variables.
 
-      num = mex_apa_interface (2000);
+      num = mex_apa_interface (1900);
     end
 
 
     function num = get_data_size ()
       % [internal] Return the number of currently used MPFR variables.
 
-      num = mex_apa_interface (2001);
+      num = mex_apa_interface (1901);
     end
 
 
@@ -26,7 +26,7 @@ classdef mpfr_t
       % [internal] Return the start and end index of a newly created MPFR
       % variable for `count` elements.
 
-      idx = mex_apa_interface (2002, count);
+      idx = mex_apa_interface (1902, count);
     end
 
 
@@ -39,7 +39,7 @@ classdef mpfr_t
         idx = idx.idx;
       end
 
-      mex_apa_interface (2003, idx);
+      mex_apa_interface (1903, idx);
     end
   end
 
@@ -525,7 +525,7 @@ classdef mpfr_t
       end
 
       c = mpfr_t (zeros (sizeA(1), sizeB(2)), prec, rnd);
-      ret = mex_apa_interface (2005, c.idx, a.idx, b.idx, prec, rnd, ...
+      ret = mex_apa_interface (2001, c.idx, a.idx, b.idx, prec, rnd, ...
                                sizeA(1), strategy);
       c.warnInexactOperation (ret);
     end
@@ -812,7 +812,7 @@ classdef mpfr_t
       % Allocate memory for b.
       b = mpfr_t (nan (fliplr (a.dims)), max (mpfr_get_prec (a)), rnd);
 
-      ret = mex_apa_interface (2004, b.idx, a.idx, rnd, b.dims(1));
+      ret = mex_apa_interface (2000, b.idx, a.idx, rnd, b.dims(1));
       a.warnInexactOperation (ret);
     end
 

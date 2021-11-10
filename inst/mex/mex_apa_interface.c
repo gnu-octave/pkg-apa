@@ -2,6 +2,15 @@
 #include "mex_gmp_interface.h"
 #include "mex_mpfr_interface.h"
 
+
+// State deciding about the output verbosity level
+// - level = 0: no output at all (including no error messages)
+// - level = 1: show error messages
+// - level = 2: show error messages and precision warnings [default]
+// - level = 3: very verbose debug output.
+int VERBOSE = 2;
+
+
 /**
  * Octave/Matlab MEX interface for GMP and MPFR.
  *

@@ -26,6 +26,63 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
 
   switch (cmd_code)
     {
+      /**
+       * Extra MPFR interface memory management functions.
+       */
+
+      case 1900: // size_t mpfr_t.get_data_capacity (void)
+      {
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) mpfr_data_capacity);
+        return;
+      }
+
+      case 1901: // size_t mpfr_t.get_data_size (void)
+      {
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) mpfr_data_size);
+        return;
+      }
+
+      case 1902: // idx_t mpfr_t.allocate (size_t count)
+      {
+        MEX_NARGINCHK (2);
+        uint64_t count = 0;
+        if (! extract_ui (1, nrhs, prhs, &count) || (count == 0))
+          MEX_FCN_ERR ("cmd[%s]: Count must be a positive numeric scalar.\n",
+                       "mpfr_t.allocate");
+
+        DBG_PRINTF ("allocate '%d' new MPFR variables\n", (int) count);
+        idx_t idx;
+        if (! mex_mpfr_allocate ((size_t) count, &idx))
+          MEX_FCN_ERR ("%s\n", "Memory allocation failed.");
+        // Return start and end indices (1-based).
+        plhs[0] = mxCreateNumericMatrix (2, 1, mxDOUBLE_CLASS, mxREAL);
+        double *ptr = mxGetPr (plhs[0]);
+        ptr[0] = (double) idx.start;
+        ptr[1] = (double) idx.end;
+        return;
+      }
+
+      case 1903: // void mpfr_t.mark_free (mpfr_t idx)
+      {
+        // Check if MPFR memory is (already) cleared.
+        if ((mpfr_data_capacity <= 0) && (mpfr_data_size <= 0))
+          return;
+
+        MEX_NARGINCHK (2);
+        MEX_MPFR_T (1, idx);
+        DBG_PRINTF ("cmd[mpfr_t.mark_free]: [%d:%d] will be marked as free\n",
+                    idx.start, idx.end);
+        mex_mpfr_mark_free (&idx);
+        return;
+      }
+
+
+      /**
+       * Genuine MPFR interface functions.
+       */
+
       case 1000:  // void mpfr_init2 (mpfr_t x, mpfr_prec_t prec)
       {
         MEX_NARGINCHK (3);

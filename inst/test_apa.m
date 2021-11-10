@@ -25,7 +25,7 @@ function test_apa ()
 
   % Bad input
   mpfr_set_default_prec (42)
-  apa ('verbose', 0);
+  apa ('verbose', 1);
   for i = {0, inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
     assert (strcmp (check_error ('mpfr_set_default_prec (i{1})'), ...
                     'apa:mexFunction'));
@@ -45,7 +45,7 @@ function test_apa ()
 
   % Bad input
   mpfr_set_default_rounding_mode (0);
-  apa ('verbose', 0);
+  apa ('verbose', 1);
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
     assert (strcmp (check_error ('mpfr_set_default_rounding_mode (i{1})'), ...
                     'apa:mexFunction'));
@@ -70,7 +70,7 @@ function test_apa ()
   assert (mpfr_t.get_data_capacity () == 2 * DATA_CHUNK_SIZE);
 
   % Bad input
-  apa ('verbose', 0);
+  apa ('verbose', 1);
   for i = {1/2, inf, -42, -1, -2, nan, 'c', eye(3)}
     assert (strcmp (check_error ('mpfr_t.allocate (i{1})'), 'apa:mexFunction'));
     assert (mpfr_t.get_data_size () == N^2 + 1);
@@ -92,14 +92,14 @@ function test_apa ()
   end
 
   % Bad input (precision)
-  apa ('verbose', 0);
+  apa ('verbose', 1);
   for i = {inf, -42, -2, 1/6, nan, 'c', eye(3), intmax('int64')}
     assert (strcmp (check_error ('mpfr_t (1, i{1})'), 'apa:mexFunction'));
   end
   apa ('verbose', default_verbosity_level);
 
   % Bad input (rounding mode)
-  apa ('verbose', 0);
+  apa ('verbose', 1);
   for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
     assert (strcmp (check_error ('mpfr_t (1, 53, i{1})'), 'apa:mexFunction'));
   end

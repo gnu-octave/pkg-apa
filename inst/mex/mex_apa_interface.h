@@ -19,7 +19,7 @@
 // - level = 1: show error messages
 // - level = 2: show error messages and precision warnings [default]
 // - level = 3: very verbose debug output.
-static int VERBOSE = 2;
+extern int VERBOSE;
 
 
 // Macro to immediately return from current function.

@@ -1,8 +1,9 @@
 #ifndef MEX_MPFR_INTERFACE_H_
 #define MEX_MPFR_INTERFACE_H_
 
-#include "mex_apa_interface.h"
 #include "mpfr.h"
+#include "mex_apa_interface.h"
+#include "mex_mpfr_algorithms.h"
 
 
 // MPFR memory management
@@ -34,22 +35,6 @@ void
 mex_mpfr_interface (int nlhs, mxArray *plhs[],
                     int nrhs, const mxArray *prhs[],
                     uint64_t cmd_code);
-
-
-/**
- * Octave/Matlab MEX interface for extra MPFR algorithms.
- *
- * @param nlhs MEX parameter.
- * @param plhs MEX parameter.
- * @param nrhs MEX parameter.
- * @param prhs MEX parameter.
- * @param cmd_code code of command to execute (2000 - 2999).
- */
-
-void
-mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
-                     int nrhs, const mxArray *prhs[],
-                     uint64_t cmd_code);
 
 
 /**
@@ -190,6 +175,34 @@ extract_rounding_mode (int idx, int nrhs, const mxArray *prhs[],
 
 int
 extract_prec (int idx, int nrhs, const mxArray *prhs[], mpfr_prec_t *prec);
+
+
+/**
+ * Constructor for new MPFR variables.
+ *
+ * @param[in] count Number of MPFR variables to create.
+ * @param[out] idx If function returns `1`, pointer to index (1-based, idx_t)
+ *                 of MPFR variables, otherwise the value of `idx` remains
+ *                 unchanged.
+ *
+ * @returns success of MPFR variable creation.
+ */
+
+int
+mex_mpfr_allocate (size_t count, idx_t *idx);
+
+
+/**
+ * Mark MPFR variable as no longer used.
+ *
+ * @param[in] idx Pointer to index (1-based, idx_t) of MPFR variable to be no
+ *                longer used.
+ *
+ * @returns success of MPFR variables creation.
+ */
+
+void
+mex_mpfr_mark_free (idx_t *idx);
 
 #endif  // MEX_MPFR_INTERFACE_H_
 
