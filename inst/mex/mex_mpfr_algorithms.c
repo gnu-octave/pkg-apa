@@ -1,5 +1,8 @@
 #include "mex_mpfr_interface.h"
 
+#define MIN(a, b)                                  \
+  ({ __typeof__(a)_a = (a); __typeof__(b)_b = (b); \
+     _a < _b ? _a : _b; })
 
 /**
  * Octave/Matlab MEX interface for extra MPFR algorithms.
@@ -70,7 +73,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         DBG_PRINTF ("cmd[mpfr_t.mtimes]: C = [%d:%d], A = [%d:%d], "
                     "B = [%d:%d], prec = %d, rnd = %d, M = %d, strategy = %d\n",
                     C.start, C.end, A.start, A.end, B.start, B.end,
-                    (int) prec, (int) rnd, (int) M);
+                    (int) prec, (int) rnd, (int) M, (int) strategy);
 
         // Check matrix dimensions to be sane.
         //   C [M x N]
@@ -98,6 +101,73 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
 
         mpfr_apa_mmm (C_ptr, A_ptr, B_ptr, prec, rnd, M, N, K, ret_ptr,
                       ret_stride, strategy);
+
+        return;
+      }
+
+      case 2002: // int mpfr_t.lu (mpfr_t L, mpfr_t U, mpfr_t A, mpfr_prec_t prec, mpfr_rnd_t rnd, uint64_t M)
+      {
+        MEX_NARGINCHK (7);
+        MEX_MPFR_T (1, L);
+        MEX_MPFR_T (2, U);
+        MEX_MPFR_T (3, A);
+        MEX_MPFR_PREC_T (4, prec);
+        MEX_MPFR_RND_T (5, rnd);
+        uint64_t M = 0;
+        if (! extract_ui (6, nrhs, prhs, &M) || (M == 0))
+          MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.lu]:M must be a positive "
+                       "numeric scalar denoting the rows of input rop.");
+        DBG_PRINTF ("cmd[mpfr_t.lu]: L = [%d:%d], U = [%d:%d], A = [%d:%d],"
+                    "prec = %d, rnd = %d, M = %d\n",
+                    L.start, L.end, U.start, U.end, A.start, A.end,
+                    (int) prec, (int) rnd, (int) M);
+
+        // Check matrix dimensions to be sane.
+        //   L [       M x min(M,N)]
+        //   U [min(M,N) x N       ]
+        //   A [       M x N       ]
+        uint64_t N = length (&A) / M;
+        if (length (&A) != (M * N))
+          MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.lu]:M does not denote the "
+                       "number of rows of input matrix A.");
+        uint64_t K = MIN (M, N);
+        if (length (&L) != (M * K))
+          MEX_FCN_ERR ("cmd[mpfr_t.lu]:Incompatible matrix L.  Expected "
+                       "a [%d x %d] matrix\n", M, K);
+        if (length (&U) != (K * N))
+          MEX_FCN_ERR ("cmd[mpfr_t.lu]:Incompatible matrix U.  Expected "
+                       "a [%d x %d] matrix\n", K, N);
+
+        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&A) : 1, 1,
+                                         mxDOUBLE_CLASS, mxREAL);
+        mpfr_ptr L_ptr      = &mpfr_data[L.start - 1];
+        mpfr_ptr U_ptr      = &mpfr_data[U.start - 1];
+        mpfr_ptr A_ptr      = &mpfr_data[A.start - 1];
+        double * ret_ptr    = mxGetPr (plhs[0]);
+        size_t   ret_stride = (nlhs) ? 1 : 0;
+
+        // Call GETRF.
+        int       INFO = 0;
+        uint64_t *IPIV = (uint64_t *) mxMalloc (K * sizeof(uint64_t));
+        mpfr_apa_GETRF (M, N, A_ptr, M, IPIV, &INFO, prec, rnd,
+                        ret_ptr, ret_stride);
+
+        // Return and translate pivot vector.
+        plhs[1] = mxCreateNumericMatrix (1, M, mxDOUBLE_CLASS, mxREAL);
+        double *P = mxGetPr (plhs[1]);
+        for (size_t i = 0; i < M; i++)
+          P[i] = (double) (i + 1);
+        for (size_t i = 0; i < K; i++)
+          if (IPIV[i] != i)
+            {
+              double d = P[i];
+              P[i]       = P[IPIV[i]];
+              P[IPIV[i]] = d;
+            }
+        mxFree (IPIV);
+
+        // Return INFO.
+        plhs[2] = mxCreateDoubleScalar ((double) INFO);
 
         return;
       }

@@ -953,6 +953,48 @@ classdef mpfr_t
       b = bb;  % Do not assign b before calculation succeeded!
     end
 
+
+    function [L, U, P] = lu (A, outputForm, prec, rnd)
+      % LU matrix factorization.
+      %
+      %   [L,U]   = lu (A)
+      %   [L,U,P] = lu (A)
+      %   [__]    = lu (A, outputForm, prec, rnd)
+      %
+
+      if (nargin < 4)
+        rnd = mpfr_get_default_rounding_mode ();
+      end
+      if (nargin < 3)
+        prec = max (mpfr_get_prec (A));
+      end
+      if ((nargin < 2) || isempty (outputForm))
+        outputForm = 'matrix';
+      end
+      outputForm = validatestring (outputForm, {'matrix', 'vector'});
+
+      sizeA = A.dims;
+      L = mpfr_t (zeros (sizeA(1), min (sizeA)), prec, rnd);
+      U = mpfr_t (zeros (min (sizeA), sizeA(2)), prec, rnd);
+
+      % A is overwritten after the function call!
+      [ret, P, INFO] = mex_apa_interface (2002, L.idx, U.idx, A.idx, ...
+                                          prec, rnd, sizeA(1));
+
+      if (INFO > 0)
+        warning ('mpfr_t:lu', ...
+                 'LU factorization reported zero pivot at %d.', INFO);
+      end
+
+      if ((nargout == 3) && (strcmp (outputForm, 'matrix')))
+        p = P;
+        P = eye (min (sizeA));
+        P = P(p,:);
+      end
+
+      A.warnInexactOperation (ret);
+    end
+
   end
 
 end
