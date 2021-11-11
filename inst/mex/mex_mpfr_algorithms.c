@@ -152,6 +152,19 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         mpfr_apa_GETRF (M, N, A_ptr, M, IPIV, &INFO, prec, rnd,
                         ret_ptr, ret_stride);
 
+        // Copy A to L.
+        for (size_t j = 0; j < K; j++)
+          {
+            mpfr_set_ui (&L_ptr[j + j * M], 1, rnd);  // diagonal 1
+            for (size_t i = j + 1; i < M; i++)
+              mpfr_set (&L_ptr[i + j * M], &A_ptr[i + j * M], rnd);
+          }
+
+        // Copy A to U.
+        for (size_t j = 0; j < N; j++)
+          for (size_t i = 0; (i < (j + 1)) && (i < K); i++)
+            mpfr_set (&U_ptr[i + j * K], &A_ptr[i + j * M], rnd);
+
         // Return and translate pivot vector.
         plhs[1] = mxCreateNumericMatrix (1, M, mxDOUBLE_CLASS, mxREAL);
         double *P = mxGetPr (plhs[1]);

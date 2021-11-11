@@ -391,6 +391,7 @@ function test_apa ()
   % Matrix operations
   % =================
 
+  % Matrix multiplication
   op = @mtimes;
   for m = 1:8
     for n = 1:8
@@ -403,6 +404,17 @@ function test_apa ()
       end
     end
   end
+  
+  % LU-factorization
+  warning ('off', 'mpfr_t:inexactOperation')
+  for m = 1:8
+    for n = 1:8
+      A = mpfr_t (rand (m, n));
+      [L, U, P] = lu (A);
+      assert (norm (double (P' * L * U - A)) < 2*eps)
+    end
+  end
+  warning ('on', 'mpfr_t:inexactOperation')
 
   % ====================
   % Comparison functions

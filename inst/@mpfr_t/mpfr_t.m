@@ -128,6 +128,7 @@ classdef mpfr_t
       end
       if (isa (x, 'mpfr_t'))
         obj.dims = x.dims;
+        prec = max (mpfr_get_prec (x));
       else
         obj.dims = size (x);
       end
@@ -954,7 +955,7 @@ classdef mpfr_t
     end
 
 
-    function [L, U, P] = lu (A, outputForm, prec, rnd)
+    function [L, U, P] = lu (a, outputForm, prec, rnd)
       % LU matrix factorization.
       %
       %   [L,U]   = lu (A)
@@ -962,6 +963,7 @@ classdef mpfr_t
       %   [__]    = lu (A, outputForm, prec, rnd)
       %
 
+      A = mpfr_t (a);
       if (nargin < 4)
         rnd = mpfr_get_default_rounding_mode ();
       end
@@ -988,7 +990,7 @@ classdef mpfr_t
 
       if ((nargout == 3) && (strcmp (outputForm, 'matrix')))
         p = P;
-        P = eye (min (sizeA));
+        P = eye (sizeA (1));
         P = P(p,:);
       end
 
