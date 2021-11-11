@@ -136,7 +136,7 @@ classdef mpfr_t
       obj.idx = mpfr_t.allocate (num_elems)';
 
       % Register destructor
-      obj.cleanupObj = onCleanup(@() mpfr_t.mark_free (obj));
+      obj.cleanupObj = onCleanup(@() mex_apa_interface (1903, obj.idx));
 
       mpfr_set_prec (obj, prec);
 
