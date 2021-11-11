@@ -209,13 +209,18 @@ classdef mpfr_t
       % Get string representation of all elements.
       [significant, exp] = mpfr_get_str (base, 0, obj.idx, rnd);
 
+      is_negative = cellfun (@(str) (str(1) == '-'), significant);
       if (strcmp (fmt, 'scientific'))
         % Add decimal point.
         significant = cellfun ( ...
-          @(str) [str(1), '.', str(2:end)], significant, ...
-          'UniformOutput', false);
+          @(str,neg) [str(1:(1 + neg)), '.', str((2 + neg):end)], ...
+          significant, num2cell (is_negative), 'UniformOutput', false);
         exp = exp - 1;
       else
+        % Remove '-' sign.
+        significant(is_negative) = cellfun (@(str) str(2:end), ...
+          significant(is_negative), 'UniformOutput', false);
+
         % Add leading zeros.
         zeropad = 1 - exp;
         exp(zeropad >= 0) = 1;
@@ -229,6 +234,10 @@ classdef mpfr_t
         significant = cellfun ( ...
           @(str,exp) [str(1:exp), '.', str(exp+1:end)], ...
           significant, num2cell(exp), 'UniformOutput', false);
+
+        % Add '-' sign.
+        significant(is_negative) = cellfun (@(str) ['-', str], ...
+          significant(is_negative), 'UniformOutput', false);
       end
 
       % Remove trailing zeros.
@@ -239,6 +248,11 @@ classdef mpfr_t
         % Handle created zeros '0.'.
         idxs = strcmp (significant, '0.');
         significant(idxs) = {'0'};
+        exp(idxs) = 0;
+
+        % Handle created zeros '-0.'.
+        idxs = strcmp (significant, '-0.');
+        significant(idxs) = {'-0'};
         exp(idxs) = 0;
       end
 
