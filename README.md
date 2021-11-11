@@ -6,7 +6,7 @@ From the Octave command-line run:
 
 
 ```octave
-pkg install 'https://github.com/gnu-octave/apa/releases/download/v0.1.6/apa-0.1.6.zip'
+pkg install 'https://github.com/gnu-octave/apa/releases/download/v0.1.7/apa-0.1.7.zip'
 pkg load apa
 pkg test apa
 ```
@@ -15,10 +15,10 @@ From the Matlab command-line run (also works for Octave):
 
 
 ```octave
-urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.6/apa-0.1.6.zip', ...
-          'apa-0.1.6.zip');
-unzip ('apa-0.1.6.zip');
-cd (fullfile ('apa-0.1.6', 'inst'))
+urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.7/apa-0.1.7.zip', ...
+          'apa-0.1.7.zip');
+unzip ('apa-0.1.7.zip');
+cd (fullfile ('apa-0.1.7', 'inst'))
 install_apa
 test_apa
 ```
@@ -37,11 +37,11 @@ rop = op1 + 1
 ```
 
     rop =
-    
+
        5   1   1
        1   5   1
        1   1   5
-    
+
 
 
 However, you can adjust the binary precision.
@@ -59,11 +59,11 @@ A(3,3) = A(3,3) + too_small
 
     too_small = 8.673617379884035e-19
     A =
-    
+
        1   1   1
        1   1   1
        1   1   1
-    
+
 
 
 
@@ -72,11 +72,11 @@ B = A - ones (3)
 ```
 
     B =
-    
+
        0   0   0
        0   0   0
        0   0   0
-    
+
 
 
 The same calculation using APA and quadruple precision (113 binary digits):
@@ -88,11 +88,11 @@ A(3,3) = A(3,3) + too_small
 ```
 
     A =
-    
+
        1   1                                       1
        1   1                                       1
        1   1   1.00000000000000000086736173798840355
-    
+
 
 
 
@@ -103,11 +103,11 @@ B = A - ones (3)
 ```
 
     B =
-    
+
        0 * 2^(-1)   0 * 2^(-1)    0 * 2^(-1)
        0 * 2^(-1)   0 * 2^(-1)    0 * 2^(-1)
        0 * 2^(-1)   0 * 2^(-1)   1 * 2^(-60)
-    
+
 
 
 The high-level MPFR interface is the preferred choice for quick numerical
@@ -161,11 +161,11 @@ rop  % Note rop vs. ret!
 ```
 
     rop =
-    
+
        6   2   2
        2   6   2
        2   2   6
-    
+
 
 
 In the low-level interface the type checks are stricter,
