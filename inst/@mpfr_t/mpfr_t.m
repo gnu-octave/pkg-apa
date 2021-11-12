@@ -117,10 +117,10 @@ classdef mpfr_t
       end
 
       if (nargin < 2)
-        prec = mpfr_get_default_prec ();
+        prec = mex_apa_interface (1002);  % mpfr_get_default_prec
       end
       if (nargin < 3)
-        rnd = mpfr_get_default_rounding_mode ();
+        rnd = mex_apa_interface (1162);  % mpfr_get_default_rounding_mode
       end
 
       if (ischar (x))
@@ -128,38 +128,42 @@ classdef mpfr_t
       end
       if (isa (x, 'mpfr_t'))
         obj.dims = x.dims;
-        prec = max (mpfr_get_prec (x));
+        prec = max (mex_apa_interface (1004, x.idx));  % mpfr_get_prec
       else
         obj.dims = size (x);
       end
       num_elems = prod (obj.dims);
-      obj.idx = mpfr_t.allocate (num_elems)';
+      obj.idx = mex_apa_interface (1902, num_elems)';  % mpfr_t.allocate
 
       % Register destructor
       obj.cleanupObj = onCleanup(@() mex_apa_interface (1903, obj.idx));
 
-      mpfr_set_prec (obj, prec);
+      mex_apa_interface (1003, obj.idx, prec);  % mpfr_set_prec
 
-      % Shortcut: fresh allocated mpfr variable is nan.
-      if (isnumeric (x) && all (all (isnan (x))))
-        return;
-      end
-
-      % Assign x to mpfr variable.
-      %
-      % https://www.mathworks.com/help/matlab/ref/subsasgn.html (2021b, Tips)
-      %
-      % > Within the subsasgn method defined by a class, MATLAB calls the
-      % > built-in subsasgn.  Calling the built-in enables you to use the
-      % > default indexing behavior when defining specialized indexing.
-      %
-      s.type = '()';
-      if (obj.dims(2) > 1)
-        s.subs = {':', ':'};
+      if (isa (x, 'mpfr_t'))
+        ret = mpfr_set (obj.idx, x.idx, rnd);
+      elseif (isnumeric (x))
+        ret = mex_apa_interface (1006, obj.idx, x(:), rnd);  % mpfr_set_d
+      elseif (iscellstr (x))
+        [ret, strpos] = mpfr_strtofr (obj.idx, x(:), 0, rnd);
+        bad_strs = (cellfun (@numel, x(:)) >= strpos);
+        if (any (bad_strs))
+          % Assign x to mpfr variable using slower subsasgn function.
+          %
+          % https://www.mathworks.com/help/matlab/ref/subsasgn.html
+          % (Matlab 2021b, Tips)
+          %
+          % > Within the subsasgn method defined by a class, MATLAB calls the
+          % > built-in subsasgn.  Calling the built-in enables you to use the
+          % > default indexing behavior when defining specialized indexing.
+          %
+          s = struct ('type', '()', 'subs', {{':'}});
+          obj.subsasgn (s, x(:), rnd);
+        end
       else
-        s.subs = {':'};
+        ret = 0;
       end
-      obj.subsasgn (s, x, rnd);
+      obj.warnInexactOperation (ret);
     end
 
 
