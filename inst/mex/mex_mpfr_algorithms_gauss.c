@@ -119,7 +119,7 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
 
           #pragma omp parallel
           {
-            mpfr_t t; //TODO: copy row of A?
+            mpfr_t t;
             mpfr_init2 (t, prec);
             #pragma omp for
             for (uint64_t j = k + 1; j < N; j++)

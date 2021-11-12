@@ -138,7 +138,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
           MEX_FCN_ERR ("cmd[mpfr_t.lu]:Incompatible matrix U.  Expected "
                        "a [%d x %d] matrix\n", K, N);
 
-        plhs[0] = mxCreateNumericMatrix (nlhs ? length (&A) : 1, 1,
+        plhs[0] = mxCreateNumericMatrix ((nlhs ? M : 1), (nlhs ? N : 1),
                                          mxDOUBLE_CLASS, mxREAL);
         mpfr_ptr L_ptr      = &mpfr_data[L.start - 1];
         mpfr_ptr U_ptr      = &mpfr_data[U.start - 1];
@@ -153,6 +153,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
                         ret_ptr, ret_stride);
 
         // Copy A to L.
+        #pragma omp parallel for
         for (size_t j = 0; j < K; j++)
           {
             mpfr_set_ui (&L_ptr[j + j * M], 1, rnd);  // diagonal 1
@@ -161,6 +162,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
           }
 
         // Copy A to U.
+        #pragma omp parallel for
         for (size_t j = 0; j < N; j++)
           for (size_t i = 0; (i < (j + 1)) && (i < K); i++)
             mpfr_set (&U_ptr[i + j * K], &A_ptr[i + j * M], rnd);
