@@ -1,6 +1,7 @@
 *.tar.gz
 *.mex*
 *.a
+*.asv
 gmp.h
 mpfr.h
 mpf2mpfr.h
