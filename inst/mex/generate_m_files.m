@@ -57,7 +57,7 @@ function generate_m_files ()
     fprintf (' %3d/%3d: (%4d) %s\n', i, length (matches), fcn.number, fcn.name);
 
     % Those functions are called by the mpfr_t class.
-    if (fcn.number >= 9000)
+    if (fcn.number >= 1900)
       disp ('                 skipped');
       continue;
     end
