@@ -658,16 +658,27 @@ classdef mpfr_t
       if (nargin < 3)
         rnd = mpfr_get_default_rounding_mode ();
       end
-      if (nargin < 4)
-        prec = [];
-      end
 
       if ((isnumeric (a) && isscalar (a)) ...
           || (isa (a, 'mpfr_t') && (prod (a.dims) == 1)))
         x = rdivide (b, a, rnd, prec);
+        return;
+      end
+      
+      A = mpfr_t (a);
+      x = mpfr_t (b);
+      
+      if (nargin < 4)
+        prec = max (mpfr_get_prec (A));
+      end
+      
+      sizeA = A.dims;
+      if (sizeA(1) == sizeA(2))
+        % A and x are overwritten after the function call!
+        [ret, INFO] = mex_apa_interface (2003, A.idx, x.idx, prec, rnd);
       else
         error ('mpfr_t:mrdivide', ...
-          'Solving systems of linear equations is not yet supported.');
+          'Only square systems of linear equations are yet supported.');
       end
     end
 

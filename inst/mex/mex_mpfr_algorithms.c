@@ -187,6 +187,51 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         return;
       }
 
+
+      case 2003: // int mpfr_t.mldivide (mpfr_t A, mpfr_t B, mpfr_prec_t prec, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK (5);
+        MEX_MPFR_T (1, A);
+        MEX_MPFR_T (2, B);
+        MEX_MPFR_PREC_T (3, prec);
+        MEX_MPFR_RND_T (4, rnd);
+        DBG_PRINTF ("cmd[mpfr_t.mldivide]: A = [%d:%d], B = [%d:%d], "
+                    "prec = %d, rnd = %d\n", A.start, A.end, B.start, B.end,
+                    (int) prec, (int) rnd);
+
+        // Check matrix dimensions to be sane.
+        //   A [N x N]
+        //   B [N x NRHS]
+        uint64_t N = (uint64_t) sqrt ((double) length (&A));
+        if (length (&A) != (N * N))
+          MEX_FCN_ERR ("%s\n", "cmd[mpfr_t.mldivide]:A must be a square "
+                       "matrix.");
+        uint64_t NRHS = length (&B) / N;
+        if (length (&B) != (N * NRHS))
+          MEX_FCN_ERR ("cmd[mpfr_t.mldivide]:Incompatible matrix B.  Expected "
+                       "a [%d x NRHS] matrix\n", N);
+
+        plhs[0] = mxCreateNumericMatrix ((nlhs ? N : 1), (nlhs ? N : 1),
+                                         mxDOUBLE_CLASS, mxREAL);
+        mpfr_ptr A_ptr      = &mpfr_data[A.start - 1];
+        mpfr_ptr B_ptr      = &mpfr_data[B.start - 1];
+        double * ret_ptr    = mxGetPr (plhs[0]);
+        size_t   ret_stride = (nlhs) ? 1 : 0;
+
+        // Call GETRF.
+        int       INFO = 0;
+        uint64_t *IPIV = (uint64_t *) mxMalloc (N * sizeof(uint64_t));
+        mpfr_apa_GESV (N, NRHS, A_ptr, N, IPIV, B_ptr, N, &INFO,
+                       prec, rnd, ret_ptr, ret_stride);
+        mxFree (IPIV);
+
+        // Return INFO.
+        plhs[1] = mxCreateDoubleScalar ((double) INFO);
+
+        return;
+      }
+
+
       default:
         MEX_FCN_ERR ("Unknown command code '%d'\n", cmd_code);
     }
