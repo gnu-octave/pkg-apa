@@ -72,6 +72,7 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
       *INFO = -5;
       return;
     }
+  *INFO = 0;
 
   mpfr_t piv, tmp;
 
@@ -225,6 +226,10 @@ mpfr_apa_GESV (uint64_t N, uint64_t NRHS, mpfr_ptr A, uint64_t LDA,
     }
 
   mpfr_apa_GETRF (N, N, A, LDA, IPIV, INFO, prec, rnd, ret_ptr, ret_stride);
+
+  // Stop if not successful.
+  if (INFO != 0)
+    return;
 
   //FIXME: handle MPFR ternary return values.
 

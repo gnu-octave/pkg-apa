@@ -147,10 +147,24 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
 
         // Call GETRF.
-        int       INFO = 0;
+        int       INFO = -1;
         uint64_t *IPIV = (uint64_t *) mxMalloc (K * sizeof(uint64_t));
         mpfr_apa_GETRF (M, N, A_ptr, M, IPIV, &INFO, prec, rnd,
                         ret_ptr, ret_stride);
+        plhs[1] = mxCreateDoubleScalar ((double) INFO);
+
+        // Stop if not successful.
+        if (INFO != 0)
+          {
+            mxFree (IPIV);
+            return;
+          }
+
+        // Copy A to U.
+        #pragma omp parallel for
+        for (size_t j = 0; j < N; j++)
+          for (size_t i = 0; (i < (j + 1)) && (i < K); i++)
+            mpfr_set (&U_ptr[i + j * K], &A_ptr[i + j * M], rnd);
 
         // Copy A to L.
         #pragma omp parallel for
@@ -161,28 +175,33 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
               mpfr_set (&L_ptr[i + j * M], &A_ptr[i + j * M], rnd);
           }
 
-        // Copy A to U.
-        #pragma omp parallel for
-        for (size_t j = 0; j < N; j++)
-          for (size_t i = 0; (i < (j + 1)) && (i < K); i++)
-            mpfr_set (&U_ptr[i + j * K], &A_ptr[i + j * M], rnd);
+        // Apply IPIV to L, if not returned `[L,U] = lu(A)`.
+        if (nlhs <= 2)
+          {
+            for (size_t i = 0; i < K; i++)
+              if (IPIV[i] != i)
+                {
+                  #pragma omp parallel for
+                  for (size_t j = 0; j < K; j++)
+                    mpfr_swap (&L_ptr[i + j * M], &L_ptr[IPIV[i] + j * M]);
+                }
+          }
+        else  // Return and translate pivot vector.
+          {
+            plhs[2] = mxCreateNumericMatrix (1, M, mxDOUBLE_CLASS, mxREAL);
+            double *P = mxGetPr (plhs[2]);
+            for (size_t i = 0; i < M; i++)
+              P[i] = (double) (i + 1);
+            for (size_t i = 0; i < K; i++)
+              if (IPIV[i] != i)
+                {
+                  double d = P[i];
+                  P[i]       = P[IPIV[i]];
+                  P[IPIV[i]] = d;
+                }
+          }
 
-        // Return and translate pivot vector.
-        plhs[1] = mxCreateNumericMatrix (1, M, mxDOUBLE_CLASS, mxREAL);
-        double *P = mxGetPr (plhs[1]);
-        for (size_t i = 0; i < M; i++)
-          P[i] = (double) (i + 1);
-        for (size_t i = 0; i < K; i++)
-          if (IPIV[i] != i)
-            {
-              double d = P[i];
-              P[i]       = P[IPIV[i]];
-              P[IPIV[i]] = d;
-            }
         mxFree (IPIV);
-
-        // Return INFO.
-        plhs[2] = mxCreateDoubleScalar ((double) INFO);
 
         return;
       }
@@ -219,7 +238,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
 
         // Call GETRF.
-        int       INFO = 0;
+        int       INFO = -1;
         uint64_t *IPIV = (uint64_t *) mxMalloc (N * sizeof(uint64_t));
         mpfr_apa_GESV (N, NRHS, A_ptr, N, IPIV, B_ptr, N, &INFO,
                        prec, rnd, ret_ptr, ret_stride);

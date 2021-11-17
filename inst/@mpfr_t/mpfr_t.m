@@ -1001,28 +1001,32 @@ classdef mpfr_t
       end
       if ((nargin < 2) || isempty (outputForm))
         outputForm = 'matrix';
+      else
+        outputForm = validatestring (outputForm, {'matrix', 'vector'});
       end
-      outputForm = validatestring (outputForm, {'matrix', 'vector'});
 
       sizeA = A.dims;
       L = mpfr_t (zeros (sizeA(1), min (sizeA)), prec, rnd);
       U = mpfr_t (zeros (min (sizeA), sizeA(2)), prec, rnd);
 
       % A is overwritten after the function call!
-      [ret, P, INFO] = mex_apa_interface (2002, L.idx, U.idx, A.idx, ...
-                                          prec, rnd, sizeA(1));
+      if (nargout == 2)
+        [ret, INFO] = mex_apa_interface (2002, L.idx, U.idx, A.idx, ...
+                                         prec, rnd, sizeA(1));
+      else
+        [ret, INFO, P] = mex_apa_interface (2002, L.idx, U.idx, A.idx, ...
+                                            prec, rnd, sizeA(1));
+        if (strcmp (outputForm, 'matrix'))
+          p = P;
+          P = eye (sizeA (1));
+          P = P(p,:);
+        end
+      end
 
       if (INFO > 0)
         warning ('mpfr_t:lu', ...
                  'LU factorization reported zero pivot at %d.', INFO);
       end
-
-      if ((nargout == 3) && (strcmp (outputForm, 'matrix')))
-        p = P;
-        P = eye (sizeA (1));
-        P = P(p,:);
-      end
-
       A.warnInexactOperation (ret);
     end
 
