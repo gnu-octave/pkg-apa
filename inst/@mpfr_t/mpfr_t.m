@@ -276,6 +276,17 @@ classdef mpfr_t
             significant, num2cell(exp), 'UniformOutput', false);
         end
       end
+      
+      % Handle '@NaN@', @Inf@', and '-@Inf@'.
+      if (strcmp (fmt, 'scientific'))
+        significant(strcmp (significant, '@.NaN@e-01'))  = {'NaN'};
+        significant(strcmp (significant, '@.Inf@e-01'))  = {'Inf'};
+        significant(strcmp (significant, '-@.Inf@e-01')) = {'-Inf'};
+      else
+        significant(strcmp (significant, '0.@NaN@'))  = {'NaN'};
+        significant(strcmp (significant, '0.@Inf@'))  = {'Inf'};
+        significant(strcmp (significant, '-0.@Inf@')) = {'-Inf'};
+      end
 
       % Adapt to size of obj.
       [M, N] = deal (obj.dims(1), obj.dims(2));
