@@ -228,7 +228,7 @@ mpfr_apa_GESV (uint64_t N, uint64_t NRHS, mpfr_ptr A, uint64_t LDA,
   mpfr_apa_GETRF (N, N, A, LDA, IPIV, INFO, prec, rnd, ret_ptr, ret_stride);
 
   // Stop if not successful.
-  if (INFO != 0)
+  if (*INFO != 0)
     {
     #pragma omp parallel for
       for (uint64_t j = 0; j < NRHS; j++)
