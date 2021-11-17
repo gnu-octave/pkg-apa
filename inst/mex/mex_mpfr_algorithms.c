@@ -153,32 +153,28 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
                         ret_ptr, ret_stride);
         plhs[1] = mxCreateDoubleScalar ((double) INFO);
 
-        // Stop if not successful.
-        if (INFO != 0)
-          {
-            mxFree (IPIV);
-            return;
-          }
+        // Handle zero pivot.
+        uint64_t K_save = ((INFO == 0) ? K : (uint64_t) INFO);
 
         // Copy A to U.
         #pragma omp parallel for
         for (size_t j = 0; j < N; j++)
-          for (size_t i = 0; (i < (j + 1)) && (i < K); i++)
+          for (size_t i = 0; (i < (j + 1)) && (i < K_save); i++)
             mpfr_set (&U_ptr[i + j * K], &A_ptr[i + j * M], rnd);
 
         // Copy A to L.
         #pragma omp parallel for
         for (size_t j = 0; j < K; j++)
-          {
-            mpfr_set_ui (&L_ptr[j + j * M], 1, rnd);  // diagonal 1
-            for (size_t i = j + 1; i < M; i++)
-              mpfr_set (&L_ptr[i + j * M], &A_ptr[i + j * M], rnd);
-          }
+          mpfr_set_ui (&L_ptr[j + j * M], 1, rnd);  // Set diagonal 1.
+        #pragma omp parallel for
+        for (size_t j = 0; j < K_save; j++)
+          for (size_t i = j + 1; i < M; i++)
+            mpfr_set (&L_ptr[i + j * M], &A_ptr[i + j * M], rnd);
 
         // Apply IPIV to L, if not returned `[L,U] = lu(A)`.
         if (nlhs <= 2)
           {
-            for (size_t i = 0; i < K; i++)
+            for (size_t i = 0; i < K_save; i++)
               if (IPIV[i] != i)
                 {
                   #pragma omp parallel for
@@ -192,7 +188,7 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
             double *P = mxGetPr (plhs[2]);
             for (size_t i = 0; i < M; i++)
               P[i] = (double) (i + 1);
-            for (size_t i = 0; i < K; i++)
+            for (size_t i = 0; i < K_save; i++)
               if (IPIV[i] != i)
                 {
                   double d = P[i];

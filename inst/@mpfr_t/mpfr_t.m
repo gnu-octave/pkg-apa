@@ -691,6 +691,12 @@ classdef mpfr_t
         error ('mpfr_t:mrdivide', ...
           'Only square systems of linear equations are yet supported.');
       end
+      
+      if (INFO > 0)
+        warning ('mpfr_t:mrdivide', ...
+                 'LU factorization reported zero pivot at %d.', INFO);
+      end
+      A.warnInexactOperation (ret);
     end
 
 
@@ -1035,8 +1041,8 @@ classdef mpfr_t
       end
 
       if (INFO > 0)
-        warning ('mpfr_t:lu', ...
-                 'LU factorization reported zero pivot at %d.', INFO);
+        warning ('mpfr_t:lu:zeroPivot', ...
+                 'LU factorization reported zero pivot in step %d.', INFO);
       end
       A.warnInexactOperation (ret);
     end

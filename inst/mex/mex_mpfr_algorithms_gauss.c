@@ -34,10 +34,10 @@
  *             row `i` of the matrix @c A was interchanged with row `IPIV(i)`.
  * @param INFO = 0:  successful exit
  *             < 0:  if INFO = -i, the i-th argument had an illegal value
- *             > 0:  if INFO = i, U(i,i) is exactly zero.  The factorization
- *                   has been completed, but the factor U is exactly
- *                   singular, and division by zero will occur if it is used
- *                   to solve a system of equations.
+ *             > 0:  if INFO = i, U(i,i) is exactly zero.  1-based index.
+ *                   The factorization has been completed, but the factor U is
+ *                   exactly singular, and division by zero will occur if it is
+ *                   used to solve a system of equations.
  * @param prec MPFR precision for intermediate operations.
  * @param rnd  MPFR rounding mode for all operations.
  * @param ret_ptr pointer to array of MPFR return values.
@@ -101,7 +101,7 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
       // STOP: if pivot is zero.
       if (mpfr_zero_p (piv))
         {
-          *INFO = k;
+          *INFO = k + 1;  // 1-based index.
           break;
         }
 
@@ -176,9 +176,9 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
  * @param LDB The leading dimension of the matrix @c B.  `LDB >= max(1,N)`.
  * @param INFO = 0:  successful exit
  *             < 0:  if INFO = -i, the i-th argument had an illegal value
- *             > 0:  if INFO = i, U(i,i) is exactly zero.  The factorization
- *                   has been completed, but the factor U is exactly singular,
- *                   so the solution could not be computed.
+ *             > 0:  if INFO = i, U(i,i) is exactly zero.  1-based index.
+ *                   The factorization has been completed, but the factor U is
+ *                   exactly singular, so the solution could not be computed.
  * @param prec MPFR precision for intermediate operations.
  * @param rnd  MPFR rounding mode for all operations.
  * @param ret_ptr pointer to array of MPFR return values.
@@ -229,7 +229,13 @@ mpfr_apa_GESV (uint64_t N, uint64_t NRHS, mpfr_ptr A, uint64_t LDA,
 
   // Stop if not successful.
   if (INFO != 0)
-    return;
+    {
+    #pragma omp parallel for
+      for (uint64_t j = 0; j < NRHS; j++)
+        for (uint64_t i = 0; i < N; i++)
+          mpfr_set_nan (&B[i + j * LDB]);
+      return;
+    }
 
   //FIXME: handle MPFR ternary return values.
 
