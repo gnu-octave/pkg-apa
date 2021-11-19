@@ -33,20 +33,31 @@ function test_apa ()
   apa ('verbose', default_verbosity_level);
 
 
-  % ==============================
-  % mpfr_set_default_rounding_mode
-  % ==============================
+  % =================
+  % MPFR rouding mode
+  % =================
+
+  % Numerical values for the rounding mode were quite stable in the past.
+  % Any changes should be recognized by this test suite.
 
   % Good input
-  for i = -1:3
-    mpfr_set_default_rounding_mode (i);
-    assert (mpfr_get_default_rounding_mode () == i);
+  rnd_modes = {@MPFR_RNDN, @MPFR_RNDZ, @MPFR_RNDU, @MPFR_RNDD, @MPFR_RNDA};
+  for i = 1:length (rnd_modes)
+    assert (rnd_modes{i}() == (i - 1));
+  end
+  for i = 1:length (rnd_modes)
+    mpfr_set_default_rounding_mode (rnd_modes{i}());
+    assert (mpfr_get_default_rounding_mode () == rnd_modes{i}());
+  end
+  for i = 1:length (rnd_modes)
+    mpfr_set_default_rounding_mode (i - 1);
+    assert (mpfr_get_default_rounding_mode () == (i - 1));
   end
 
   % Bad input
   mpfr_set_default_rounding_mode (0);
   apa ('verbose', 1);
-  for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
+  for i = {inf, -42, -2, 5, 1/6, nan, 'c', eye(3)}
     assert (strcmp (check_error ('mpfr_set_default_rounding_mode (i{1})'), ...
                     'apa:mexFunction'));
   end
@@ -100,7 +111,7 @@ function test_apa ()
 
   % Bad input (rounding mode)
   apa ('verbose', 1);
-  for i = {inf, -42, -2, 4, 1/6, nan, 'c', eye(3)}
+  for i = {inf, -42, -2, 5, 1/6, nan, 'c', eye(3)}
     assert (strcmp (check_error ('mpfr_t (1, 53, i{1})'), 'apa:mexFunction'));
   end
   apa ('verbose', default_verbosity_level);

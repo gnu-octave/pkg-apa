@@ -4,6 +4,7 @@ function generate_m_files ()
 
   % Parse "mpfr.info" for help strings.
   help_strings = parse_mpfr_info_file ();
+  help_strings_extra = get_help_strings_extra ();
 
   show_error = @(i, s) error (['generate_m_files: failed on input i = %d:', ...
     '\n\n%s\n\n'], i, s);
@@ -118,6 +119,8 @@ function generate_m_files ()
     fcn_str = [fcn_str, '%%\n'];
     if (isfield (help_strings, fcn.name))
       fcn_str = [fcn_str, help_strings.(fcn.name), '\n\n'];
+    elseif (isfield (help_strings_extra, fcn.name))
+      fcn_str = [fcn_str, help_strings_extra.(fcn.name), '\n\n'];
     else
       disp ('                 no help text');
     end
@@ -148,6 +151,24 @@ function generate_m_files ()
 
     clear fcn;
   end
+end
+
+
+function help_strings_extra = get_help_strings_extra ()
+  MPFR_RND_COMMON = '%% Return internal numerical value for the rounding mode';
+  help_strings_extra.MPFR_RNDN = [MPFR_RND_COMMON, ...
+    '\n%% "round to nearest", with the even rounding rule (roundTiesToEven ', ...
+    'in IEEE 754-2008).'];
+  help_strings_extra.MPFR_RNDZ = [MPFR_RND_COMMON, ...
+    '\n%% "round toward minus infinity" (roundTowardNegative in IEEE ', ...
+    '754-2008).'];
+  help_strings_extra.MPFR_RNDU = [MPFR_RND_COMMON, ...
+    '\n%% "round toward plus infinity" (roundTowardPositive in IEEE ', ...
+    '754-2008).'];
+  help_strings_extra.MPFR_RNDD = [MPFR_RND_COMMON, ...
+    '\n%% "round toward zero" (roundTowardZero in IEEE 754-2008).'];
+  help_strings_extra.MPFR_RNDA = [MPFR_RND_COMMON, ...
+    '\n%% "round away from zero".'];
 end
 
 

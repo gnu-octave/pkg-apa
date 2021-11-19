@@ -149,8 +149,8 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
       case 1162:  // mpfr_rnd_t mpfr_get_default_rounding_mode (void)
       {
         MEX_NARGINCHK (1);
-        plhs[0] = mxCreateDoubleScalar (export_rounding_mode (
-                                          mpfr_get_default_rounding_mode ()));
+        plhs[0] = mxCreateDoubleScalar ((double)
+                                        mpfr_get_default_rounding_mode ());
         return;
       }
 
@@ -2204,6 +2204,46 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
 
       case 1022: // void mpfr_free_str (char *str)
         return;  // NOP
+
+      case 1300: // int MPFR_RNDN (void)
+      {
+        // round to nearest, with ties to even
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) MPFR_RNDN);
+        return;
+      }
+
+      case 1301: // int MPFR_RNDZ (void)
+      {
+        // round toward zero
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) MPFR_RNDZ);
+        return;
+      }
+
+      case 1302: // int MPFR_RNDU (void)
+      {
+        // round toward +Inf
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) MPFR_RNDU);
+        return;
+      }
+
+      case 1303: // int MPFR_RNDD (void)
+      {
+        // round toward -Inf
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) MPFR_RNDD);
+        return;
+      }
+
+      case 1304: // int MPFR_RNDA (void)
+      {
+        // round away from zero
+        MEX_NARGINCHK (1);
+        plhs[0] = mxCreateDoubleScalar ((double) MPFR_RNDA);
+        return;
+      }
 
       default:
         MEX_FCN_ERR ("Unknown command code '%d'\n", cmd_code);

@@ -291,64 +291,6 @@ extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t *idx_vec)
 }
 
 
-// Rounding mode translation
-// =========================
-//
-// -1.0 = MPFR_RNDD: round toward minus infinity
-//                   (roundTowardNegative in IEEE 754-2008).
-//  0.0 = MPFR_RNDN: round to nearest, with the even rounding rule
-//                   (roundTiesToEven in IEEE 754-2008); see details below.
-//  1.0 = MPFR_RNDU: round toward plus infinity
-//                   (roundTowardPositive in IEEE 754-2008).
-//  2.0 = MPFR_RNDZ: round toward zero (roundTowardZero in IEEE 754-2008).
-//  3.0 = MPFR_RNDA: round away from zero.
-
-
-/**
- * Export MPFR rounding mode to `double`.
- *
- * @param[in] rnd MPFR rounding mode.
- *
- * @returns `double` representation of rounding mode.  In case of an invalid
- *          rounding mode `rnd`, `FP_NAN` is returned.
- */
-
-double
-export_rounding_mode (mpfr_rnd_t rnd)
-{
-  double d = FP_NAN;
-
-  switch (rnd)
-    {
-      case MPFR_RNDD:
-        d = -1.0;
-        break;
-
-      case MPFR_RNDN:
-        d = 0.0;
-        break;
-
-      case MPFR_RNDU:
-        d = 1.0;
-        break;
-
-      case MPFR_RNDZ:
-        d = 2.0;
-        break;
-
-      case MPFR_RNDA:
-        d = 3.0;
-        break;
-
-      default:
-        DBG_PRINTF ("%s\n", "Failed.");
-        d = FP_NAN;
-        break;
-    }
-  return (d);
-}
-
-
 /**
  * Safely read MPFR rounding mode from MEX input.
  *
@@ -358,6 +300,18 @@ export_rounding_mode (mpfr_rnd_t rnd)
  * @param[out] rnd If function returns `1`, `rnd` contains the MPFR rounding
  *                 mode extracted from the MEX input, otherwise `rnd` remains
  *                 unchanged.
+ *
+ * Rounding mode translation (mpfr.h)
+ * ==================================
+ *
+ *  0 = MPFR_RNDD: round toward minus infinity
+ *                 (roundTowardNegative in IEEE 754-2008).
+ *  1 = MPFR_RNDN: round to nearest, with the even rounding rule
+ *                 (roundTiesToEven in IEEE 754-2008); see details below.
+ *  2 = MPFR_RNDU: round toward plus infinity
+ *                 (roundTowardPositive in IEEE 754-2008).
+ *  3 = MPFR_RNDZ: round toward zero (roundTowardZero in IEEE 754-2008).
+ *  4 = MPFR_RNDA: round away from zero.
  *
  * @returns success of extraction.
  */
@@ -371,24 +325,12 @@ extract_rounding_mode (int idx, int nrhs, const mxArray *prhs[],
   if (extract_si (idx, nrhs, prhs, &si))
     switch (si)
       {
-        case -1:
-          *rnd = MPFR_RNDD;
-          return (1);
-
-        case 0:
-          *rnd = MPFR_RNDN;
-          return (1);
-
-        case 1:
-          *rnd = MPFR_RNDU;
-          return (1);
-
-        case 2:
-          *rnd = MPFR_RNDZ;
-          return (1);
-
-        case 3:
-          *rnd = MPFR_RNDA;
+        case MPFR_RNDD:
+        case MPFR_RNDN:
+        case MPFR_RNDU:
+        case MPFR_RNDZ:
+        case MPFR_RNDA:
+          *rnd = si;
           return (1);
 
         default:
