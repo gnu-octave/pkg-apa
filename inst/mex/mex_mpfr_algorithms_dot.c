@@ -27,7 +27,7 @@ mpfr_apa_dot (mpfr_ptr rop, mpfr_ptr a, mpfr_ptr b, uint64_t N,
 
     #pragma omp for
     for (uint64_t i = 0; i < N; i++)
-      r |= mpfr_fma (c, b + i, a + i, c, rnd);
+      r |= mpfr_fma (c, a + i, b + i, c, rnd);
 
     // Sum `c` to `rop`, one thread at a time.
     #pragma omp critical

@@ -782,7 +782,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t opN = mxGetN (prhs[2]);
         if (! mxIsDouble (prhs[2])
             || (((opM * opN) != length (&rop)) && ((opM * opN) != 1)))
-          MEX_FCN_ERR ("cmd[%d]:op must be a numeric vector "
+          MEX_FCN_ERR ("cmd[%d]:op must be a double-precision matrix "
                        "of length 1 or %d\n.", cmd_code, length (&rop));
         MEX_MPFR_RND_T (3, rnd);
         DBG_PRINTF ("cmd[%d]: [%d:%d]\n", cmd_code, rop.start, rop.end);

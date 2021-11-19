@@ -276,7 +276,7 @@ classdef mpfr_t
             significant, num2cell(exp), 'UniformOutput', false);
         end
       end
-      
+
       % Handle '@NaN@', @Inf@', and '-@Inf@'.
       if (strcmp (fmt, 'scientific'))
         significant(strcmp (significant, '@.NaN@e-01'))  = {'NaN'};
@@ -294,7 +294,7 @@ classdef mpfr_t
     end
 
 
-    function disp (obj)
+    function disp (obj, rnd)
       % Object display.
 
       if (isscalar (obj))
@@ -303,7 +303,9 @@ classdef mpfr_t
         base = apa ('format.base');
         inner_padding = apa ('format.inner_padding');
         break_at_col  = apa ('format.break_at_col');
-        rnd = mpfr_get_default_rounding_mode ();
+        if (nargin < 2)
+          rnd = mpfr_get_default_rounding_mode ();
+        end
         N = obj.dims(2);
 
         % Get cellstr representation.
@@ -519,6 +521,9 @@ classdef mpfr_t
     function c = mtimes (a, b, rnd, prec, strategy)
       % Matrix multiplication `c = a * b` using rounding mode `rnd`.
       %
+      % If at least one input is scalar, then `a * b` is equivalent to
+      % `a .* b`.
+      %
       % If no rounding mode `rnd` is given, the default rounding mode is used.
       %
       % If no precision `prec` is given for `c` the maximum precision of a and
@@ -536,10 +541,16 @@ classdef mpfr_t
 
       % TODO: mpfr_t * double
       if (~ isa (a, 'mpfr_t'))
-        a = mpfr_t (a);
+        a = mpfr_t (a, max (mpfr_get_prec (b.idx)));
       end
       if (~ isa (b, 'mpfr_t'))
-        b = mpfr_t (b);
+        b = mpfr_t (b, max (mpfr_get_prec (a.idx)));
+      end
+      % Test for scalars `a .* b`.
+      if ((isa (a, 'mpfr_t') && (prod (a.dims) == 1)) ...
+          || (isa (b, 'mpfr_t') && (prod (b.dims) == 1)))
+        c = times (a, b, rnd);
+        return;
       end
 
       if (isempty (prec))
@@ -675,14 +686,14 @@ classdef mpfr_t
         x = rdivide (b, a, rnd, prec);
         return;
       end
-      
+
       A = mpfr_t (a);
       x = mpfr_t (b);
-      
+
       if (nargin < 4)
         prec = max (mpfr_get_prec (A));
       end
-      
+
       sizeA = A.dims;
       if (sizeA(1) == sizeA(2))
         % A and x are overwritten after the function call!
@@ -691,7 +702,7 @@ classdef mpfr_t
         error ('mpfr_t:mrdivide', ...
           'Only square systems of linear equations are yet supported.');
       end
-      
+
       if (INFO > 0)
         warning ('mpfr_t:mrdivide', ...
                  'LU factorization reported zero pivot at %d.', INFO);
