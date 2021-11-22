@@ -6,7 +6,7 @@ From the Octave command-line run:
 
 
 ```octave
-pkg install 'https://github.com/gnu-octave/apa/releases/download/v0.1.8/apa-0.1.8.zip'
+pkg install 'https://github.com/gnu-octave/apa/releases/download/v1.0.0/apa-1.0.0.zip'
 pkg load apa
 pkg test apa
 ```
@@ -15,10 +15,10 @@ From the Matlab command-line run (also works for Octave):
 
 
 ```octave
-urlwrite ('https://github.com/gnu-octave/apa/releases/download/v0.1.8/apa-0.1.8.zip', ...
-          'apa-0.1.8.zip');
-unzip ('apa-0.1.8.zip');
-cd (fullfile ('apa-0.1.8', 'inst'))
+urlwrite ('https://github.com/gnu-octave/apa/releases/download/v1.0.0/apa-1.0.0.zip', ...
+          'apa-1.0.0.zip');
+unzip ('apa-1.0.0.zip');
+cd (fullfile ('apa-1.0.0', 'inst'))
 install_apa
 test_apa
 ```
