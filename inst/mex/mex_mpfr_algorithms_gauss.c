@@ -107,8 +107,11 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
 
       // Pivoting: swap rows k and IPIV[k] in A.
       if (IPIV[k] != k)
-        for (uint64_t j = 0; j < N; j++)
-          mpfr_swap (&A[k + j * LDA], &A[IPIV[k] + j * LDA]);
+        {
+        #pragma omp parallel for
+          for (uint64_t j = 0; j < N; j++)
+            mpfr_swap (&A[k + j * LDA], &A[IPIV[k] + j * LDA]);
+        }
 
       // Gaussian elimination.
       for (uint64_t i = k + 1; i < M; i++)
@@ -119,22 +122,17 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
                            rnd);
           ret_ptr[(i + k * LDA) * ret_stride] = (double) ret;
 
-          #pragma omp parallel
-          {
-            mpfr_t t;
-            mpfr_init2 (t, prec);
-            #pragma omp for
-            for (uint64_t j = k + 1; j < N; j++)
-              {
-                // A[i][j] = A[i][j] - A[i][k] * A[k][j];
-                int ret = (int) ret_ptr[(i + j * LDA) * ret_stride];
-                ret |= mpfr_mul (t, &A[i + k * LDA], &A[k + j * LDA], rnd);
-                ret |= mpfr_sub (&A[i + j * LDA], &A[i + j * LDA], t, rnd);
-                ret_ptr[(i + j * LDA) * ret_stride] = (double) ret;
-              }
-            mpfr_clear (t);
-            mpfr_free_cache ();
-          }
+          #pragma omp parallel for
+          for (uint64_t j = k + 1; j < N; j++)
+            {
+              // A[i][j] = A[i][j] - A[i][k] * A[k][j];
+              int ret = (int) ret_ptr[(i + j * LDA) * ret_stride];
+              ret |= mpfr_fms (&A[i + j * LDA],
+                               &A[i + k * LDA], &A[k + j * LDA],
+                               &A[i + j * LDA], rnd);
+              ret |= mpfr_neg (&A[i + j * LDA], &A[i + j * LDA], rnd);
+              ret_ptr[(i + j * LDA) * ret_stride] = (double) ret;
+            }
         }
     }
 
