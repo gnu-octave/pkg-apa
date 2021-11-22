@@ -476,6 +476,8 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
 
       case 1007:  // int mpfr_set_ui_2exp (mpfr_t rop, unsigned long int op, mpfr_exp_t e, mpfr_rnd_t rnd)
       case 1008:  // int mpfr_set_si_2exp (mpfr_t rop, long int op, mpfr_exp_t e, mpfr_rnd_t rnd)
+      case 1320:  // int mpfr_set_uj_2exp (mpfr_t rop, uintmax_t op, intmax_t e, mpfr_rnd_t rnd)
+      case 1321:  // int mpfr_set_sj_2exp (mpfr_t rop, intmax_t op, intmax_t e, mpfr_rnd_t rnd)
       {
         MEX_NARGINCHK (5);
         MEX_MPFR_T (1, rop);
@@ -512,13 +514,29 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
                 rop_ptr + i, (unsigned long) op_ptr[i * op_stride],
                 (mpfr_exp_t) exp_ptr[i * exp_stride], rnd);
           }
-        else
+        else if (cmd_code == 1008)
           {
             #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_set_si_2exp (
-                rop_ptr + i, (unsigned long) op_ptr[i * op_stride],
+                rop_ptr + i, (long) op_ptr[i * op_stride],
                 (mpfr_exp_t) exp_ptr[i * exp_stride], rnd);
+          }
+        else if (cmd_code == 1320)
+          {
+            #pragma omp parallel for
+            for (size_t i = 0; i < length (&rop); i++)
+              ret_ptr[i * ret_stride] = (double) mpfr_set_uj_2exp (
+                rop_ptr + i, (uintmax_t) op_ptr[i * op_stride],
+                (intmax_t) exp_ptr[i * exp_stride], rnd);
+          }
+        else
+          {
+            #pragma omp parallel for
+            for (size_t i = 0; i < length (&rop); i++)
+              ret_ptr[i * ret_stride] = (double) mpfr_set_sj_2exp (
+                rop_ptr + i, (intmax_t) op_ptr[i * op_stride],
+                (intmax_t) exp_ptr[i * exp_stride], rnd);
           }
 
         return;
@@ -796,9 +814,23 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1006:  // int mpfr_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)
-      case 1015:  // int mpfr_init_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)
+      case 1300:  // int mpfr_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)
+      case 1301:  // int mpfr_set_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)
+      case 1302:  // int mpfr_set_si (mpfr_t rop, long int op, mpfr_rnd_t rnd)
+      case 1303:  // int mpfr_set_uj (mpfr_t rop, uintmax_t op, mpfr_rnd_t rnd)
+      case 1304:  // int mpfr_set_sj (mpfr_t rop, intmax_t op, mpfr_rnd_t rnd)
+      case 1305:  // int mpfr_set_flt (mpfr_t rop, float op, mpfr_rnd_t rnd)
+      case 1306:  // int mpfr_set_ld (mpfr_t rop, long double op, mpfr_rnd_t rnd)
+      case 1307:  // int mpfr_set_float128 (mpfr_t rop, _Float128 op, mpfr_rnd_t rnd)
+      case 1308:  // int mpfr_set_decimal64 (mpfr_t rop, _Decimal64 op, mpfr_rnd_t rnd)
+      case 1309:  // int mpfr_set_decimal128 (mpfr_t rop, _Decimal128 op, mpfr_rnd_t rnd)
+      case 1310:  // int mpfr_init_set_d (mpfr_t rop, double op, mpfr_rnd_t rnd)
+      case 1311:  // int mpfr_init_set_ui (mpfr_t rop, unsigned long int op, mpfr_rnd_t rnd)
+      case 1312:  // int mpfr_init_set_si (mpfr_t rop, long int op, mpfr_rnd_t rnd)
+      case 1313:  // int mpfr_init_set_ld (mpfr_t rop, long double op, mpfr_rnd_t rnd)
       {
+        //FIXME: Only "set_d" (double) functions really implemented here!
+        //       Other overloads are only for convenience.
         MEX_NARGINCHK (4);
         MEX_MPFR_T (1, rop);
         size_t opM = mxGetM (prhs[2]);
@@ -817,7 +849,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t  ret_stride = (nlhs) ? 1 : 0;
         size_t  op_stride  = ((opM * opN) == 1) ? 0 : 1;
 
-        if (cmd_code == 1006)
+        if (cmd_code < 1310)
           {
             #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
@@ -1067,11 +1099,20 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1032:  // int mpfr_add_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
-      case 1035:  // int mpfr_sub_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
-      case 1037:  // int mpfr_mul_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
-      case 1041:  // int mpfr_div_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+      case 1330:  // int mpfr_add_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+      case 1331:  // int mpfr_add_ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)
+      case 1332:  // int mpfr_add_si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)
+      case 1340:  // int mpfr_sub_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+      case 1341:  // int mpfr_sub_ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)
+      case 1342:  // int mpfr_sub_si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)
+      case 1350:  // int mpfr_mul_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+      case 1351:  // int mpfr_mul_ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)
+      case 1352:  // int mpfr_mul_si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)
+      case 1360:  // int mpfr_div_d (mpfr_t rop, mpfr_t op1, double op2, mpfr_rnd_t rnd)
+      case 1361:  // int mpfr_div_ui (mpfr_t rop, mpfr_t op1, unsigned long int op2, mpfr_rnd_t rnd)
+      case 1362:  // int mpfr_div_si (mpfr_t rop, mpfr_t op1, long int op2, mpfr_rnd_t rnd)
       {
+        //FIXME: only "_d" (double) function really implemented.
         MEX_NARGINCHK (5);
         MEX_MPFR_T (1, rop);
         MEX_MPFR_T (2, op1);
@@ -1090,13 +1131,13 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
                     op2M, op2N, (int) rnd);
 
         int (*fcn) (mpfr_t, const mpfr_t, const double, mpfr_rnd_t);
-        if (cmd_code == 1032)
+        if ((1330 <= cmd_code) && (cmd_code <= 1332))
           fcn = mpfr_add_d;
-        else if (cmd_code == 1035)
+        else if ((1340 <= cmd_code) && (cmd_code <= 1342))
           fcn = mpfr_sub_d;
-        else if (cmd_code == 1037)
+        else if ((1350 <= cmd_code) && (cmd_code <= 1352))
           fcn = mpfr_mul_d;
-        else if (cmd_code == 1041)
+        else if ((1360 <= cmd_code) && (cmd_code <= 1362))
           fcn = mpfr_div_d;
         else
           MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
@@ -1117,12 +1158,17 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1034:  // int mpfr_d_sub (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
-      case 1040:  // int mpfr_d_div (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 1343:  // int mpfr_d_sub (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 1344:  // int mpfr_ui_sub (mpfr_t rop, unsigned long int op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 1345:  // int mpfr_si_sub (mpfr_t rop, long int op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 1363:  // int mpfr_d_div (mpfr_t rop, double op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 1364:  // int mpfr_ui_div (mpfr_t rop, unsigned long int op1, mpfr_t op2, mpfr_rnd_t rnd)
+      case 1365:  // int mpfr_si_div (mpfr_t rop, long int op1, mpfr_t op2, mpfr_rnd_t rnd)
       case 1097:  // int mpfr_ui_pow (mpfr_t rop, unsigned long int op1, mpfr_t op2, mpfr_rnd_t rnd)
       case 1133:  // int mpfr_jn (mpfr_t rop, long n, mpfr_t op, mpfr_rnd_t rnd)
       case 1136:  // int mpfr_yn (mpfr_t rop, long n, mpfr_t op, mpfr_rnd_t rnd)
       {
+        //FIXME: only "_d" (double) function really implemented.
         MEX_NARGINCHK (5);
         MEX_MPFR_T (1, rop);
         size_t op1M = mxGetM (prhs[2]);
@@ -1147,7 +1193,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op1_stride = ((op1M * op1N) == 1) ? 0 : 1;
         size_t   op2_stride = (length (&op2) == 1) ? 0 : 1;
-        if (cmd_code == 1034)
+        if ((1343 <= cmd_code) && (cmd_code <= 1345))
           {
             #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
@@ -1158,7 +1204,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
                                                              (i * op2_stride),
                                                              rnd);
           }
-        else if (cmd_code == 1040)
+        else if ((1363 <= cmd_code) && (cmd_code <= 1365))
           {
             #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
@@ -2280,10 +2326,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1022: // void mpfr_free_str (char *str)
-        return;  // NOP
-
-      case 1300: // int MPFR_RNDN (void)
+      case 1400: // int MPFR_RNDN (void)
       {
         // round to nearest, with ties to even
         MEX_NARGINCHK (1);
@@ -2291,7 +2334,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1301: // int MPFR_RNDZ (void)
+      case 1401: // int MPFR_RNDZ (void)
       {
         // round toward zero
         MEX_NARGINCHK (1);
@@ -2299,7 +2342,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1302: // int MPFR_RNDU (void)
+      case 1402: // int MPFR_RNDU (void)
       {
         // round toward +Inf
         MEX_NARGINCHK (1);
@@ -2307,7 +2350,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1303: // int MPFR_RNDD (void)
+      case 1403: // int MPFR_RNDD (void)
       {
         // round toward -Inf
         MEX_NARGINCHK (1);
@@ -2315,13 +2358,20 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1304: // int MPFR_RNDA (void)
+      case 1404: // int MPFR_RNDA (void)
       {
         // round away from zero
         MEX_NARGINCHK (1);
         plhs[0] = mxCreateDoubleScalar ((double) MPFR_RNDA);
         return;
       }
+
+      case 1800: // void mpfr_inits (mpfr_t x, ...)
+      case 1801: // void mpfr_inits2 (mpfr_prec_t prec, mpfr_t x, ...)
+      case 1802: // void mpfr_clear (mpfr_t x)
+      case 1803: // void mpfr_clears (mpfr_t x, ...)
+      case 1804: // void mpfr_free_str (char *str)
+        return;  // NOP
 
       default:
         MEX_FCN_ERR ("Unknown command code '%d'\n", cmd_code);

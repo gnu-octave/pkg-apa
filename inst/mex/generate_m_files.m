@@ -66,6 +66,10 @@ function generate_m_files ()
     end
 
     % Patch changes to C function definition
+    if (fcn.number >= 1800)
+      % Make NOP, accept any input.
+      fcn.in_args = struct ('type', 'void', 'name', 'varargin');
+    end
     switch (fcn.number)
       case 1021
         % char * mpfr_get_str (char *str, mpfr_exp_t *expptr, int base,
@@ -111,6 +115,7 @@ function generate_m_files ()
       fcn_str_args2 = num2str(fcn.number);
     else
       fcn_str_args2 = strjoin({num2str(fcn.number), fcn_str_args}, ', ');
+      fcn_str_args2 = regexprep (fcn_str_args2, 'varargin', 'varargin{:}');
     end
 
     % Write function signature.
@@ -119,6 +124,10 @@ function generate_m_files ()
     % Write help text.
     fcn_str = [fcn_str, '%% ', fcn_str_ret, fcn.name, ' (', fcn_str_args, ')\n'];
     fcn_str = [fcn_str, '%%\n'];
+    if (fcn.number >= 1800)
+      fcn_str = [fcn_str, '%% This function does nothing (NOP)!\n'];
+      fcn_str = [fcn_str, '%%\n'];
+    end
     help_strings_idx = strcmp (help_strings(:,1), fcn.name);
     help_strings_extra_idx = strcmp (help_strings_extra(:,1), fcn.name);
     if (any (help_strings_idx))

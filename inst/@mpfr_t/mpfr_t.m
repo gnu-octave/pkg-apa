@@ -143,7 +143,7 @@ classdef mpfr_t
       if (isa (x, 'mpfr_t'))
         ret = mpfr_set (obj.idx, x.idx, rnd);
       elseif (isnumeric (x))
-        ret = mex_apa_interface (1006, obj.idx, x(:), rnd);  % mpfr_set_d
+        ret = mex_apa_interface (1300, obj.idx, x(:), rnd);  % mpfr_set_d
       elseif (iscellstr (x))
         [ret, strpos] = mpfr_strtofr (obj.idx, x(:), 0, rnd);
         bad_strs = (cellfun (@numel, x(:)) >= strpos);

@@ -1,6 +1,8 @@
 #ifndef MEX_MPFR_INTERFACE_H_
 #define MEX_MPFR_INTERFACE_H_
 
+#include <inttypes.h> // intmax_t, etc. in mpfr.h
+
 #include "mpfr.h"
 #include "mex_apa_interface.h"
 #include "mex_mpfr_algorithms.h"
