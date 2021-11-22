@@ -702,8 +702,19 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         return;
       }
 
-      case 1017:  // double mpfr_get_d (mpfr_t op, mpfr_rnd_t rnd)
+      case 1410:  // double mpfr_get_d (mpfr_t op, mpfr_rnd_t rnd)
+      case 1411:  // float mpfr_get_flt (mpfr_t op, mpfr_rnd_t rnd)
+      case 1412:  // long double mpfr_get_ld (mpfr_t op, mpfr_rnd_t rnd)
+      case 1413:  // _Float128 mpfr_get_float128 (mpfr_t op, mpfr_rnd_t rnd)
+      case 1414:  // _Decimal64 mpfr_get_decimal64 (mpfr_t op, mpfr_rnd_t rnd)
+      case 1415:  // _Decimal128 mpfr_get_decimal128 (mpfr_t op, mpfr_rnd_t rnd)
+      case 1416:  // long mpfr_get_si (mpfr_t op, mpfr_rnd_t rnd)
+      case 1417:  // unsigned long mpfr_get_ui (mpfr_t op, mpfr_rnd_t rnd)
+      case 1418:  // intmax_t mpfr_get_sj (mpfr_t op, mpfr_rnd_t rnd)
+      case 1419:  // uintmax_t mpfr_get_uj (mpfr_t op, mpfr_rnd_t rnd)
       {
+        //FIXME: Only "mpfr_get_d" (double) function really implemented here!
+        //       Other overloads are only for convenience.
         MEX_NARGINCHK (3);
         MEX_MPFR_T (1, op);
         MEX_MPFR_RND_T (2, rnd);
@@ -1912,6 +1923,9 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
       }
 
       case 1064:  // int mpfr_cmp_d (mpfr_t op1, double op2)
+      case 1034:  // int mpfr_cmp_ui (mpfr_t op1, unsigned long int op2)
+      case 1035:  // int mpfr_cmp_si (mpfr_t op1, long int op2)
+      case 1037:  // int mpfr_cmp_ld (mpfr_t op1, long double op2)
       case 1068:  // int mpfr_cmpabs_ui (mpfr_t op1, unsigned long op2)
       {
         MEX_NARGINCHK (3);
@@ -1934,10 +1948,35 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   op1_stride = (length (&op1) == 1) ? 0 : 1;
         size_t   op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
         if (cmd_code == 1064)
-                               #pragma omp parallel for
-          for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
-            ret_ptr[i * ret_stride] = (double) mpfr_cmp_d (
-              op1_ptr + (i * op1_stride), op2_ptr[i * op2_stride]);
+          {
+            #pragma omp parallel for
+            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+              ret_ptr[i * ret_stride] = (double) mpfr_cmp_d (
+                op1_ptr + (i * op1_stride), op2_ptr[i * op2_stride]);
+          }
+        else if (cmd_code == 1034)
+          {
+            #pragma omp parallel for
+            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+              ret_ptr[i * ret_stride] = (double) mpfr_cmp_ui (
+                op1_ptr + (i * op1_stride),
+                (unsigned long) op2_ptr[i * op2_stride]);
+          }
+        else if (cmd_code == 1037)
+          {
+            #pragma omp parallel for
+            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+              ret_ptr[i * ret_stride] = (double) mpfr_cmp_si (
+                op1_ptr + (i * op1_stride), (long) op2_ptr[i * op2_stride]);
+          }
+        else if (cmd_code == 1035)
+          {
+            #pragma omp parallel for
+            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+              ret_ptr[i * ret_stride] = (double) mpfr_cmp_si (
+                op1_ptr + (i * op1_stride),
+                (long double) op2_ptr[i * op2_stride]);
+          }
         else
           {
           #if (MPFR_VERSION < MPFR_VERSION_NUM (4, 1, 0))
