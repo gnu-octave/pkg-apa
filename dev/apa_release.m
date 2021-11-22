@@ -4,6 +4,10 @@ function apa_release (varargin)
 % Called with an argument: re-run pre-release tasks.
 %
 
+if (exist ('OCTAVE_VERSION', 'builtin') == 5)
+  confirm_recursive_rmdir (false, 'local');
+end
+
 [apa_dev_dir, ~, ~] = fileparts (mfilename ('fullpath'));
 old_dir = cd (fullfile (apa_dev_dir, '..'));
 apa_dir = pwd ();
@@ -44,8 +48,9 @@ delete (apa_zip);
 % Patch zip-archive content.
 cd (apa_zip_dir);
 
-% Remove .gitignore
+% Remove ".gitignore" and "dev" directory.
 delete ('.gitignore');
+rmdir ('dev', 's');
 
 % Add static libraries.
 src_dir = fullfile (apa_dir, 'inst', 'mex');
