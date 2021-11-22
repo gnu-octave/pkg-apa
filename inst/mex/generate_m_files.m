@@ -4,7 +4,9 @@ function generate_m_files ()
 
   % Parse "mpfr.info" for help strings.
   help_strings = parse_mpfr_info_file ();
+  help_strings_used = false (size (help_strings, 1), 1);
   help_strings_extra = get_help_strings_extra ();
+  help_strings_extra_used = false (size (help_strings_extra, 1), 1);
 
   show_error = @(i, s) error (['generate_m_files: failed on input i = %d:', ...
     '\n\n%s\n\n'], i, s);
@@ -117,10 +119,16 @@ function generate_m_files ()
     % Write help text.
     fcn_str = [fcn_str, '%% ', fcn_str_ret, fcn.name, ' (', fcn_str_args, ')\n'];
     fcn_str = [fcn_str, '%%\n'];
-    if (isfield (help_strings, fcn.name))
-      fcn_str = [fcn_str, help_strings.(fcn.name), '\n\n'];
-    elseif (isfield (help_strings_extra, fcn.name))
-      fcn_str = [fcn_str, help_strings_extra.(fcn.name), '\n\n'];
+    help_strings_idx = strcmp (help_strings(:,1), fcn.name);
+    help_strings_extra_idx = strcmp (help_strings_extra(:,1), fcn.name);
+    if (any (help_strings_idx))
+      idx = find(help_strings_idx,1);
+      help_strings_used(idx) = true;
+      fcn_str = [fcn_str, help_strings{idx,2}, '\n\n'];
+    elseif (any (help_strings_extra_idx))
+      idx = find(help_strings_extra_idx,1);
+      help_strings_extra_used(idx) = true;
+      fcn_str = [fcn_str, help_strings_extra{idx,2}, '\n\n'];
     else
       disp ('                 no help text');
     end
@@ -151,24 +159,27 @@ function generate_m_files ()
 
     clear fcn;
   end
+  fprintf ('\n\nUnimplemented documented MPFR functions (%d of %d):\n\n', ...
+    sum (~help_strings_used), length (help_strings_used));
+  disp (help_strings(~help_strings_used,1));
 end
 
 
 function help_strings_extra = get_help_strings_extra ()
   MPFR_RND_COMMON = '%% Return internal numerical value for the rounding mode';
-  help_strings_extra.MPFR_RNDN = [MPFR_RND_COMMON, ...
+  help_strings_extra(1,:) = {'MPFR_RNDN', [MPFR_RND_COMMON, ...
     '\n%% "round to nearest", with the even rounding rule (roundTiesToEven ', ...
-    'in IEEE 754-2008).'];
-  help_strings_extra.MPFR_RNDZ = [MPFR_RND_COMMON, ...
+    'in IEEE 754-2008).']};
+  help_strings_extra(2,:) = {'MPFR_RNDZ', [MPFR_RND_COMMON, ...
     '\n%% "round toward minus infinity" (roundTowardNegative in IEEE ', ...
-    '754-2008).'];
-  help_strings_extra.MPFR_RNDU = [MPFR_RND_COMMON, ...
+    '754-2008).']};
+  help_strings_extra(3,:) = {'MPFR_RNDU', [MPFR_RND_COMMON, ...
     '\n%% "round toward plus infinity" (roundTowardPositive in IEEE ', ...
-    '754-2008).'];
-  help_strings_extra.MPFR_RNDD = [MPFR_RND_COMMON, ...
-    '\n%% "round toward zero" (roundTowardZero in IEEE 754-2008).'];
-  help_strings_extra.MPFR_RNDA = [MPFR_RND_COMMON, ...
-    '\n%% "round away from zero".'];
+    '754-2008).']};
+  help_strings_extra(4,:) = {'MPFR_RNDD', [MPFR_RND_COMMON, ...
+    '\n%% "round toward zero" (roundTowardZero in IEEE 754-2008).']};
+  help_strings_extra(5,:) = {'MPFR_RNDA', [MPFR_RND_COMMON, ...
+    '\n%% "round away from zero".']};
 end
 
 
@@ -178,7 +189,7 @@ function help_strings = parse_mpfr_info_file ()
   idx_end = find (strcmp (str, '5.17 Internals'));
   str = str(idx_start:idx_end);
 
-  help_strings = struct ();
+  help_strings = cell (0, 2);
   item_stack = {};
   text_stack = {};
   state = 'start';
@@ -232,9 +243,10 @@ function [help_strings, item_stack, text_stack] = parse_flush_stack ( ...
 % Helper function for info-file parser.
   if (~isempty (item_stack))
     text_stack = strjoin (text_stack, '\n');
-    for j = 1:length (item_stack)
-      help_strings.(item_stack{j}) = text_stack;
-    end
+    N = size (help_strings, 1);
+    idx = 1:length (item_stack);
+    help_strings(N + idx, 1) = item_stack(idx);
+    help_strings(N + idx, 2) = {text_stack};
     item_stack = {};
     text_stack = {};
   end
