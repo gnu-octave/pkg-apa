@@ -12,7 +12,8 @@ function install_apa (cmd)
 
   old_dir = cd (apa_dir);
 
-  if (strcmp (cmd, 'rebuild') || exist ('mex_apa_interface', 'file') ~= 3)
+  if (strcmp (cmd, 'rebuild') ...
+      || exist (['mex_apa_interface.', mexext()], 'file') ~= 3)
 
     cd (fullfile (apa_dir, 'mex'));
 
