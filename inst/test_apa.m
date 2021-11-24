@@ -417,7 +417,7 @@ function test_apa ()
   end
   
   % LU-factorization
-  warning ('off', 'mpfr_t:inexactOperation')
+  S = warning ('off', 'mpfr_t:inexactOperation');
   for m = 1:8
     for n = 1:8
       A = mpfr_t (rand (m, n));
@@ -425,7 +425,7 @@ function test_apa ()
       assert (norm (double (P' * L * U - A)) < 2*eps)
     end
   end
-  warning ('on', 'mpfr_t:inexactOperation')
+  warning (S);
 
   % ====================
   % Comparison functions
