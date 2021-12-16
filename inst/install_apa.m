@@ -31,6 +31,7 @@ function install_apa (cmd)
     % Set cflags and ldflags according to OS and Octave/Matlab.
     cflags = {'--std=c99', '-Wall', '-Wextra'};
     if (ismac ())
+      static_libs_dir = 'macos';
       cflags = [cflags, {'-Xpreprocessor', '-fopenmp'}];
       if (exist ('OCTAVE_VERSION', 'builtin') == 5)
         ldflags = {'-lomp'};
@@ -41,6 +42,7 @@ function install_apa (cmd)
         ldflags = {['-L', ldflags], '-liomp5'};
       end
     elseif (ispc ())
+      static_libs_dir = 'mswin';
       cflags = [cflags, {'-fopenmp'}];
       if (exist('OCTAVE_VERSION', 'builtin') == 5)
         ldflags = {'-lgomp'};
@@ -49,26 +51,34 @@ function install_apa (cmd)
         ldflags = {};
       end
     elseif (isunix ())
+      static_libs_dir = 'unix';
       cflags = [cflags, {'-fopenmp'}];
       ldflags = {'-lgomp'};
+    else
+      error ('install_apa: Could not detect operating system.');
     end
 
+    % Download pre-compiled static GMP and MPFR library.
+    if (exist (static_libs_dir, 'dir') ~= 7)
+      static_libs_url = 'https://github.com/gnu-octave/pkg-apa/releases/download/';
+      static_libs_ver = '1.0.0';
+      static_libs_zip = sprintf ('%s-libs-minimal-%s.zip', static_libs_dir, ...
+                                 static_libs_ver);
+      static_libs_url = sprintf ('%sv%s/%s', static_libs_url, ...
+                                 static_libs_ver, static_libs_zip);
+      urlwrite (static_libs_url, static_libs_zip);
+      unzip  (static_libs_zip);
+      delete (static_libs_zip);
+    end
+    
     % Add static GMP and MPFR library to compiler flags.
     if (is_complete (pwd (), [header, static_libs]))
       cflags{end+1} = '-I.';
-      ldflags = static_libs;
-    elseif (ismac () && is_complete (fullfile (pwd (), 'macos'), ...
-                                     [header, static_libs]))
-      cflags{end+1} = '-Imacos';
-      ldflags = [fullfile('macos', static_libs), ldflags];
-    elseif (ispc () && is_complete (fullfile (pwd (), 'mswin'), ...
-                                    [header, static_libs]))
-      cflags{end+1} = '-Imswin';
-      ldflags = [fullfile('mswin', static_libs), ldflags];
-    elseif (isunix () && is_complete (fullfile (pwd (), 'unix'), ...
-                                      [header, static_libs]))
-      cflags{end+1} = '-Iunix';
-      ldflags = [fullfile('unix', static_libs), ldflags];
+      ldflags = [static_libs, ldflags];
+    elseif (is_complete (fullfile (pwd (), static_libs_dir), ...
+                         [header, static_libs]))
+      cflags{end+1} = ['-I', static_libs_dir];
+      ldflags = [fullfile(static_libs_dir, static_libs), ldflags];
     else
       error (['install_apa: Could not find pre-built GMP or MPFR ', ...
         'libraries.  Please run the Makefile in the "mex" directory.']);
@@ -93,7 +103,6 @@ function install_apa (cmd)
   cd (old_dir);
 
   add_to_path_if_not_exists (apa_dir);
-
 end
 
 

@@ -1,12 +1,10 @@
-*.tar.gz
 *.mex*
 *.a
 *.asv
-gmp.h
-mpfr.h
-mpf2mpfr.h
-omp.h
 .build
 .DS_Store
 .ipynb_checkpoints/
 dev/
+inst/mex/macos/
+inst/mex/mswin/
+inst/mex/unix/
