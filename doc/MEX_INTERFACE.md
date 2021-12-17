@@ -75,3 +75,40 @@ cp ./usr/x86_64-w64-mingw32/lib/gcc/x86_64-w64-mingw32/11.2.0/libgomp.a \
    ./usr/x86_64-w64-mingw32/include/mpf2mpfr.h \
    /path/to/apa/inst/mex/mswin
 ```
+
+
+## Compiling static mplapack libraries
+
+For detailed manuals, see <https://github.com/nakatamaho/mplapack>.
+
+### UNIX (Linux)
+
+```
+git clone --depth=10 https://github.com/nakatamaho/mplapack/
+cd mplapack
+git checkout v1.0.1
+/usr/bin/time docker build -t mplapack:ubuntu2004 -f Dockerfile_ubuntu20.04 . 2>&1 | tee log.ubuntu2004
+
+rm -Rf MPLAPACK
+mkdir -p MPLAPACK/lib
+docker create --name mplapack_ubuntu2004 mplapack:ubuntu2004
+docker cp mplapack_ubuntu2004:/home/docker/MPLAPACK/include       MPLAPACK/include
+docker cp mplapack_ubuntu2004:/home/docker/MPLAPACK/lib/libgmp.a  MPLAPACK/lib
+docker cp mplapack_ubuntu2004:/home/docker/MPLAPACK/lib/libmpfr.a MPLAPACK/lib
+docker cp mplapack_ubuntu2004:/home/docker/MPLAPACK/lib/libmplapack_mpfr.a   MPLAPACK/lib
+docker cp mplapack_ubuntu2004:/home/docker/MPLAPACK/lib/libmplapack_mpfr.a   MPLAPACK/lib
+docker cp mplapack_ubuntu2004:/home/docker/MPLAPACK/lib/libmpblas_mpfr_opt.a MPLAPACK/lib
+docker rm mplapack_ubuntu2004
+strip --strip-unneeded MPLAPACK/lib/*.a
+```
+
+### MS Windows
+
+```
+git clone --depth=10 https://github.com/nakatamaho/mplapack/
+cd mplapack
+git checkout v1.0.1
+/usr/bin/time docker build -t mplapack:mingw -f  Dockerfile_ubuntu20.04_mingw64 . 2>&1 | tee log.mingw
+```
+
+### macOS

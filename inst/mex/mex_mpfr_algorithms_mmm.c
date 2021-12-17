@@ -16,6 +16,7 @@
  */
 
 #include "mex_mpfr_interface.h"
+#include "mex_mplapack_interface.h"
 
 /**
  * MPFR Matrix-Matrix-Multiplication `C = A * B`.
@@ -181,6 +182,19 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
         mxFree (Ai);
       }
       break;
+
+
+      #ifdef MPLAPACK
+      case 8:  // Use MPLAPACK "Rgemm".
+      {
+        mpfr_t one;
+        mpfr_init2 (one, prec);
+        mpfr_set_ui (one, 1, rnd);
+        mplapack_Rgemm ("N", "N", M, N, K, one, A, M, B, K, one,
+                        C, M);
+      }
+      break;
+      #endif
 
 
       default:

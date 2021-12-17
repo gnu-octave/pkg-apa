@@ -22,7 +22,7 @@ CURL_OPTS = --fail --location --silent --show-error --output
 HEADER = gmp.h mpfr.h mpf2mpfr.h
 STATIC_LIBS = libgmp.a libmpfr.a
 
-UNCRUSTIFY_FILES = $(wildcard *.c) $(wildcard *.h)
+UNCRUSTIFY_FILES = $(wildcard *.cc) $(wildcard *.c) $(wildcard *.h)
 
 all: $(patsubst %,${BUILD_DIR}/lib/%,${STATIC_LIBS})
 	cp $(patsubst %,${BUILD_DIR}/lib/%,${STATIC_LIBS}) ${INST_DIR}

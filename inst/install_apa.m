@@ -1,7 +1,9 @@
 function install_apa (cmd)
 % Install GMP and MPFR MEX interface.
 %
-%   'rebuild'  -  Rebuild and overwrite the MEX interface.
+%   'rebuild'          -  Rebuild and overwrite the MEX interface.
+%   'rebuild_mplapck'  -  Rebuild and overwrite the MEX interface using
+%                         MPLAPACK.
 %
 
   if (nargin < 1)
@@ -12,7 +14,7 @@ function install_apa (cmd)
 
   old_dir = cd (apa_dir);
 
-  if (strcmp (cmd, 'rebuild') ...
+  if (strncmp (cmd, 'rebuild', length ('rebuild')) ...
       || exist (['mex_apa_interface.', mexext()], 'file') ~= 3)
 
     cd (fullfile (apa_dir, 'mex'));
@@ -27,10 +29,15 @@ function install_apa (cmd)
               'mex_mpfr_algorithms_dot.c', ...
               'mex_mpfr_algorithms_mmm.c', ...
               'mex_mpfr_algorithms_gauss.c'};
+    ccfiles_mplapack = {'mex_mplapack_interface.cc'};
+    static_libs_mplapack = {'libmplapack_mpfr.a', ...
+                            'libmpblas_mpfr_opt.a'};
 
     % Set cflags and ldflags according to OS and Octave/Matlab.
-    cflags = {'--std=c99', '-Wall', '-Wextra'};
+    cflags  = {'--std=c11',   '-Wall', '-Wextra'};
+    ccflags = {'--std=c++11', '-Wall', '-Wextra'};
     if (ismac ())
+      include_dir     = 'macos';
       static_libs_dir = 'macos';
       cflags = [cflags, {'-Xpreprocessor', '-fopenmp'}];
       if (exist ('OCTAVE_VERSION', 'builtin') == 5)
@@ -42,6 +49,7 @@ function install_apa (cmd)
         ldflags = {['-L', ldflags], '-liomp5'};
       end
     elseif (ispc ())
+      include_dir     = 'mswin';
       static_libs_dir = 'mswin';
       cflags = [cflags, {'-fopenmp'}];
       if (exist('OCTAVE_VERSION', 'builtin') == 5)
@@ -51,11 +59,22 @@ function install_apa (cmd)
         ldflags = {};
       end
     elseif (isunix ())
+      include_dir     = 'unix';
       static_libs_dir = 'unix';
       cflags = [cflags, {'-fopenmp'}];
       ldflags = {'-lgomp'};
     else
       error ('install_apa: Could not detect operating system.');
+    end
+
+    % Determine use of MPLAPACK.
+    if (strcmp (cmd, 'rebuild_mplapck'))
+      cflags  = [cflags,  {'-DMPLAPACK'}];
+      ccflags = [ccflags, {'-DMPLAPACK'}];
+      static_libs = [static_libs_mplapack, static_libs];
+      static_libs_dir = fullfile (static_libs_dir, 'MPLAPACK', 'lib');
+      include_dir     = fullfile (include_dir,     'MPLAPACK', 'include');
+      cfiles = [cfiles, {'mex_mplapack_interface.o'}];
     end
 
     % Download pre-compiled static GMP and MPFR library.
@@ -73,11 +92,13 @@ function install_apa (cmd)
     
     % Add static GMP and MPFR library to compiler flags.
     if (is_complete (pwd (), [header, static_libs]))
-      cflags{end+1} = '-I.';
+      cflags{end+1}  = '-I.';
+      ccflags{end+1} = '-I.';
       ldflags = [static_libs, ldflags];
-    elseif (is_complete (fullfile (pwd (), static_libs_dir), ...
-                         [header, static_libs]))
-      cflags{end+1} = ['-I', static_libs_dir];
+    elseif (is_complete (fullfile (pwd (), static_libs_dir), static_libs) ...
+         && is_complete (fullfile (pwd (), include_dir),     header))
+      cflags{end+1}  = ['-I', include_dir];
+      ccflags{end+1} = ['-I', include_dir];
       ldflags = [fullfile(static_libs_dir, static_libs), ldflags];
     else
       error (['install_apa: Could not find pre-built GMP or MPFR ', ...
@@ -86,7 +107,8 @@ function install_apa (cmd)
 
     try
       if (exist('OCTAVE_VERSION', 'builtin') == 5)
-        mex (cflags{:}, cfiles{:}, ldflags{:});
+        mex ('-c', '-v', ccflags{:}, ccfiles_mplapack{:});
+        mex ('-v', cflags{:}, cfiles{:}, ldflags{:});
       else
         mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], ...
              cfiles{:}, ldflags{:});
