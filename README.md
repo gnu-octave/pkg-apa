@@ -178,3 +178,7 @@ operations are permitted, which do not create new (temporary) variables:
 ```octave
 ret = mpfr_add (op1, op1, op1, rnd);  % op1 += op1
 ```
+
+## Presentations
+
+- [NVR workshop (Nov) 2021](https://github.com/siko1056/slides_nvr2021/blob/main/slides.pdf)
