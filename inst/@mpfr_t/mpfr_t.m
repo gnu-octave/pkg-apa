@@ -1012,6 +1012,34 @@ classdef mpfr_t
     end
 
 
+    function b = min (a, rnd, prec)
+      % Minimum elements of an array `b = min(a)` using rounding mode `rnd`.
+      %
+      % If no rounding mode `rnd` is given, the default rounding mode is used.
+      %
+      % If no precision `prec` is given for `b` the maximum precision of a.
+      %
+      % If `a` is a matrix, then `min(a)` is a row vector containing the
+      % minimum value of each matrix column.
+
+      if (nargin < 2)
+        rnd = mpfr_get_default_rounding_mode ();
+      end
+      if (nargin < 3)
+        prec = max (mpfr_get_prec (a));
+      end
+
+      N = a.dims(2);
+      if (a.dims(1) == 1)
+        N = 1;
+      end
+      bb = mpfr_t (zeros (1, N), prec);
+      ret = mex_apa_interface (2004, bb.idx, a.idx, rnd);
+      a.warnInexactOperation (ret);
+      b = bb;  % Do not assign b before calculation succeeded!
+    end
+
+
     function [L, U, P] = lu (a, outputForm, prec, rnd)
       % LU matrix factorization.
       %

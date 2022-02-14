@@ -264,6 +264,45 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
       }
 
 
+      case 2004: // int mpfr_t.min (mpfr_t rop, mpfr_t op, mpfr_rnd_t rnd)
+      {
+        MEX_NARGINCHK (4);
+        MEX_MPFR_T (1, rop);
+        MEX_MPFR_T (2, op);
+        MEX_MPFR_RND_T (3, rnd);
+        DBG_PRINTF ("cmd[mpfr_t.min]: rop = [%d:%d], op = [%d:%d], "
+                    "prec = %d, rnd = %d\n", rop.start, rop.end,
+                    op.start, op.end, (int) rnd);
+
+        // Check matrix dimensions to be sane.
+        //    op [M x N]
+        //   rop [1 x N]
+        uint64_t N = length (&rop);
+        uint64_t M = length (&op) / N;
+        if (length (&op) != (M * N))
+          MEX_FCN_ERR ("cmd[mpfr_t.min]:Incompatible matrix A.  Expected "
+                       "a [%d x %d] matrix\n", M, N);
+
+        plhs[0] = mxCreateNumericMatrix (N, 1, mxDOUBLE_CLASS, mxREAL);
+        double * ret_ptr    = mxGetPr (plhs[0]);
+        mpfr_ptr rop_ptr    = &mpfr_data[rop.start - 1];
+        mpfr_ptr op_ptr     = &mpfr_data[op.start - 1];
+        #pragma omp parallel for
+        for (size_t j = 0; j < N; j++)
+          {
+            int ret = mpfr_set (rop_ptr + j, op_ptr + M * j, rnd);
+            for (size_t i = 1; i < M; i++)
+              {
+                ret |= mpfr_min (rop_ptr + j, rop_ptr + j,
+                                              op_ptr + M * j + i, rnd);
+              }
+            ret_ptr[j] = (double) ret;
+          }
+
+        return;
+      }
+
+
       default:
         MEX_FCN_ERR ("Unknown command code '%d'\n", cmd_code);
     }
