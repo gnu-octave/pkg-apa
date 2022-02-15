@@ -29,7 +29,7 @@ function install_apa (cmd)
               'mex_mpfr_algorithms_gauss.c'};
 
     % Set cflags and ldflags according to OS and Octave/Matlab.
-    cflags = {'--std=c99', '-Wall', '-Wextra'};
+    cflags = {'--std=c11', '-Wall', '-Wextra'};
     if (ismac ())
       static_libs_dir = 'macos';
       cflags = [cflags, {'-Xpreprocessor', '-fopenmp'}];
