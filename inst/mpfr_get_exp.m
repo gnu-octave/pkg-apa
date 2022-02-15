@@ -8,9 +8,6 @@ function ret = mpfr_get_exp (x)
 % undefined.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1176, x);
 end
 

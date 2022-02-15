@@ -5,12 +5,6 @@ function ret = mpfr_cot (rop, op, rnd)
 % rounded in the direction RND.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1104, rop, op, rnd);
 end
 

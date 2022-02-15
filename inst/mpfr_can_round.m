@@ -38,9 +38,6 @@ function ret = mpfr_can_round (b, err, rnd1, rnd2, prec)
 % file ‘can_round.c’.
 %
 
-  if (isa (b, 'mpfr_t'))
-    b = b.idx;
-  end
   ret = mex_apa_interface (1164, b, err, rnd1, rnd2, prec);
 end
 

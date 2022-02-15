@@ -8,12 +8,6 @@ function ret = mpfr_log2 (rop, op, rnd)
 % sign of the zero has no influence on the result).
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1085, rop, op, rnd);
 end
 

@@ -10,15 +10,6 @@ function ret = mpfr_sin_cos (sop, cop, op, rnd)
 % of OP.
 %
 
-  if (isa (sop, 'mpfr_t'))
-    sop = sop.idx;
-  end
-  if (isa (cop, 'mpfr_t'))
-    cop = cop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1101, sop, cop, op, rnd);
 end
 

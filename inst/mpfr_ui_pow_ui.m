@@ -24,9 +24,6 @@ function ret = mpfr_ui_pow_ui (rop, op1, op2, rnd)
 % these rules are not used for ‘pow’.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1096, rop, op1, op2, rnd);
 end
 

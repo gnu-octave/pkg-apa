@@ -5,9 +5,6 @@ function mpfr_nextabove (x)
 % minus infinity).
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   mex_apa_interface (1167, x);
 end
 

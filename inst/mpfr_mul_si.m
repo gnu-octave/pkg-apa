@@ -8,12 +8,6 @@ function ret = mpfr_mul_si (rop, op1, op2, rnd)
 % ‘mpfr_mul_d’.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op1, 'mpfr_t'))
-    op1 = op1.idx;
-  end
   ret = mex_apa_interface (1352, rop, op1, op2, rnd);
 end
 

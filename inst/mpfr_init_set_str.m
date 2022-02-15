@@ -5,9 +5,6 @@ function ret = mpfr_init_set_str (x, s, base, rnd)
 % rounded in the direction RND.  See ‘mpfr_set_str’.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1016, x, s, base, rnd);
 end
 

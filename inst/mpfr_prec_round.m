@@ -19,9 +19,6 @@ function ret = mpfr_prec_round (x, prec, rnd)
 % Interface::).
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1163, x, prec, rnd);
 end
 

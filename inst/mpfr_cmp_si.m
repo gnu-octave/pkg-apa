@@ -15,9 +15,6 @@ function ret = mpfr_cmp_si (op1, op2)
 % conversion first).
 %
 
-  if (isa (op1, 'mpfr_t'))
-    op1 = op1.idx;
-  end
   ret = mex_apa_interface (1035, op1, op2);
 end
 

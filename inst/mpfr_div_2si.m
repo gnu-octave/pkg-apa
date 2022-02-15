@@ -6,12 +6,6 @@ function ret = mpfr_div_2si (rop, op1, op2, rnd)
 % identical.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op1, 'mpfr_t'))
-    op1 = op1.idx;
-  end
   ret = mex_apa_interface (1054, rop, op1, op2, rnd);
 end
 

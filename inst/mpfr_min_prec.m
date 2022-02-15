@@ -5,9 +5,6 @@ function ret = mpfr_min_prec (x)
 % of X, and 0 for special values, including 0.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1165, x);
 end
 

@@ -14,12 +14,6 @@ function mpfr_swap (x, y)
 % Custom Interface::).
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
-  if (isa (y, 'mpfr_t'))
-    y = y.idx;
-  end
   mex_apa_interface (1013, x, y);
 end
 

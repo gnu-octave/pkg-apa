@@ -6,12 +6,6 @@ function ret = mpfr_li2 (rop, op, rnd)
 % integral of -log(1-t)/t from 0 to OP.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1120, rop, op, rnd);
 end
 

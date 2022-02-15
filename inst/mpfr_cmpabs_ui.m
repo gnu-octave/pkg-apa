@@ -6,9 +6,6 @@ function ret = mpfr_cmpabs_ui (op1, op2)
 % one of the operands is NaN, set the _erange_ flag and return zero.
 %
 
-  if (isa (op1, 'mpfr_t'))
-    op1 = op1.idx;
-  end
   ret = mex_apa_interface (1068, op1, op2);
 end
 

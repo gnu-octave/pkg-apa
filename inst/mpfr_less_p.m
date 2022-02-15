@@ -6,12 +6,6 @@ function ret = mpfr_less_p (op1, op2)
 % zero whenever OP1 and/or OP2 is NaN.
 %
 
-  if (isa (op1, 'mpfr_t'))
-    op1 = op1.idx;
-  end
-  if (isa (op2, 'mpfr_t'))
-    op2 = op2.idx;
-  end
   ret = mex_apa_interface (1077, op1, op2);
 end
 

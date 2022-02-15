@@ -142,16 +142,6 @@ function generate_m_files ()
       disp ('                 no help text');
     end
 
-    % Write mpfr_t conversion code.
-    for j = 1:length (fcn.in_args)
-      if (strcmp (fcn.in_args(j).type, 'mpfr_t'))
-        var = fcn.in_args(j).name;
-        fcn_str = [fcn_str, '  if (isa (', var, ', ''mpfr_t''))\n'];
-        fcn_str = [fcn_str, '    ', var, ' = ', var, '.idx;\n'];
-        fcn_str = [fcn_str, '  end\n'];
-      end
-    end
-
     % Write mex_apa_interface function call.
     fcn_str = [fcn_str, '  ', fcn_str_ret, 'mex_apa_interface (', ...
                               fcn_str_args2, ');\n'];

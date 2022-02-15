@@ -35,9 +35,6 @@ function ret = mpfr_set_si (rop, op, rnd)
 % ‘mpfr_set_decimal128’) number before MPFR can work with it.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1302, rop, op, rnd);
 end
 

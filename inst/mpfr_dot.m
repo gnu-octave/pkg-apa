@@ -8,9 +8,6 @@ function ret = mpfr_dot (rop, a, b, n, rnd)
 % overflows and underflows.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1062, rop, a, b, n, rnd);
 end
 

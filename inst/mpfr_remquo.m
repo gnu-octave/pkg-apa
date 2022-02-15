@@ -23,15 +23,6 @@ function [ret, q] = mpfr_remquo (r, x, y, rnd)
 % additive argument reduction.
 %
 
-  if (isa (r, 'mpfr_t'))
-    r = r.idx;
-  end
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
-  if (isa (y, 'mpfr_t'))
-    y = y.idx;
-  end
   [ret, q] = mex_apa_interface (1159, r, x, y, rnd);
 end
 

@@ -5,9 +5,6 @@ function ret = mpfr_signbit (op)
 % negative, −0, or a NaN whose representation has its sign bit set).
 %
 
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1178, op);
 end
 

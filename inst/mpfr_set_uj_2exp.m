@@ -6,9 +6,6 @@ function ret = mpfr_set_uj_2exp (rop, op, e, rnd)
 % converted to +0.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1320, rop, op, e, rnd);
 end
 

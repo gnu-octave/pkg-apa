@@ -62,9 +62,6 @@ function [ret, endptr] = mpfr_strtofr (rop, nptr, base, rnd)
 % is a valid representation for NaN in base 17.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   [ret, endptr] = mex_apa_interface (1217, rop, nptr, base, rnd);
 end
 

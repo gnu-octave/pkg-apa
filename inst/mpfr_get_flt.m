@@ -13,9 +13,6 @@ function ret = mpfr_get_flt (op, rnd)
 % ‘mpfr_set_decimal64’ and ‘mpfr_set_decimal128’ respectively.
 %
 
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1411, op, rnd);
 end
 

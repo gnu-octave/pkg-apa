@@ -5,9 +5,6 @@ function ret = mpfr_get_prec (x)
 % its significand.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1004, x);
 end
 

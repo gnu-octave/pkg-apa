@@ -9,9 +9,6 @@ function ret = mpfr_const_log2 (rop, rnd)
 % ‘mpfr_free_cache2’.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1139, rop, rnd);
 end
 

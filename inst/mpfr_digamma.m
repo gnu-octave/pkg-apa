@@ -6,12 +6,6 @@ function ret = mpfr_digamma (rop, op, rnd)
 % negative integer, set ROP to NaN.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1125, rop, op, rnd);
 end
 

@@ -8,15 +8,6 @@ function ret = mpfr_sinh_cosh (sop, cop, op, rnd)
 % for a more detailed description of the return value).
 %
 
-  if (isa (sop, 'mpfr_t'))
-    sop = sop.idx;
-  end
-  if (isa (cop, 'mpfr_t'))
-    cop = cop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1112, sop, cop, op, rnd);
 end
 

@@ -23,15 +23,6 @@ function ret = mpfr_remainder (r, x, y, rnd)
 % additive argument reduction.
 %
 
-  if (isa (r, 'mpfr_t'))
-    r = r.idx;
-  end
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
-  if (isa (y, 'mpfr_t'))
-    y = y.idx;
-  end
   ret = mex_apa_interface (1158, r, x, y, rnd);
 end
 

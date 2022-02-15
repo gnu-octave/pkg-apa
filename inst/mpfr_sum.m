@@ -13,9 +13,6 @@ function ret = mpfr_sum (rop, tab, n, rnd)
 % • otherwise, either because all inputs are zeros with at least a
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1061, rop, tab, n, rnd);
 end
 

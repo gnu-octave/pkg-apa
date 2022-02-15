@@ -7,9 +7,6 @@ function mpfr_set_nan (x)
 % ‘mpfr_set_nan’, the sign bit of the result is unspecified.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   mex_apa_interface (1010, x);
 end
 

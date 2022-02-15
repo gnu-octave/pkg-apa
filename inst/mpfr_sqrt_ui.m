@@ -6,9 +6,6 @@ function ret = mpfr_sqrt_ui (rop, op, rnd)
 % Set ROP to NaN if OP is negative.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1043, rop, op, rnd);
 end
 

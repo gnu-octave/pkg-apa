@@ -13,9 +13,6 @@ function ret = mpfr_get_si (op, rnd)
 % and ‘mpfr_fits_uintmax_p’.
 %
 
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1416, op, rnd);
 end
 

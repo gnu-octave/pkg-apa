@@ -9,12 +9,6 @@ function ret = mpfr_ai (rop, x, rnd)
 % should be used and will be implemented in a future version.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1138, rop, x, rnd);
 end
 

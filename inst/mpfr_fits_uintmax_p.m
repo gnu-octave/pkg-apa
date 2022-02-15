@@ -15,9 +15,6 @@ function ret = mpfr_fits_uintmax_p (op, rnd)
 % non-negative number less than or equal to ‘ULONG_MAX’.
 %
 
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1029, op, rnd);
 end
 

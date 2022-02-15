@@ -10,12 +10,6 @@ function mpfr_nexttoward (x, y)
 % sign.  No underflow, overflow, or inexact exception is raised.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
-  if (isa (y, 'mpfr_t'))
-    y = y.idx;
-  end
   mex_apa_interface (1166, x, y);
 end
 

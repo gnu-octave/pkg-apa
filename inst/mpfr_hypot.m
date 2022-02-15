@@ -9,15 +9,6 @@ function ret = mpfr_hypot (rop, x, y, rnd)
 % other number is NaN.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
-  if (isa (y, 'mpfr_t'))
-    y = y.idx;
-  end
   ret = mex_apa_interface (1060, rop, x, y, rnd);
 end
 

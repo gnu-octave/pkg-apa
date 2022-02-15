@@ -11,12 +11,6 @@ function ret = mpfr_eint (rop, op, rnd)
 % called eint1) at −OP (formula 5.1.1 from the same reference).
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1119, rop, op, rnd);
 end
 

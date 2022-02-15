@@ -10,12 +10,6 @@ function ret = mpfr_d_div (rop, op1, op2, rnd)
 % ‘mpfr_add_d’ apply to ‘mpfr_d_div’ and ‘mpfr_div_d’.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op2, 'mpfr_t'))
-    op2 = op2.idx;
-  end
   ret = mex_apa_interface (1363, rop, op1, op2, rnd);
 end
 

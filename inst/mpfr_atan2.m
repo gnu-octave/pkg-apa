@@ -32,15 +32,6 @@ function ret = mpfr_atan2 (rop, y, x, rnd)
 % • ‘atan2(y, +Inf)’ returns −0 for finite y < 0.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (y, 'mpfr_t'))
-    y = y.idx;
-  end
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1108, rop, y, x, rnd);
 end
 

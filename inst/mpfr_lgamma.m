@@ -10,12 +10,6 @@ function [ret, signp] = mpfr_lgamma (rop, op, rnd)
 % OP is ±0, *SIGNP is the sign of the zero.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   [ret, signp] = mex_apa_interface (1124, rop, op, rnd);
 end
 

@@ -5,9 +5,6 @@ function ret = mpfr_zeta_ui (rop, op, rnd)
 % the direction RND.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1128, rop, op, rnd);
 end
 

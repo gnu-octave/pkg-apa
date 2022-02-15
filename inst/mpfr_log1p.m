@@ -5,12 +5,6 @@ function ret = mpfr_log1p (rop, op, rnd)
 % RND.  Set ROP to −Inf if OP is −1.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1087, rop, op, rnd);
 end
 

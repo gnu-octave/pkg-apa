@@ -11,12 +11,6 @@ function ret = mpfr_root (rop, op, n, rnd)
 % and will be removed in a future release.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1047, rop, op, n, rnd);
 end
 

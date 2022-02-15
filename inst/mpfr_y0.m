@@ -8,12 +8,6 @@ function ret = mpfr_y0 (rop, op, rnd)
 % on the parity and sign of N.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1134, rop, op, rnd);
 end
 

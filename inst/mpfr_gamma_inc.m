@@ -13,15 +13,6 @@ function ret = mpfr_gamma_inc (rop, op, op2, rnd)
 % might also occur.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
-  if (isa (op2, 'mpfr_t'))
-    op2 = op2.idx;
-  end
   ret = mex_apa_interface (1122, rop, op, op2, rnd);
 end
 

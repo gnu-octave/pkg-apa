@@ -6,9 +6,6 @@ function ret = mpfr_set_exp (x, e)
 % non-zero value (X is not changed).
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1177, x, e);
 end
 

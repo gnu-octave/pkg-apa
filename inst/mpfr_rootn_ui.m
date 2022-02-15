@@ -14,12 +14,6 @@ function ret = mpfr_rootn_ui (rop, op, n, rnd)
 % Functions allowing a negative N may be implemented in the future.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1046, rop, op, n, rnd);
 end
 

@@ -60,9 +60,6 @@ function [significant, expptr] = mpfr_get_str (base, n, op, rnd)
 % inexact.
 %
 
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   [significant, expptr] = mex_apa_interface (1021, base, n, op, rnd);
 end
 

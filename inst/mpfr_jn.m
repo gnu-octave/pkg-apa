@@ -9,12 +9,6 @@ function ret = mpfr_jn (rop, n, op, rnd)
 % OP.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1133, rop, n, op, rnd);
 end
 

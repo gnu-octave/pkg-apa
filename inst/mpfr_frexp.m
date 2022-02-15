@@ -9,12 +9,6 @@ function ret = mpfr_frexp (exp, y, x, rnd)
 % undefined.
 %
 
-  if (isa (y, 'mpfr_t'))
-    y = y.idx;
-  end
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1019, exp, y, x, rnd);
 end
 

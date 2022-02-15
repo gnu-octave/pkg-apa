@@ -24,9 +24,6 @@ function ret = mpfr_check_range (x, t, rnd)
 % could have been set due to internal computations.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1196, x, t, rnd);
 end
 

@@ -13,12 +13,6 @@ function ret = mpfr_total_order_p (x, y)
 % The sign bit of NaN also matters.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
-  if (isa (y, 'mpfr_t'))
-    y = y.idx;
-  end
   ret = mex_apa_interface (1082, x, y);
 end
 

@@ -15,9 +15,6 @@ function mpfr_set_prec (x, prec)
 % Interface::).
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   mex_apa_interface (1003, x, prec);
 end
 

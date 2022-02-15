@@ -8,12 +8,6 @@ function ret = mpfr_frac (rop, op, rnd)
 % infinity, set ROP to zero with the same sign as OP.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1154, rop, op, rnd);
 end
 

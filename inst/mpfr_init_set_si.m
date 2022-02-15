@@ -6,9 +6,6 @@ function ret = mpfr_init_set_si (rop, op, rnd)
 % precision, as set by ‘mpfr_set_default_prec’.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
   ret = mex_apa_interface (1312, rop, op, rnd);
 end
 

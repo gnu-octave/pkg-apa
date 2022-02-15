@@ -16,9 +16,6 @@ function mpfr_init2 (x, prec)
 % undefined).
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   mex_apa_interface (1000, x, prec);
 end
 

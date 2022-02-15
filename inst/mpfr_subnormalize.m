@@ -32,9 +32,6 @@ function ret = mpfr_subnormalize (x, t, rnd)
 % change ‘emin’ before any computation, if possible.
 %
 
-  if (isa (x, 'mpfr_t'))
-    x = x.idx;
-  end
   ret = mex_apa_interface (1197, x, t, rnd);
 end
 

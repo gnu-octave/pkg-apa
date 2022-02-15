@@ -7,9 +7,6 @@ function ret = mpfr_number_p (op)
 % otherwise.
 %
 
-  if (isa (op, 'mpfr_t'))
-    op = op.idx;
-  end
   ret = mex_apa_interface (1071, op);
 end
 

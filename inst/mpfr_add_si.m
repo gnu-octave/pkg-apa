@@ -10,12 +10,6 @@ function ret = mpfr_add_si (rop, op1, op2, rnd)
 % ‘IEEE_DBL_MANT_DIG’, and if not defined 53 bits).
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op1, 'mpfr_t'))
-    op1 = op1.idx;
-  end
   ret = mex_apa_interface (1332, rop, op1, op2, rnd);
 end
 

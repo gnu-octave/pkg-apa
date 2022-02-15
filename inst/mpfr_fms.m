@@ -8,18 +8,6 @@ function ret = mpfr_fms (rop, op1, op2, op3, rnd)
 % That is, the fused operation matters only for rounding.
 %
 
-  if (isa (rop, 'mpfr_t'))
-    rop = rop.idx;
-  end
-  if (isa (op1, 'mpfr_t'))
-    op1 = op1.idx;
-  end
-  if (isa (op2, 'mpfr_t'))
-    op2 = op2.idx;
-  end
-  if (isa (op3, 'mpfr_t'))
-    op3 = op3.idx;
-  end
   ret = mex_apa_interface (1057, rop, op1, op2, op3, rnd);
 end
 
