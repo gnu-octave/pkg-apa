@@ -120,6 +120,18 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
 
 
 /**
+ * Check for valid index range.
+ *
+ * @param[in] idx Pointer to index (1-based, idx_t) of MPFR variables.
+ *
+ * @returns `0` if `idx` is invalid, otherwise `idx` is valid.
+ */
+
+int
+is_valid (idx_t *idx);
+
+
+/**
  * Safely read an index (idx_t) structure.
  *
  * @param[in] idx MEX input position index (0 is first).
