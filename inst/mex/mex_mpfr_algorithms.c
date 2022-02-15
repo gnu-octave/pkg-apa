@@ -284,18 +284,16 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
                        "a [%d x %d] matrix\n", M, N);
 
         plhs[0] = mxCreateNumericMatrix (N, 1, mxDOUBLE_CLASS, mxREAL);
-        double * ret_ptr    = mxGetPr (plhs[0]);
-        mpfr_ptr rop_ptr    = &mpfr_data[rop.start - 1];
-        mpfr_ptr op_ptr     = &mpfr_data[op.start - 1];
+        double * ret_ptr = mxGetPr (plhs[0]);
+        mpfr_ptr rop_ptr = &mpfr_data[rop.start - 1];
+        mpfr_ptr op_ptr  = &mpfr_data[op.start - 1];
         #pragma omp parallel for
         for (size_t j = 0; j < N; j++)
           {
             int ret = mpfr_set (rop_ptr + j, op_ptr + M * j, rnd);
             for (size_t i = 1; i < M; i++)
-              {
-                ret |= mpfr_min (rop_ptr + j, rop_ptr + j,
-                                              op_ptr + M * j + i, rnd);
-              }
+              ret |= mpfr_min (rop_ptr + j, rop_ptr + j,
+                               op_ptr + M * j + i, rnd);
             ret_ptr[j] = (double) ret;
           }
 
