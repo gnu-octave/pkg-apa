@@ -61,7 +61,6 @@ extern int VERBOSE;
  *
  * @param num Desired number of MEX `nrhs`.
  */
-
 #define MEX_NARGINCHK(num) \
   if (nrhs != (num))       \
     MEX_FCN_ERR ("cmd[%d]: Invalid number of arguments.\n", cmd_code);
@@ -83,7 +82,6 @@ typedef struct
  *
  * @returns length of index range.
  */
-
 inline size_t
 length (idx_t *idx)
 {
@@ -103,7 +101,6 @@ length (idx_t *idx)
  *
  * @returns success of extraction.
  */
-
 int
 extract_d (int idx, int nrhs, const mxArray *prhs[], double *d);
 
@@ -120,7 +117,6 @@ extract_d (int idx, int nrhs, const mxArray *prhs[], double *d);
  *
  * @returns success of extraction.
  */
-
 int
 extract_si (int idx, int nrhs, const mxArray *prhs[], int64_t *si);
 
@@ -137,7 +133,6 @@ extract_si (int idx, int nrhs, const mxArray *prhs[], int64_t *si);
  *
  * @returns success of extraction.
  */
-
 int
 extract_ui (int idx, int nrhs, const mxArray *prhs[], uint64_t *ui);
 
@@ -155,7 +150,6 @@ extract_ui (int idx, int nrhs, const mxArray *prhs[], uint64_t *ui);
  *
  * @returns success of extraction.
  */
-
 int
 extract_ui_vector (int idx, int nrhs, const mxArray *prhs[], uint64_t **ui,
                    size_t len);

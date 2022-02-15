@@ -34,7 +34,6 @@
  *                   scalar (ignored) return value.
  * @param strategy for matrix multiplication.
  */
-
 void
 mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
               mpfr_prec_t prec, mpfr_rnd_t rnd,

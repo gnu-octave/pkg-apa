@@ -30,7 +30,6 @@
  * @param prhs MEX parameter.
  * @param cmd_code code of command to execute (2000 - 2999).
  */
-
 void
 mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
                      int nrhs, const mxArray *prhs[],

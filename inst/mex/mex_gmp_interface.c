@@ -27,7 +27,6 @@
  * @param prhs MEX parameter.
  * @param cmd_code code of command to execute (1000 - 1999).
  */
-
 void
 mex_gmp_interface (int nlhs, mxArray *plhs[],
                    int nrhs, const mxArray *prhs[],

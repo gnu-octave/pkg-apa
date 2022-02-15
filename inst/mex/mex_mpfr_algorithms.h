@@ -28,7 +28,6 @@
  * @param prhs MEX parameter.
  * @param cmd_code code of command to execute (2000 - 2999).
  */
-
 void
 mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
                      int nrhs, const mxArray *prhs[],
@@ -47,7 +46,6 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
  *
  * @returns MPFR ternary return value (logical OR of all return values).
  */
-
 int
 mpfr_apa_dot (mpfr_ptr rop, mpfr_ptr a, mpfr_ptr b, uint64_t N,
               mpfr_prec_t prec, mpfr_rnd_t rnd);
@@ -70,7 +68,6 @@ mpfr_apa_dot (mpfr_ptr rop, mpfr_ptr a, mpfr_ptr b, uint64_t N,
  *                   scalar (ignored) return value.
  * @param strategy for matrix multiplication.
  */
-
 void
 mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
               mpfr_prec_t prec, mpfr_rnd_t rnd,
@@ -118,7 +115,6 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
  * @returns MPFR ternary return value @c ret_ptr (logical OR of all return
  *          values).
  */
-
 void
 mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
                 uint64_t *IPIV, int *INFO, mpfr_prec_t prec, mpfr_rnd_t rnd,
@@ -171,7 +167,6 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
  * @returns MPFR ternary return value @c ret_ptr (logical OR of all return
  *          values).
  */
-
 void
 mpfr_apa_GESV (uint64_t N, uint64_t NRHS, mpfr_ptr A, uint64_t LDA,
                uint64_t *IPIV, mpfr_ptr B, uint64_t LDB, int *INFO,

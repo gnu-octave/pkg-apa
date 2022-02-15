@@ -33,7 +33,6 @@ int VERBOSE = 2;
  *
  * See mex_apa_interface.m for documentation.
  */
-
 void
 mexFunction (int nlhs, mxArray *plhs[],
              int nrhs, const mxArray *prhs[])
@@ -95,7 +94,6 @@ mexFunction (int nlhs, mxArray *plhs[],
  *
  * @returns success of extraction.
  */
-
 int
 extract_d (int idx, int nrhs, const mxArray *prhs[], double *d)
 {
@@ -121,7 +119,6 @@ extract_d (int idx, int nrhs, const mxArray *prhs[], double *d)
  *
  * @returns success of extraction.
  */
-
 int
 extract_si (int idx, int nrhs, const mxArray *prhs[], int64_t *si)
 {
@@ -149,7 +146,6 @@ extract_si (int idx, int nrhs, const mxArray *prhs[], int64_t *si)
  *
  * @returns success of extraction.
  */
-
 int
 extract_ui (int idx, int nrhs, const mxArray *prhs[], uint64_t *ui)
 {
@@ -178,7 +174,6 @@ extract_ui (int idx, int nrhs, const mxArray *prhs[], uint64_t *ui)
  *
  * @returns success of extraction.
  */
-
 int
 extract_ui_vector (int idx, int nrhs, const mxArray *prhs[], uint64_t **ui,
                    size_t len)

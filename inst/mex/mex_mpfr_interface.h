@@ -49,7 +49,6 @@ extern size_t   mpfr_data_size;
  * @param prhs MEX parameter.
  * @param cmd_code code of command to execute (1000 - 1999).
  */
-
 void
 mex_mpfr_interface (int nlhs, mxArray *plhs[],
                     int nrhs, const mxArray *prhs[],
@@ -62,7 +61,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
  * @param mex_rhs Position (0-based) in MEX input.
  * @param name    Desired variable name.
  */
-
 #define MEX_MPFR_T(mex_rhs, name)                                     \
   idx_t name;                                                         \
   if (! extract_idx ((mex_rhs), nrhs, prhs, &name))                   \
@@ -76,7 +74,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
  * @param mex_rhs Position (0-based) in MEX input.
  * @param name    Desired variable name.
  */
-
 #define MEX_MPFR_RND_T(mex_rhs, name)                              \
   mpfr_rnd_t name = mpfr_get_default_rounding_mode ();             \
   if (! extract_rounding_mode ((mex_rhs), nrhs, prhs, &name))      \
@@ -91,7 +88,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
  * @param mex_rhs Position (0-based) in MEX input.
  * @param name    Desired variable name.
  */
-
 #define MEX_MPFR_PREC_T(mex_rhs, name)                           \
   mpfr_prec_t name = mpfr_get_default_prec ();                   \
   if (! extract_prec ((mex_rhs), nrhs, prhs, &name))             \
@@ -106,7 +102,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
  * @param mex_rhs Position (0-based) in MEX input.
  * @param name    Desired variable name.
  */
-
 #define MEX_MPFR_EXP_T(mex_rhs, name)                             \
   mpfr_exp_t name = mpfr_get_emin ();                             \
   {                                                               \
@@ -126,13 +121,12 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
  *
  * @returns `0` if `idx` is invalid, otherwise `idx` is valid.
  */
-
 int
 is_valid (idx_t *idx);
 
 
 /**
- * Safely read an index (idx_t) structure.
+ * Safely read MPFR index (idx_t) structure.
  *
  * @param[in] idx MEX input position index (0 is first).
  * @param[in] nrhs Number of right-hand sides.
@@ -143,7 +137,6 @@ is_valid (idx_t *idx);
  *
  * @returns success of extraction.
  */
-
 int
 extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t *idx_vec);
 
@@ -172,7 +165,6 @@ extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t *idx_vec);
  *
  * @returns success of extraction.
  */
-
 int
 extract_rounding_mode (int idx, int nrhs, const mxArray *prhs[],
                        mpfr_rnd_t *rnd);
@@ -190,7 +182,6 @@ extract_rounding_mode (int idx, int nrhs, const mxArray *prhs[],
  *
  * @returns success of extraction.
  */
-
 int
 extract_prec (int idx, int nrhs, const mxArray *prhs[], mpfr_prec_t *prec);
 
@@ -205,7 +196,6 @@ extract_prec (int idx, int nrhs, const mxArray *prhs[], mpfr_prec_t *prec);
  *
  * @returns success of MPFR variable creation.
  */
-
 int
 mex_mpfr_allocate (size_t count, idx_t *idx);
 
@@ -218,7 +208,6 @@ mex_mpfr_allocate (size_t count, idx_t *idx);
  *
  * @returns success of MPFR variables creation.
  */
-
 void
 mex_mpfr_mark_free (idx_t *idx);
 
