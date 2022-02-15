@@ -291,19 +291,48 @@ mex_mpfr_allocate (size_t count, idx_t *idx)
 int
 extract_idx (int idx, int nrhs, const mxArray *prhs[], idx_t *idx_vec)
 {
-  uint64_t *ui = NULL;
-
-  if (extract_ui_vector (idx, nrhs, prhs, &ui, 2))
+  if (idx >= nrhs)
     {
-      (*idx_vec).start = ui[0];
-      (*idx_vec).end   = ui[1];
-      mxFree (ui);
-      if (is_valid (idx_vec))
-        return (1);
-
-      DBG_PRINTF ("Invalid index [%d:%d].\n", (*idx_vec).start, (*idx_vec).end);
+      DBG_PRINTF ("extract_idx: idx(%d) >= nrhs(%d).\n", idx, nrhs);
+      return (0);
     }
-  DBG_PRINTF ("%s\n", "Failed.");
+
+  const mxArray *mpfr_t_idx = NULL;
+
+  if (mxIsClass (prhs[idx], "mpfr_t"))
+    {
+      mpfr_t_idx = mxGetProperty (prhs[idx], 0, "idx");
+      if (mpfr_t_idx == NULL)
+        {
+          DBG_PRINTF ("mpfr_t object in prhs[%d] has no 'idx' field.\n", idx);
+          return (0);
+        }
+    }
+  else
+    mpfr_t_idx = prhs[idx];
+
+  if (mxIsNumeric (mpfr_t_idx)
+      && ((mxGetM (mpfr_t_idx) * mxGetN (mpfr_t_idx) == 2)))
+    {
+      double *vec = mxGetPr (mpfr_t_idx);
+      if ((vec[0] >= 0.0) && mxIsFinite (vec[0]) && (floor (vec[0]) == vec[0])
+          && (vec[1] >= 0.0) && mxIsFinite (vec[1])
+          && (floor (vec[1]) == vec[1]))
+        {
+          idx_t tmp_vec = { (size_t) vec[0], (size_t) vec[1] };
+          if (is_valid (&tmp_vec))
+            {
+              (*idx_vec).start = tmp_vec.start;
+              (*idx_vec).end   = tmp_vec.end;
+              return (1);
+            }
+
+          DBG_PRINTF ("Invalid index [%d:%d].\n", (*idx_vec).start,
+                      (*idx_vec).end);
+        }
+    }
+
+  DBG_PRINTF ("extract_idx: %s\n", "Failed.");
   return (0);
 }
 
