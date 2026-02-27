@@ -3,6 +3,14 @@ function install_apa (cmd)
 %
 %   'rebuild'  -  Rebuild and overwrite the MEX interface.
 %
+% After installation, find the version of dynamically linked GMP and MPFR libraries with
+%
+%    >> gmp_version ()
+%    ans = 6.3.0
+%
+%    >> mpfr_get_version ()
+%    ans = 4.2.1
+%
 
   if (nargin < 1)
     cmd = '';
@@ -12,13 +20,10 @@ function install_apa (cmd)
 
   old_dir = cd (apa_dir);
 
-  if (strcmp (cmd, 'rebuild') ...
-      || exist (['mex_apa_interface.', mexext()], 'file') ~= 3)
+  if (strcmp (cmd, 'rebuild') || exist (['mex_apa_interface.', mexext()], 'file') ~= 3)
 
     cd (fullfile (apa_dir, 'mex'));
 
-    header = {'gmp.h', 'mpfr.h', 'mpf2mpfr.h'};
-    static_libs = {'libmpfr.a', 'libgmp.a'};
     cfiles = {'mex_apa_interface.c', ...
               'mex_gmp_interface.c', ...
               'mex_mpfr_interface.c', ...
@@ -30,9 +35,8 @@ function install_apa (cmd)
               'mex_mpfr_algorithms_gauss.c'};
 
     % Set cflags and ldflags according to OS and Octave/Matlab.
-    cflags = {'--std=c11', '-Wall', '-Wextra'};
+    cflags = {'-Wall', '-Wextra'};
     if (ismac ())
-      static_libs_dir = 'macos';
       cflags = [cflags, {'-Xpreprocessor', '-fopenmp'}];
       if (exist ('OCTAVE_VERSION', 'builtin') == 5)
         ldflags = {'-lomp'};
@@ -42,55 +46,19 @@ function install_apa (cmd)
         ldflags = fullfile (matlabroot (), 'sys', 'os', computer ('arch'));
         ldflags = {['-L', ldflags], '-liomp5'};
       end
-    elseif (ispc ())
-      static_libs_dir = 'mswin';
+    elseif (isunix () || ispc ())
       cflags = [cflags, {'-fopenmp'}];
-      if (exist('OCTAVE_VERSION', 'builtin') == 5)
-        ldflags = {'-lgomp'};
-      else
-        static_libs = [static_libs, {'libgomp.a'}];
-        ldflags = {};
-      end
-    elseif (isunix ())
-      static_libs_dir = 'unix';
-      cflags = [cflags, {'-fopenmp'}];
-      ldflags = {'-lgomp'};
+      ldflags = {'-lmpfr', '-lgomp'};
     else
       error ('install_apa: Could not detect operating system.');
     end
 
-    % Download pre-compiled static GMP and MPFR library.
-    if (exist (static_libs_dir, 'dir') ~= 7)
-      static_libs_url = 'https://github.com/gnu-octave/pkg-apa/releases/download/';
-      static_libs_ver = '1.0.0';
-      static_libs_zip = sprintf ('%s-libs-minimal-%s.zip', static_libs_dir, ...
-                                 static_libs_ver);
-      static_libs_url = sprintf ('%sv%s/%s', static_libs_url, ...
-                                 static_libs_ver, static_libs_zip);
-      urlwrite (static_libs_url, static_libs_zip);
-      unzip  (static_libs_zip);
-      delete (static_libs_zip);
-    end
-
-    % Add static GMP and MPFR library to compiler flags.
-    if (is_complete (pwd (), [header, static_libs]))
-      cflags{end+1} = '-I.';
-      ldflags = [static_libs, ldflags];
-    elseif (is_complete (fullfile (pwd (), static_libs_dir), ...
-                         [header, static_libs]))
-      cflags{end+1} = ['-I', static_libs_dir];
-      ldflags = [fullfile(static_libs_dir, static_libs), ldflags];
-    else
-      error (['install_apa: Could not find pre-built GMP or MPFR ', ...
-        'libraries.  Please run the Makefile in the "mex" directory.']);
-    end
 
     try
       if (exist('OCTAVE_VERSION', 'builtin') == 5)
         mex (cflags{:}, cfiles{:}, ldflags{:});
       else
-        mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], ...
-             cfiles{:}, ldflags{:});
+        mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], cfiles{:}, ldflags{:});
       end
       movefile (['mex_apa_interface.', mexext()], '..');
     catch
@@ -104,19 +72,6 @@ function install_apa (cmd)
   cd (old_dir);
 
   add_to_path_if_not_exists (apa_dir);
-end
-
-
-
-function bool = is_complete (dir, files)
-  bool = true;
-  for ff = files
-    f = ff{1};
-    bool = bool && (exist (fullfile (dir, f), 'file') == 2);
-    if (~ bool)
-      return;
-    end
-  end
 end
 
 
@@ -146,3 +101,4 @@ end
 % Adapter for Octave to run the test suite for "pkg test".
 %!test
 % test_apa ();
+
