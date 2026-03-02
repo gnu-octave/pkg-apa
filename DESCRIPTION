@@ -1,9 +1,9 @@
 name: apa
-version: 1.0.0
-date: 2021-11-22
+version: 1.1.0
+date: 2026-03-02
 author: Kai T. Ohlhus <k.ohlhus@gmail.com>
 maintainer: Kai T. Ohlhus <k.ohlhus@gmail.com>
-title: Octave/Matlab arbitrary precision arithmetic.
-description: Octave/Matlab arbitrary precision arithmetic.
+title: Arbitrary Precision Arithmetic via MPFR interface for Octave/Matlab.
+description: Arbitrary Precision Arithmetic via MPFR interface for Octave/Matlab.
 categories: package
-depends: octave (>= 4.0.0)
+depends: octave (>= 9.1.0)

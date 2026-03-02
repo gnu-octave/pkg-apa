@@ -3,75 +3,73 @@
 For general installation instructions, please read `README.md`.
 
 The APA Octave/Matlab MEX-interface consists of several source files in the
-`inst/mex` directory (C and header files) and in the released package
-version with pre-compiled static GMP and MPFR libraries for MS Windows, macOS,
-and UNIX (Linux).
+`inst/mex` directory (C and header files).
 
-If those pre-compiled libraries are missing or not working, please read below.
+## Dependencies
 
-The APA MEX interface is known to work and tested for
+- Multiple Precision Floating-Point Reliable Library (MPFR) 4.1.0+
+  - Website: <https://www.mpfr.org/mpfr-current/mpfr.html>
+  - Ubuntu Linux: `sudo apt-get install libmpfr-dev` <https://launchpad.net/ubuntu/+source/mpfr4>
+  - Fedora Linux: `sudo dnf install mpfr-devel` <https://packages.fedoraproject.org/pkgs/mpfr/mpfr-devel>
+  - macOS Homebrew: `brew install mpfr` <https://formulae.brew.sh/formula/mpfr>
+  - MS Windows mingw: `pacman -S mingw-w64-x86_64-mpfr` <https://packages.msys2.org/packages/mingw-w64-x86_64-mpfr>
+- GNU Multiple Precision Arithmetic Library (GMP) 6.2.0+
+  - Website: <https://gmplib.org/>
+  - Ubuntu Linux: `sudo apt-get install libgmp-dev` <https://launchpad.net/ubuntu/+source/gmp>
+  - Fedora Linux: `sudo dnf install gmp-devel` <https://packages.fedoraproject.org/pkgs/gmp/gmp-devel>
+  - macOS Homebrew: `brew install gmp` <https://formulae.brew.sh/formula/gmp>
+  - MS Windows mingw: `pacman -S mingw-w64-x86_64-gmp` <https://packages.msys2.org/packages/mingw-w64-x86_64-gmp>
 
-- GNU Octave
-  - Version 6.4.0
-    - MS Windows 10: <https://www.gnu.org/software/octave/download#ms-windows>
-    - macOS 11 (Big Sur): <https://formulae.brew.sh/formula/octave>
-    - Linux (openSUSE 15.3): <https://github.com/gnu-octave/docker>
-- Matlab
-  - R2021a
-    - MS Windows 10: Official installer
-    - macOS 11 (Big Sur): Official installer
-    - Linux (openSUSE 15.3): Official installer
+### GNU Octave 9.1.0+
 
-> **Matlab Note:** The mex compiler must be fully functional.
-> Please consult the official Matlab support or the website
-> <https://www.mathworks.com/support/requirements/supported-compilers.html>,
-> if you face any issues.
-> For MS Windows, the free MinGW compiler must be used.
+- MS Windows: <https://www.gnu.org/software/octave/download#ms-windows>
+- macOS: <https://formulae.brew.sh/formula/octave>
+- Linux: <https://github.com/gnu-octave/docker>
 
-> **MS Windows Note:** To compile MPFR with Visual Studio, please look at the
-> following project <https://github.com/BrianGladman/mpfr>.  However, this
-> approach is not supported by APA and requires some adaptions of this project.
+### Matlab R2025b+
 
+#### MS Windows
 
-## Compiling static GMP and MPFR libraries for MS Windows, macOS, and UNIX (Linux)
+Please follow the instructions from <https://www.fil.ion.ucl.ac.uk/spm/docs/development/compilation/windows/>:
 
-> Usually this step is **not** necessary, as pre-compiled static library
-> versions (`libgmp.a`, `libmpfr.a`, `gmp.h`, `mpfr.h`, and `mpf2mpfr.h`)
-> are included in the released package in the respective folders
-> - `apa/inst/mex/macos`
-> - `apa/inst/mex/mswin`
-> - `apa/inst/mex/unix`
+> Download and install MSYS2 from <https://www.msys2.org/> in directory `C:\msys64`.
+>
+> Then, from MSYS2, type:
+> ```
+> pacman -Syu
+> pacman -Su  
+> pacman -S --needed base-devel mingw-w64-x86_64-toolchain
+> pacman -S mingw-w64-x86_64-mpfr mingw-w64-x86_64-gmp  
+> ```
+>
+> Start MATLAB and type:
+> ```
+> setenv('MW_MINGW64_LOC', 'C:\msys64\mingw64')
+> mex -setup
+> % MEX configured to use 'MinGW64 Compiler (C)' for C language compilation.
+> ```
+>
+> Do not worry if this warning is displayed:
+> ```
+> Warning: The MATLAB C and Fortran API has changed to support MATLAB
+>      variables with more than 2^32-1 elements. You will be required
+>      to update your code to utilize the new API.
+> ```
 
-For macOS and UNIX/Linux systems (Octave or Matlab) this can be conveniently
-done by calling:
-```matlab
-cd (fileparts (which ('install_apa.m')));  % 'apa/inst'
-cd mex
-system ('make')
+See also:
+- <https://www.mathworks.com/matlabcentral/fileexchange/52848-matlab-support-for-mingw-w64-c-c-fortran-compiler>
+- <https://www.mathworks.com/support/requirements/supported-compilers.html>.
+
+> **Note:** To compile MPFR with Visual Studio, please look at the following project <https://github.com/BrianGladman/mpfr>.
+> However, this approach is not supported by APA and requires some adaptions of this project.
+
+#### Linux
+
+To use MATLAB's MEX compiler, MATLAB must eventually started from Terminal with this command
+
+```bash
+# For libstdc++ library in Ubuntu. The system libstdc++ can be force loaded with the required version.
+export LD_PRELOAD=/lib/x86_64-linux-gnu/libstdc++.so.6 matlab 
 ```
 
-For MS Windows one has to cross-compile the respective libraries using
-the [octave-mxe](https://wiki.octave.org/Windows_Installer) project.
-
-> The following steps have to be done on Linux (e.g. in a virtual machine).
-
-```
-hg clone https://hg.octave.org/mxe-octave
-cd mxe-octave
-./bootstrap
-./configure \
-  --enable-devel-tools \
-  --enable-binary-packages \
-  --with-ccache \
-  --enable-octave=release \
-  --enable-static \
-  --disable-shared
-make JOBS=8 mpfr libgomp
-cp ./usr/x86_64-w64-mingw32/lib/gcc/x86_64-w64-mingw32/11.2.0/libgomp.a \
-   ./usr/x86_64-w64-mingw32/lib/libgmp.a \
-   ./usr/x86_64-w64-mingw32/lib/libmpfr.a \
-   ./usr/x86_64-w64-mingw32/include/gmp.h \
-   ./usr/x86_64-w64-mingw32/include/mpfr.h \
-   ./usr/x86_64-w64-mingw32/include/mpf2mpfr.h \
-   /path/to/apa/inst/mex/mswin
-```
+<https://www.mathworks.com/matlabcentral/answers/2021516-why-doesn-t-simple-mex-compilation-work-on-linux#answer_1340311>

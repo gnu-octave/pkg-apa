@@ -6,6 +6,3 @@
 .ipynb_checkpoints/
 .vscode/
 dev/
-inst/mex/macos/
-inst/mex/mswin/
-inst/mex/unix/

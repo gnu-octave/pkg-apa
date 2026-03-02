@@ -1,27 +1,27 @@
-# APA - Octave/Matlab arbitrary precision arithmetic.
+# APA - Arbitrary Precision Arithmetic via MPFR interface for Octave/Matlab.
 
 ## Installation
 
 From the Octave command-line run:
-
-
 ```octave
-pkg install 'https://github.com/gnu-octave/apa/releases/download/v1.0.0/apa-1.0.0.zip'
+pkg install 'https://github.com/gnu-octave/pkg-apa/archive/refs/heads/main.tar.gz'
 pkg load apa
 pkg test apa
 ```
 
-From the Matlab command-line run (also works for Octave):
-
-
+From the Matlab* command-line run:
 ```octave
-urlwrite ('https://github.com/gnu-octave/apa/releases/download/v1.0.0/apa-1.0.0.zip', ...
-          'apa-1.0.0.zip');
-unzip ('apa-1.0.0.zip');
-cd (fullfile ('apa-1.0.0', 'inst'))
+urlwrite ('https://github.com/gnu-octave/pkg-apa/archive/refs/heads/main.zip', 'pkg-apa-main.zip');
+unzip ('pkg-apa-main.zip');
+cd (fullfile ('pkg-apa-main', 'inst'))
 install_apa
 test_apa
 ```
+
+> The installation in Matlab requires a proper MEX-compiler setup, please see for details
+> [`doc/MEX_INTERFACE.md`](https://github.com/gnu-octave/apa/blob/main/doc/MEX_INTERFACE.md).
+
+
 
 ## High-level MPFR Interface
 

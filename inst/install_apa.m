@@ -37,20 +37,23 @@ function install_apa (cmd)
     % Set cflags and ldflags according to OS and Octave/Matlab.
     cflags = {'-Wall', '-Wextra'};
     if (ismac ())
-      cflags = [cflags, {'-Xpreprocessor', '-fopenmp'}];
-      if (exist ('OCTAVE_VERSION', 'builtin') == 5)
-        ldflags = {'-lomp'};
+      cflags = [cflags, {'-Xpreprocessor'}];
+    end
+    ldflags = {'-lmpfr', '-lgmp'};
+    
+    
+    % Set OpenMP library
+    cflags = [cflags, {'-fopenmp'}];
+    if (exist ('OCTAVE_VERSION', 'builtin') == 5)
+      if (ismac ())
+        ldflags = [ldflags, {'-lomp'}];
       else
-        % Matlab crashes when `gomp` is linked, use omp shipped with Matlab.
-        cflags{end+1} = '-Imacos/matlab';  % Provides omp.h.
-        ldflags = fullfile (matlabroot (), 'sys', 'os', computer ('arch'));
-        ldflags = {['-L', ldflags], '-liomp5'};
+        ldflags = [ldflags, {'-lgomp'}];
       end
-    elseif (isunix () || ispc ())
-      cflags = [cflags, {'-fopenmp'}];
-      ldflags = {'-lmpfr', '-lgomp'};
     else
-      error ('install_apa: Could not detect operating system.');
+      % Matlab crashes when `gomp` is linked, use omp shipped with Matlab.
+      matlab_lib_path = fullfile (matlabroot (), 'sys', 'os', computer ('arch'));
+      ldflags = [ldflags, {['-L', matlab_lib_path], '-liomp5'}];
     end
 
 
@@ -61,17 +64,20 @@ function install_apa (cmd)
         mex (['CFLAGS="$CFLAGS ', strjoin(cflags, ' '), '"'], cfiles{:}, ldflags{:});
       end
       movefile (['mex_apa_interface.', mexext()], '..');
-    catch
+    catch exception
       cd (old_dir);
-      error ('MEX interface creation failed.  APA cannot be used.');
+      error ('MEX interface creation failed: %s\n\nMPFR cannot be used.', exception.message);
     end
 
-    disp ('APA is ready to use.');
   end
 
   cd (old_dir);
 
   add_to_path_if_not_exists (apa_dir);
+
+  disp ('APA is ready to use.');
+  disp (['    Detected MPFR version: ', mpfr_get_version(), '']);
+  disp (['    Detected  GMP version: ', gmp_version(),      '']);
 end
 
 
@@ -101,4 +107,3 @@ end
 % Adapter for Octave to run the test suite for "pkg test".
 %!test
 % test_apa ();
-
