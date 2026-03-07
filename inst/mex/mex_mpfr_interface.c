@@ -17,6 +17,8 @@
 
 #include "mex_mpfr_interface.h"
 
+// MAX that avoids double evaluation of arguments.
+// Do NOT used within, e.g. loops, for performance.
 #define MAX(a, b)                                  \
   ({ __typeof__(a)_a = (a); __typeof__(b)_b = (b); \
      _a > _b ? _a : _b; })
@@ -818,14 +820,14 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
                        "mpfr_get_str_ndigits");
         size_t op1Dim = mxGetM (prhs[1]) * mxGetN (prhs[1]);
         size_t op2Dim = mxGetM (prhs[2]) * mxGetN (prhs[2]);
+        size_t maxDim = MAX (op1Dim, op2Dim);
         if ((op1Dim != 1) && (op2Dim != 1) && (op1Dim != op2Dim))
           MEX_FCN_ERR ("cmd[%s]:b and p must be scalar or their dimensions "
                        "must agree\n.", "mpfr_get_str_ndigits");
         DBG_PRINTF ("cmd[mpfr_get_str_ndigits]: dim(b) = %d, dim(p) = %d\n",
                     op1Dim, op2Dim);
 
-        plhs[0] = mxCreateNumericMatrix (MAX (op1Dim, op2Dim), 1,
-                                         mxDOUBLE_CLASS, mxREAL);
+        plhs[0] = mxCreateNumericMatrix (maxDim, 1, mxDOUBLE_CLASS, mxREAL);
         double *ret_ptr    = mxGetPr (plhs[0]);
         double *op1_ptr    = mxGetPr (prhs[1]);
         double *op2_ptr    = mxGetPr (prhs[2]);
@@ -833,7 +835,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t  op2_stride = (op2Dim == 1) ? 0 : 1;
 
         #pragma omp parallel for
-        for (size_t i = 0; i < MAX (op1Dim, op2Dim); i++)
+        for (size_t i = 0; i < maxDim; i++)
           ret_ptr[i] = (double) mpfr_get_str_ndigits (
             (int) op1_ptr[i * op1_stride],
             (mpfr_prec_t) op2_ptr[i * op2_stride]);
@@ -1921,10 +1923,8 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         else
           MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
 
-        plhs[0] = mxCreateNumericMatrix (nlhs
-                                         ? MAX (length (&op1), length (&op2))
-                                         : 1,
-                                         1, mxDOUBLE_CLASS, mxREAL);
+        size_t max_length = MAX (length (&op1), length (&op2));
+        plhs[0] = mxCreateNumericMatrix ((nlhs) ? max_length : 1, 1, mxDOUBLE_CLASS, mxREAL);
         double * ret_ptr    = mxGetPr (plhs[0]);
         mpfr_ptr op1_ptr    = &mpfr_data[op1.start - 1];
         mpfr_ptr op2_ptr    = &mpfr_data[op2.start - 1];
@@ -1932,7 +1932,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   op1_stride = (length (&op1) == 1) ? 0 : 1;
         size_t   op2_stride = (length (&op2) == 1) ? 0 : 1;
         #pragma omp parallel for
-        for (size_t i = 0; i < MAX (length (&op1), length (&op2)); i++)
+        for (size_t i = 0; i < max_length; i++)
           ret_ptr[i * ret_stride] = (double) fcn (op1_ptr + (i * op1_stride),
                                                   op2_ptr + (i * op2_stride));
         return;
@@ -1954,9 +1954,8 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         DBG_PRINTF ("cmd[%d]: op1 = [%d:%d] , op2 = [%d x %d]\n", cmd_code,
                     op1.start, op1.end, op2M, op2N);
 
-        plhs[0] = mxCreateNumericMatrix (
-          (nlhs ? MAX (length (&op1), (op2M * op2N)) : 1), 1, mxDOUBLE_CLASS,
-          mxREAL);
+        size_t max_length = MAX (length (&op1), (op2M * op2N));
+        plhs[0] = mxCreateNumericMatrix ((nlhs ? max_length : 1), 1, mxDOUBLE_CLASS, mxREAL);
         double * ret_ptr    = mxGetPr (plhs[0]);
         mpfr_ptr op1_ptr    = &mpfr_data[op1.start - 1];
         double * op2_ptr    = mxGetPr (prhs[2]);
@@ -1966,14 +1965,14 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         if (cmd_code == 1064)
           {
             #pragma omp parallel for
-            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+            for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_d (
                 op1_ptr + (i * op1_stride), op2_ptr[i * op2_stride]);
           }
         else if (cmd_code == 1034)
           {
             #pragma omp parallel for
-            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+            for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_ui (
                 op1_ptr + (i * op1_stride),
                 (unsigned long) op2_ptr[i * op2_stride]);
@@ -1981,14 +1980,14 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         else if (cmd_code == 1037)
           {
             #pragma omp parallel for
-            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+            for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_si (
                 op1_ptr + (i * op1_stride), (long) op2_ptr[i * op2_stride]);
           }
         else if (cmd_code == 1035)
           {
             #pragma omp parallel for
-            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+            for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_si (
                 op1_ptr + (i * op1_stride),
                 (long double) op2_ptr[i * op2_stride]);
@@ -2001,7 +2000,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
                          cmd_code, MPFR_VERSION_STRING);
           #else
             #pragma omp parallel for
-            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+            for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmpabs_ui (
                 op1_ptr + (i * op1_stride),
                 (unsigned long) op2_ptr[i * op2_stride]);
@@ -2024,9 +2023,8 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         DBG_PRINTF ("cmd[%d]: op1 = [%d:%d] , op2 = [%d x %d]\n", cmd_code,
                     op1.start, op1.end, op2M, op2N);
 
-        plhs[0] = mxCreateNumericMatrix (
-          (nlhs ? MAX (length (&op1), (op2M * op2N)) : 1), 1, mxDOUBLE_CLASS,
-          mxREAL);
+        size_t max_length = MAX (length (&op1), (op2M * op2N));
+        plhs[0] = mxCreateNumericMatrix ((nlhs ? max_length : 1), 1, mxDOUBLE_CLASS, mxREAL);
         double * ret_ptr    = mxGetPr (plhs[0]);
         mpfr_ptr op1_ptr    = &mpfr_data[op1.start - 1];
         double * op2_ptr    = mxGetPr (prhs[2]);
@@ -2036,7 +2034,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         if (cmd_code == 1065)
           {
             #pragma omp parallel for
-            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+            for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_ui_2exp (
                 op1_ptr + (i * op1_stride),
                 (unsigned long int) op2_ptr[i * op2_stride], e);
@@ -2044,7 +2042,7 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         else
           {
             #pragma omp parallel for
-            for (size_t i = 0; i < MAX (length (&op1), (op2M * op2N)); i++)
+            for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_si_2exp (
                 op1_ptr + (i * op1_stride), (long int) op2_ptr[i * op2_stride],
                 e);
