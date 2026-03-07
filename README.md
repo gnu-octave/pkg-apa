@@ -4,7 +4,7 @@
 
 From the Octave command-line run:
 ```octave
-pkg install 'https://github.com/gnu-octave/pkg-apa/archive/refs/heads/main.tar.gz'
+pkg install apa
 pkg load apa
 pkg test apa
 ```
