@@ -3,16 +3,13 @@ function ret = mpfr_set_sj (rop, op, rnd)
 %
 % Set the value of ROP from OP, rounded toward the given direction
 % RND.  Note that the input 0 is converted to +0 by ‘mpfr_set_ui’,
-% ‘mpfr_set_si’, ‘mpfr_set_uj’, ‘mpfr_set_sj’, The
-% ‘mpfr_set_float128’ function is built only with the configure
-% option ‘--enable-float128’, which requires the compiler or system
-% provides the ‘_Float128’ data type (GCC 4.3 or later supports this
-% data type); to use ‘mpfr_set_float128’, one should define the macro
-% ‘MPFR_WANT_FLOAT128’ before including ‘mpfr.h’.  ‘mpfr_set_z’,
-% ‘mpfr_set_q’ and ‘mpfr_set_f’, regardless of the rounding mode.  If
-% the system does not support the IEEE 754 standard, ‘mpfr_set_flt’,
-% ‘mpfr_set_d’, ‘mpfr_set_ld’, ‘mpfr_set_decimal64’ and
-% ‘mpfr_set_decimal128’ might not preserve the signed zeros.  The
+% ‘mpfr_set_si’, ‘mpfr_set_uj’, ‘mpfr_set_sj’, ‘mpfr_set_z’,
+% ‘mpfr_set_q’ and ‘mpfr_set_f’, regardless of the rounding mode.  To
+% use the ‘mpfr_set_float128’ function, see *note Nomenclature and
+% Types::.  If the system does not support the IEEE 754 standard,
+% ‘mpfr_set_flt’, ‘mpfr_set_d’, ‘mpfr_set_ld’, ‘mpfr_set_decimal64’
+% and ‘mpfr_set_decimal128’ might not preserve the signed zeros (and
+% in any case they don't preserve the sign bit of NaN).  The
 % ‘mpfr_set_decimal64’ and ‘mpfr_set_decimal128’ functions are built
 % only with the configure option ‘--enable-decimal-float’, and when
 % the compiler or system provides the ‘_Decimal64’ and ‘_Decimal128’

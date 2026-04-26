@@ -3,8 +3,9 @@ function mpfr_set_nan (x)
 %
 % Set the variable X to NaN (Not-a-Number), infinity or zero
 % respectively.  In ‘mpfr_set_inf’ or ‘mpfr_set_zero’, X is set to
-% plus infinity or plus zero iff SIGN is nonnegative; in
-% ‘mpfr_set_nan’, the sign bit of the result is unspecified.
+% positive infinity (+Inf) or positive zero (+0) iff SIGN is
+% non-negative; in ‘mpfr_set_nan’, the sign bit of the result is
+% unspecified.
 %
 
   mex_apa_interface (1010, x);

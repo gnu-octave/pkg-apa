@@ -3,9 +3,10 @@ function ret = mpfr_set_str (rop, s, base, rnd)
 %
 % Set ROP to the value of the string S in base BASE, rounded in the
 % direction RND.  See the documentation of ‘mpfr_strtofr’ for a
-% detailed description of the valid string formats.  Contrary to
-% ‘mpfr_strtofr’, ‘mpfr_set_str’ requires the _whole_ string to
-% represent a valid floating-point number.
+% detailed description of BASE (with its special value 0) and the
+% valid string formats.  Contrary to ‘mpfr_strtofr’, ‘mpfr_set_str’
+% requires the _whole_ string to represent a valid floating-point
+% number.
 %
 % The meaning of the return value differs from other MPFR functions:
 % it is 0 if the entire string up to the final null character is a

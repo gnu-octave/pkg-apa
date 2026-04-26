@@ -24,7 +24,8 @@ function ret = mpfr_roundeven (rop, op)
 % C99 rule for the ‘rint’ function.  If you want the behavior to be
 % more like IEEE 754 / ISO TS 18661-1, i.e., the usual behavior where
 % the round-to-integer function is regarded as any other mathematical
-% function, you should use one the ‘mpfr_rint_*’ functions instead.
+% function, you should use one of the ‘mpfr_rint_*’ functions
+% instead.
 %
 % Note that no double rounding is performed; for instance, 10.5
 % (1010.1 in binary) is rounded by ‘mpfr_rint’ with rounding to

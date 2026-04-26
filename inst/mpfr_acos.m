@@ -7,7 +7,7 @@ function ret = mpfr_acos (rop, op, rnd)
 % mode, this number might not be in the output range 0 <= ROP < Pi of
 % the arc-cosine function; still, the result lies in the image of the
 % output range by the rounding function.  The same holds for
-% ‘asin(-1)’, ‘asin(1)’, ‘atan(-Inf)’, ‘atan(+Inf)’ or for ‘atan(op)’
+% ‘asin(-1)’, ‘asin(1)’, ‘atan(-Inf)’, ‘atan(+Inf)’ or for ‘atan(OP)’
 % with large OP and small precision of ROP.
 %
 

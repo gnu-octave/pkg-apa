@@ -1,8 +1,9 @@
 function ret = mpfr_log1p (rop, op, rnd)
 % ret = mpfr_log1p (rop, op, rnd)
 %
-% Set ROP to the logarithm of one plus OP, rounded in the direction
-% RND.  Set ROP to −Inf if OP is −1.
+% Set ROP to the logarithm of one plus OP (in radix two for
+% ‘mpfr_log2p1’, and in radix ten for ‘mpfr_log10p1’), rounded in the
+% direction RND.  Set ROP to −Inf if OP is −1.
 %
 
   ret = mex_apa_interface (1087, rop, op, rnd);

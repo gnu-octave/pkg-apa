@@ -5,8 +5,9 @@ function ret = mpfr_rec_sqrt (rop, op, rnd)
 % direction RND.  Set ROP to +Inf if OP is ±0, +0 if OP is +Inf, and
 % NaN if OP is negative.  Warning!  Therefore the result on −0 is
 % different from the one of the rSqrt function recommended by the
-% IEEE 754-2008 standard (Section 9.2.1), which is −Inf instead of
-% +Inf.
+% IEEE 754 standard (Section 9.2.1), which is −Inf instead of +Inf.
+% However, ‘mpfr_rec_sqrt’ is equivalent to ‘mpfr_rootn_si’ with
+% N = −2.
 %
 
   ret = mex_apa_interface (1044, rop, op, rnd);

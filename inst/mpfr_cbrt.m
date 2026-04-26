@@ -8,10 +8,8 @@ function ret = mpfr_cbrt (rop, op, rnd)
 % set ROP to zero with the sign obtained by the usual limit rules,
 % i.e., the same sign as OP if N is odd, and positive if N is even.
 %
-% These functions agree with the rootn function of the IEEE 754-2008
-% standard and the P754/D2.41 draft of the next standard
-% (Section 9.2).  Note that it is here restricted to N >= 0.
-% Functions allowing a negative N may be implemented in the future.
+% These functions agree with the rootn operation of the IEEE 754
+% standard.
 %
 
   ret = mex_apa_interface (1045, rop, op, rnd);

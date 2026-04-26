@@ -6,9 +6,9 @@ function ret = mpfr_root (rop, op, n, rnd)
 % consistent with ‘mpfr_sqrt’).  Said otherwise, if OP is zero, set
 % ROP to OP.
 %
-% This function predates the IEEE 754-2008 standard and behaves
-% differently from its rootn function.  It is marked as deprecated
-% and will be removed in a future release.
+% This function predates IEEE 754-2008, where rootn was introduced,
+% and behaves differently from the IEEE 754 rootn operation.  It is
+% marked as deprecated and will be removed in a future release.
 %
 
   ret = mex_apa_interface (1047, rop, op, n, rnd);

@@ -1,8 +1,10 @@
 function ret = mpfr_expm1 (rop, op, rnd)
 % ret = mpfr_expm1 (rop, op, rnd)
 %
-% Set ROP to the exponential of OP followed by a subtraction by one,
-% rounded in the direction RND.
+% Set ROP to the exponential of OP followed by a subtraction by one
+% (resp. 2 power of OP followed by a subtraction by one, and 10 power
+% of OP followed by a subtraction by one), rounded in the direction
+% RND.
 %
 
   ret = mex_apa_interface (1091, rop, op, rnd);

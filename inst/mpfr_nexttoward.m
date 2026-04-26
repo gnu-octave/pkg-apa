@@ -9,6 +9,11 @@ function mpfr_nexttoward (x, y)
 % floating-point numbers).  If the result is zero, it keeps the same
 % sign.  No underflow, overflow, or inexact exception is raised.
 %
+% Note: Concerning the exceptions and the sign of 0, the behavior
+% differs from the ISO C ‘nextafter’ and ‘nexttoward’ functions.  It
+% is similar to the nextUp and nextDown operations from IEEE 754
+% (introduced in its 2008 revision).
+%
 
   mex_apa_interface (1166, x, y);
 end

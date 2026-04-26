@@ -55,11 +55,12 @@ function [ret, endptr] = mpfr_strtofr (rop, nptr, base, rnd)
 % Special data (for infinities and NaN) can be ‘@inf@’ or
 % ‘@nan@(n-char-sequence-opt)’, and if BASE <= 16, it can also be
 % ‘infinity’, ‘inf’, ‘nan’ or ‘nan(n-char-sequence-opt)’, all case
-% insensitive.  A ‘n-char-sequence-opt’ is a possibly empty string
-% containing only digits, Latin letters and the underscore (0, 1, 2,
-% ..., 9, a, b, ..., z, A, B, ..., Z, _).  Note: one has an optional
-% sign for all data, even NaN.  For example, ‘-@nAn@(This_Is_Not_17)’
-% is a valid representation for NaN in base 17.
+% insensitive with the rules of the C locale.  An
+% ‘n-char-sequence-opt’ is a possibly empty string containing only
+% digits, Latin letters and the underscore (0, 1, 2, ..., 9, a, b,
+% ..., z, A, B, ..., Z, _).  Note: one has an optional sign for all
+% data, even NaN.  For example, ‘-@nAn@(This_Is_Not_17)’ is a valid
+% representation for NaN in base 17.
 %
 
   [ret, endptr] = mex_apa_interface (1217, rop, nptr, base, rnd);

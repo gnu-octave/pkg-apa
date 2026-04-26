@@ -1,35 +1,41 @@
 function ret = mpfr_atan2 (rop, y, x, rnd)
 % ret = mpfr_atan2 (rop, y, x, rnd)
 %
-% Set ROP to the arc-tangent2 of Y and X, rounded in the direction
-% RND: if ‘x > 0’, ‘atan2(y, x) = atan(y/x)’; if ‘x < 0’, ‘atan2(y,
-% x) = sign(y)*(Pi - atan(abs(y/x)))’, thus a number from -Pi to Pi.
-% As for ‘atan’, in case the exact mathematical result is +Pi or -Pi,
-% its rounded result might be outside the function output range.
+% For ‘mpfr_atan2’, set ROP to the arc-tangent2 of Y and X, rounded
+% in the direction RND: if X > 0, then ‘atan2(Y, X)’ returns
+% atan(Y/X); if X < 0, then ‘atan2(Y, X)’ returns the sign of Y
+% multiplied by Pi − atan(abs(Y/X)), thus a number from −Pi to Pi.
+% As for ‘atan’, in case the exact mathematical result is +Pi or −Pi,
+% its rounded result might be outside the function output range.  The
+% function ‘mpfr_atan2u’ behaves similarly, except the result is
+% multiplied by U and divided by 2 Pi; and ‘mpfr_atan2pi’ is the same
+% as ‘mpfr_atan2u’ with U = 2.  For example, if U equals 360,
+% ‘mpfr_atan2u’ returns the arc-tangent in degrees, with values from
+% −180 to 180.
 %
-% ‘atan2(y, 0)’ does not raise any floating-point exception.  Special
-% values are handled as described in the ISO C99 and IEEE 754-2008
+% ‘atan2(Y, 0)’ does not raise any floating-point exception.  Special
+% values are handled as described in the ISO C99 and IEEE 754
 % standards for the ‘atan2’ function:
 % • ‘atan2(+0, -0)’ returns +Pi.
-% • ‘atan2(-0, -0)’ returns -Pi.
+% • ‘atan2(-0, -0)’ returns −Pi.
 % • ‘atan2(+0, +0)’ returns +0.
 % • ‘atan2(-0, +0)’ returns −0.
-% • ‘atan2(+0, x)’ returns +Pi for x < 0.
-% • ‘atan2(-0, x)’ returns -Pi for x < 0.
-% • ‘atan2(+0, x)’ returns +0 for x > 0.
-% • ‘atan2(-0, x)’ returns −0 for x > 0.
-% • ‘atan2(y, 0)’ returns -Pi/2 for y < 0.
-% • ‘atan2(y, 0)’ returns +Pi/2 for y > 0.
+% • ‘atan2(+0, X)’ returns +Pi for X < 0.
+% • ‘atan2(-0, X)’ returns −Pi for X < 0.
+% • ‘atan2(+0, X)’ returns +0 for X > 0.
+% • ‘atan2(-0, X)’ returns −0 for X > 0.
+% • ‘atan2(Y, 0)’ returns −Pi/2 for Y < 0.
+% • ‘atan2(Y, 0)’ returns +Pi/2 for Y > 0.
 % • ‘atan2(+Inf, -Inf)’ returns +3*Pi/4.
-% • ‘atan2(-Inf, -Inf)’ returns -3*Pi/4.
+% • ‘atan2(-Inf, -Inf)’ returns −3*Pi/4.
 % • ‘atan2(+Inf, +Inf)’ returns +Pi/4.
-% • ‘atan2(-Inf, +Inf)’ returns -Pi/4.
-% • ‘atan2(+Inf, x)’ returns +Pi/2 for finite x.
-% • ‘atan2(-Inf, x)’ returns -Pi/2 for finite x.
-% • ‘atan2(y, -Inf)’ returns +Pi for finite y > 0.
-% • ‘atan2(y, -Inf)’ returns -Pi for finite y < 0.
-% • ‘atan2(y, +Inf)’ returns +0 for finite y > 0.
-% • ‘atan2(y, +Inf)’ returns −0 for finite y < 0.
+% • ‘atan2(-Inf, +Inf)’ returns −Pi/4.
+% • ‘atan2(+Inf, X)’ returns +Pi/2 for finite X.
+% • ‘atan2(-Inf, X)’ returns −Pi/2 for finite X.
+% • ‘atan2(Y, -Inf)’ returns +Pi for finite Y > 0.
+% • ‘atan2(Y, -Inf)’ returns −Pi for finite Y < 0.
+% • ‘atan2(Y, +Inf)’ returns +0 for finite Y > 0.
+% • ‘atan2(Y, +Inf)’ returns −0 for finite Y < 0.
 %
 
   ret = mex_apa_interface (1108, rop, y, x, rnd);

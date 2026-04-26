@@ -2,9 +2,9 @@ function ret = mpfr_fits_intmax_p (op, rnd)
 % ret = mpfr_fits_intmax_p (op, rnd)
 %
 % Return non-zero if OP would fit in the respective C data type,
-% respectively ‘unsigned long’, ‘long’, ‘unsigned int’, ‘int’,
-% ‘unsigned short’, ‘short’, ‘uintmax_t’, ‘intmax_t’, when rounded to
-% an integer in the direction RND.  For instance, with the
+% respectively ‘unsigned long int’, ‘long int’, ‘unsigned int’,
+% ‘int’, ‘unsigned short’, ‘short’, ‘uintmax_t’, ‘intmax_t’, when
+% rounded to an integer in the direction RND.  For instance, with the
 % ‘MPFR_RNDU’ rounding mode on −0.5, the result will be non-zero for
 % all these functions.  For ‘MPFR_RNDF’, those functions return
 % non-zero when it is guaranteed that the corresponding conversion

@@ -1,24 +1,29 @@
 function ret = mpfr_pow_si (rop, op1, op2, rnd)
 % ret = mpfr_pow_si (rop, op1, op2, rnd)
 %
-% Set ROP to OP1 raised to OP2, rounded in the direction RND.
-% Special values are handled as described in the ISO C99 and
-% IEEE 754-2008 standards for the ‘pow’ function:
-% • ‘pow(±0, Y)’ returns plus or minus infinity for Y a negative
-% • ‘pow(±0, Y)’ returns plus infinity for Y negative and not an
-% • ‘pow(±0, Y)’ returns plus or minus zero for Y a positive odd
-% • ‘pow(±0, Y)’ returns plus zero for Y positive and not an odd
+% Set ROP to OP1 raised to OP2, rounded in the direction RND.  The
+% ‘mpfr_powr’ function corresponds to the ‘powr’ function from
+% IEEE 754, i.e., it computes the exponential of OP2 multiplied by
+% the logarithm of OP1.  The ‘mpfr_pown’ function is just an alias
+% for ‘mpfr_pow_sj’ (defined with ‘#define mpfr_pown mpfr_pow_sj’),
+% to follow the C2x function ‘pown’.  Special values are handled as
+% described in the ISO C99 and IEEE 754 standards for the ‘pow’
+% function:
+% • ‘pow(±0, Y)’ returns ±Inf for Y a negative odd integer.
+% • ‘pow(±0, Y)’ returns +Inf for Y negative and not an odd
+% • ‘pow(±0, Y)’ returns ±0 for Y a positive odd integer.
+% • ‘pow(±0, Y)’ returns +0 for Y positive and not an odd integer.
 % • ‘pow(-1, ±Inf)’ returns 1.
 % • ‘pow(+1, Y)’ returns 1 for any Y, even a NaN.
 % • ‘pow(X, ±0)’ returns 1 for any X, even a NaN.
 % • ‘pow(X, Y)’ returns NaN for finite negative X and finite
-% • ‘pow(X, -Inf)’ returns plus infinity for 0 < abs(x) < 1, and
-% • ‘pow(X, +Inf)’ returns plus zero for 0 < abs(x) < 1, and plus
-% • ‘pow(-Inf, Y)’ returns minus zero for Y a negative odd
-% • ‘pow(-Inf, Y)’ returns plus zero for Y negative and not an odd
-% • ‘pow(-Inf, Y)’ returns minus infinity for Y a positive odd
-% • ‘pow(-Inf, Y)’ returns plus infinity for Y positive and not an
-% • ‘pow(+Inf, Y)’ returns plus zero for Y negative, and plus
+% • ‘pow(X, -Inf)’ returns +Inf for 0 < abs(x) < 1, and +0 for
+% • ‘pow(X, +Inf)’ returns +0 for 0 < abs(x) < 1, and +Inf for
+% • ‘pow(-Inf, Y)’ returns −0 for Y a negative odd integer.
+% • ‘pow(-Inf, Y)’ returns +0 for Y negative and not an odd
+% • ‘pow(-Inf, Y)’ returns −Inf for Y a positive odd integer.
+% • ‘pow(-Inf, Y)’ returns +Inf for Y positive and not an odd
+% • ‘pow(+Inf, Y)’ returns +0 for Y negative, and +Inf for Y
 % Note: When 0 is of integer type, it is regarded as +0 by these
 % functions.  We do not use the usual limit rules in this case, as
 % these rules are not used for ‘pow’.

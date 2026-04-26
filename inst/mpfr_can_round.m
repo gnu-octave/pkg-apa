@@ -2,13 +2,14 @@ function ret = mpfr_can_round (b, err, rnd1, rnd2, prec)
 % ret = mpfr_can_round (b, err, rnd1, rnd2, prec)
 %
 % Assuming B is an approximation of an unknown number X in the
-% direction RND1 with error at most two to the power E(b)-ERR where
-% E(b) is the exponent of B, return a non-zero value if one is able
-% to round correctly X to precision PREC with the direction RND2
-% assuming an unbounded exponent range, and 0 otherwise (including
-% for NaN and Inf).  In other words, if the error on B is bounded by
-% two to the power K ulps, and B has precision PREC, you should give
-% ERR=PREC−K.  This function *does not modify* its arguments.
+% direction RND1 with error at most two to the power EXP(B) − ERR
+% where EXP(B) is the exponent of B, return a non-zero value if one
+% is able to round correctly X to precision PREC with the direction
+% RND2 assuming an unbounded exponent range, and 0 otherwise
+% (including for NaN and Inf).  In other words, if the error on B is
+% bounded by two to the power K ulps, and B has precision PREC, you
+% should give ERR = PREC − K.  This function *does not modify* its
+% arguments.
 %
 % If RND1 is ‘MPFR_RNDN’ or ‘MPFR_RNDF’, the error is considered to
 % be either positive or negative, thus the possible range is twice as
@@ -29,7 +30,7 @@ function ret = mpfr_can_round (b, err, rnd1, rnd2, prec)
 % any rounding mode RND2 (note that ‘MPFR_RNDZ’ below can be replaced
 % by any directed rounding mode):
 % Indeed, if RND2 is ‘MPFR_RNDN’, this will check if one can round to
-% PREC+1 bits with a directed rounding: if so, one can surely round
+% PREC + 1 bits with a directed rounding: if so, one can surely round
 % to nearest to PREC bits, and in addition one can determine the
 % correct ternary value, which would not be the case when B is near
 % from a value exactly representable on PREC bits.

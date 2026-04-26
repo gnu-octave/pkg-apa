@@ -1,8 +1,7 @@
 function mpfr_nextbelow (x)
 % mpfr_nextbelow (x)
 %
-% Equivalent to ‘mpfr_nexttoward’ where Y is plus infinity (resp.
-% minus infinity).
+% Equivalent to ‘mpfr_nexttoward’ where Y is +Inf (resp. −Inf).
 %
 
   mex_apa_interface (1168, x);

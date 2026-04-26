@@ -2,8 +2,9 @@ function ret = mpfr_sqrt (rop, op, rnd)
 % ret = mpfr_sqrt (rop, op, rnd)
 %
 % Set ROP to the square root of OP rounded in the direction RND.  Set
-% ROP to −0 if OP is −0, to be consistent with the IEEE 754 standard.
-% Set ROP to NaN if OP is negative.
+% ROP to −0 if OP is −0, to be consistent with the IEEE 754 standard
+% (thus this differs from ‘mpfr_rootn_ui’ and ‘mpfr_rootn_si’ with
+% N = 2).  Set ROP to NaN if OP is negative.
 %
 
   ret = mex_apa_interface (1042, rop, op, rnd);

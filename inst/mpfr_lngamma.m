@@ -3,10 +3,10 @@ function ret = mpfr_lngamma (rop, op, rnd)
 %
 % Set ROP to the value of the logarithm of the Gamma function on OP,
 % rounded in the direction RND.  When OP is 1 or 2, set ROP to +0 (in
-% all rounding modes).  When OP is an infinity or a nonpositive
+% all rounding modes).  When OP is an infinity or a non-positive
 % integer, set ROP to +Inf, following the general rules on special
-% values.  When −2K−1 < OP < −2K, K being a nonnegative integer, set
-% ROP to NaN.  See also ‘mpfr_lgamma’.
+% values.  When −2k − 1 < OP < −2k, k being a non-negative integer,
+% set ROP to NaN.  See also ‘mpfr_lgamma’.
 %
 
   ret = mex_apa_interface (1123, rop, op, rnd);

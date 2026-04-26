@@ -3,11 +3,12 @@ function ret = mpfr_agm (rop, op1, op2, rnd)
 %
 % Set ROP to the arithmetic-geometric mean of OP1 and OP2, rounded in
 % the direction RND.  The arithmetic-geometric mean is the common
-% limit of the sequences U_N and V_N, where U_0=OP1, V_0=OP2, U_(N+1)
-% is the arithmetic mean of U_N and V_N, and V_(N+1) is the geometric
-% mean of U_N and V_N.  If any operand is negative and the other one
-% is not zero, set ROP to NaN.  If any operand is zero and the other
-% one is finite (resp. infinite), set ROP to +0 (resp. NaN).
+% limit of the sequences u_n and v_n, where u_0 = OP1, v_0 = OP2,
+% u_(n+1) is the arithmetic mean of u_n and v_n, and v_(n+1) is the
+% geometric mean of u_n and v_n.  If any operand is negative and the
+% other one is not zero, set ROP to NaN.  If any operand is zero and
+% the other one is finite (resp. infinite), set ROP to +0 (resp.
+% NaN).
 %
 
   ret = mex_apa_interface (1137, rop, op1, op2, rnd);

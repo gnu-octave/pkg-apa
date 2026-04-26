@@ -7,6 +7,11 @@ function mpfr_free_str (varargin)
 % function (*note Memory Handling::).  The block is assumed to be
 % ‘strlen(STR)+1’ bytes.
 %
+% Note: It is allowed to modify the string allocated by
+% ‘mpfr_get_str’; but when ‘mpfr_free_str’ is called, its length must
+% be the same as the original one (unless it is guaranteed that the
+% unallocation function ignores its size parameter).
+%
 
   mex_apa_interface (1804, varargin{:});
 end

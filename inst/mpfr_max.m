@@ -4,7 +4,13 @@ function ret = mpfr_max (rop, op1, op2, rnd)
 % Set ROP to the minimum (resp. maximum) of OP1 and OP2.  If OP1 and
 % OP2 are both NaN, then ROP is set to NaN.  If OP1 or OP2 is NaN,
 % then ROP is set to the numeric value.  If OP1 and OP2 are zeros of
-% different signs, then ROP is set to −0 (resp. +0).
+% different signs, then ROP is set to −0 (resp. +0).  As usual, the
+% NaN flag is set only when the result is NaN, i.e., when both OP1
+% and OP2 are NaN.
+%
+% Note: These functions correspond to the minimumNumber and
+% maximumNumber operations of IEEE 754-2019 for the result.  But in
+% MPFR, the NaN flag is set only when _both_ operands are NaN.
 %
 
   ret = mex_apa_interface (1170, rop, op1, op2, rnd);

@@ -11,7 +11,7 @@ function ret = mpfr_prec_round (x, prec, rnd)
 % X is changed to PREC.
 %
 % Here is an example of how to use ‘mpfr_prec_round’ to implement
-% Newton’s algorithm to compute the inverse of A, assuming X is
+% Newton's algorithm to compute the inverse of A, assuming X is
 % already an approximation to N bits:
 %
 % Warning!  You must not use this function if X was initialized with

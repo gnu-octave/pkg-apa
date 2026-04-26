@@ -4,8 +4,9 @@ function ret = mpfr_mul_ui (rop, op1, op2, rnd)
 % Set ROP to OP1 times OP2 rounded in the direction RND.  When a
 % result is zero, its sign is the product of the signs of the
 % operands (for types having no signed zeros, 0 is considered
-% positive).  The same restrictions than for ‘mpfr_add_d’ apply to
-% ‘mpfr_mul_d’.
+% positive).  The same restrictions as for ‘mpfr_add_d’ apply to
+% ‘mpfr_mul_d’.  Note: when OP1 and OP2 are equal, use ‘mpfr_sqr’
+% instead of ‘mpfr_mul’ for better efficiency.
 %
 
   ret = mex_apa_interface (1351, rop, op1, op2, rnd);
