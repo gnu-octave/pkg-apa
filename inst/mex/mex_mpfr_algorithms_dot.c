@@ -35,18 +35,15 @@ mpfr_apa_dot (mpfr_ptr rop, mpfr_ptr a, mpfr_ptr b, uint64_t N,
 {
   int ret = 0;
 
-  #pragma omp parallel shared(ret)
   {
     int    r = 0;
     mpfr_t c;
     mpfr_init_set_d (c, 0.0, prec);
 
-    #pragma omp for
     for (uint64_t i = 0; i < N; i++)
       r |= mpfr_fma (c, a + i, b + i, c, rnd);
 
     // Sum `c` to `rop`, one thread at a time.
-    #pragma omp critical
     {
       ret |= (r | mpfr_add (rop, rop, c, rnd));
     }

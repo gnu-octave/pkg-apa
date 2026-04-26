@@ -124,7 +124,6 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
       // Pivoting: swap rows k and IPIV[k] in A.
       if (IPIV[k] != k)
         {
-        #pragma omp parallel for
           for (uint64_t j = 0; j < N; j++)
             mpfr_swap (&A[k + j * LDA], &A[IPIV[k] + j * LDA]);
         }
@@ -138,7 +137,6 @@ mpfr_apa_GETRF (uint64_t M, uint64_t N, mpfr_ptr A, uint64_t LDA,
                            rnd);
           ret_ptr[(i + k * LDA) * ret_stride] = (double) ret;
 
-          #pragma omp parallel for
           for (uint64_t j = k + 1; j < N; j++)
             {
               // A[i][j] = A[i][j] - A[i][k] * A[k][j];
@@ -243,7 +241,6 @@ mpfr_apa_GESV (uint64_t N, uint64_t NRHS, mpfr_ptr A, uint64_t LDA,
   // Stop if not successful.
   if (*INFO != 0)
     {
-    #pragma omp parallel for
       for (uint64_t j = 0; j < NRHS; j++)
         for (uint64_t i = 0; i < N; i++)
           mpfr_set_nan (&B[i + j * LDB]);

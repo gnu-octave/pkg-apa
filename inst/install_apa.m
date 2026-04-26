@@ -1,4 +1,4 @@
-function install_apa (cmd)
+function install_apa (varargin)
 % Install GMP and MPFR MEX interface.
 %
 %   'rebuild'  -  Rebuild and overwrite the MEX interface.
@@ -9,18 +9,14 @@ function install_apa (cmd)
 %    ans = 6.3.0
 %
 %    >> mpfr_get_version ()
-%    ans = 4.2.1
+%    ans = 4.2.2
 %
-
-  if (nargin < 1)
-    cmd = '';
-  end
 
   [apa_dir, ~, ~] = fileparts (mfilename ('fullpath'));
 
   old_dir = cd (apa_dir);
 
-  if (strcmp (cmd, 'rebuild') || exist (['mex_apa_interface.', mexext()], 'file') ~= 3)
+  if (any (strcmp (varargin, 'rebuild')) || exist (['mex_apa_interface.', mexext()], 'file') ~= 3)
 
     cd (fullfile (apa_dir, 'mex'));
 
@@ -40,21 +36,6 @@ function install_apa (cmd)
       cflags = [cflags, {'-Xpreprocessor'}];
     end
     ldflags = {'-lmpfr', '-lgmp'};
-    
-    
-    % Set OpenMP library
-    cflags = [cflags, {'-fopenmp'}];
-    if (exist ('OCTAVE_VERSION', 'builtin') == 5)
-      if (ismac ())
-        ldflags = [ldflags, {'-lomp'}];
-      else
-        ldflags = [ldflags, {'-lgomp'}];
-      end
-    else
-      % Matlab crashes when `gomp` is linked, use omp shipped with Matlab.
-      matlab_lib_path = fullfile (matlabroot (), 'sys', 'os', computer ('arch'));
-      ldflags = [ldflags, {['-L', matlab_lib_path], '-liomp5'}];
-    end
 
 
     try

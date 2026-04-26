@@ -108,7 +108,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         MEX_MPFR_PREC_T (2, prec);
         DBG_PRINTF ("cmd[mpfr_init2]: [%d:%d] (prec = %d)\n",
                     idx.start, idx.end, (int) prec);
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&idx); i++)
           {
             mpfr_clear (&mpfr_data[(idx.start - 1) + i]);
@@ -122,7 +121,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         MEX_NARGINCHK (2);
         MEX_MPFR_T (1, idx);
         DBG_PRINTF ("cmd[mpfr_init]: [%d:%d]\n", idx.start, idx.end);
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&idx); i++)
           {
             mpfr_clear (&mpfr_data[(idx.start - 1) + i]);
@@ -153,7 +151,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         MEX_MPFR_PREC_T (2, prec);
         DBG_PRINTF ("cmd[mpfr_set_prec]: [%d:%d] (prec = %d)\n",
                     idx.start, idx.end, (int) prec);
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&idx); i++)
           mpfr_set_prec (&mpfr_data[(idx.start - 1) + i], prec);
         return;
@@ -420,7 +417,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         mpfr_prec_t (*fcn)(const mpfr_t) = ((cmd_code == 1004) ? mpfr_get_prec
                                             : mpfr_min_prec);
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&idx); i++)
           plhs_0_pr[i] = (double) fcn (&mpfr_data[(idx.start - 1) + i]);
         return;
@@ -462,7 +458,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         else
           MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&idx); i++)
           plhs_0_pr[i] = (double) fcn (&mpfr_data[(idx.start - 1) + i]);
         return;
@@ -486,7 +481,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         else
           MEX_FCN_ERR ("cmd[%d]: Bad operator.\n", cmd_code);
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&idx); i++)
           fcn (&mpfr_data[(idx.start - 1) + i]);
         return;
@@ -526,7 +520,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   exp_stride = ((expM * expN) == 1) ? 0 : 1;
         if (cmd_code == 1007)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_set_ui_2exp (
                 rop_ptr + i, (unsigned long) op_ptr[i * op_stride],
@@ -534,7 +527,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else if (cmd_code == 1008)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_set_si_2exp (
                 rop_ptr + i, (long) op_ptr[i * op_stride],
@@ -542,7 +534,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else if (cmd_code == 1320)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_set_uj_2exp (
                 rop_ptr + i, (uintmax_t) op_ptr[i * op_stride],
@@ -550,7 +541,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_set_sj_2exp (
                 rop_ptr + i, (intmax_t) op_ptr[i * op_stride],
@@ -658,7 +648,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         double *sign_ptr    = mxGetPr (prhs[2]);
         size_t  sign_stride = ((signM * signN) == 1) ? 0 : 1;
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&idx); i++)
           fcn (&mpfr_data[(idx.start - 1) + i],
                (int) sign_ptr[i * sign_stride]);
@@ -678,14 +667,12 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
 
         if (cmd_code == 1013)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&x); i++)
               mpfr_swap (&mpfr_data[x.start - 1 + i],
                          &mpfr_data[y.start - 1 + i]);
           }
         else
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&x); i++)
               mpfr_nexttoward (&mpfr_data[x.start - 1 + i],
                                &mpfr_data[y.start - 1 + i]);
@@ -709,7 +696,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         double *ret_ptr    = mxGetPr (plhs[0]);
         size_t  ret_stride = (nlhs) ? 1 : 0;
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           {
             mpfr_clear (&mpfr_data[(rop.start - 1) + i]);
@@ -742,7 +728,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         plhs[0] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
                                          mxREAL);
         double *ret_ptr = mxGetPr (plhs[0]);
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&op); i++)
           ret_ptr[i] =
             (double) mpfr_get_d (&mpfr_data[(op.start - 1) + i], rnd);
@@ -764,7 +749,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
                                          mxREAL);
         double *ret_ptr = mxGetPr (plhs[0]);
         double *exp_ptr = mxGetPr (plhs[1]);
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&op); i++)
           {
             long exp = 0;
@@ -795,7 +779,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
                                          mxREAL);
         double *ret_ptr = mxGetPr (plhs[0]);
         double *exp_ptr = mxGetPr (plhs[1]);
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&y); i++)
           {
             mpfr_exp_t exp = 0;
@@ -834,7 +817,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t  op1_stride = (op1Dim == 1) ? 0 : 1;
         size_t  op2_stride = (op2Dim == 1) ? 0 : 1;
 
-        #pragma omp parallel for
         for (size_t i = 0; i < maxDim; i++)
           ret_ptr[i] = (double) mpfr_get_str_ndigits (
             (int) op1_ptr[i * op1_stride],
@@ -880,14 +862,12 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
 
         if (cmd_code < 1310)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_set_d (
                 &mpfr_data[(rop.start - 1) + i], op_pr[i * op_stride], rnd);
           }
         else
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               {
                 mpfr_clear (&mpfr_data[(rop.start - 1) + i]);
@@ -990,7 +970,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         plhs[0] = mxCreateNumericMatrix (length (&op), 1, mxDOUBLE_CLASS,
                                          mxREAL);
         double *ret_ptr = mxGetPr (plhs[0]);
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&op); i++)
           ret_ptr[i] = (double) fcn (&mpfr_data[(op.start - 1) + i], rnd);
         return;
@@ -1073,7 +1052,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op1_stride = (length (&op1) == 1) ? 0 : 1;
         size_t   op2_stride = (length (&op2) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] =
             (double) fcn (rop_ptr + i, op1_ptr + (i * op1_stride),
@@ -1120,7 +1098,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         mpfr_ptr op_ptr     = &mpfr_data[op.start - 1];
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op_stride  = (length (&op) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&sop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (sop_ptr + i, cop_ptr + i,
                                                   op_ptr + (i * op_stride),
@@ -1179,7 +1156,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         double * op2_ptr    = mxGetPr (prhs[3]);
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] =
             (double) fcn (rop_ptr + i, op1_ptr + i, op2_ptr[i * op2_stride],
@@ -1224,7 +1200,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   op2_stride = (length (&op2) == 1) ? 0 : 1;
         if ((1343 <= cmd_code) && (cmd_code <= 1345))
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_d_sub (rop_ptr + i,
                                                              op1_ptr[i *
@@ -1235,7 +1210,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else if ((1363 <= cmd_code) && (cmd_code <= 1365))
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_d_div (rop_ptr + i,
                                                              op1_ptr[i *
@@ -1246,7 +1220,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else if (cmd_code == 1097)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_ui_pow (rop_ptr + i,
                                                               (unsigned long int) op1_ptr[
@@ -1257,7 +1230,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else if (cmd_code == 1133)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_jn (rop_ptr + i,
                                                           (long) op1_ptr[i *
@@ -1268,7 +1240,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else if (cmd_code == 1136)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < length (&rop); i++)
               ret_ptr[i * ret_stride] = (double) mpfr_yn (rop_ptr + i,
                                                           (long) op1_ptr[i *
@@ -1313,7 +1284,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op1_stride = ((op1M * op1N) == 1) ? 0 : 1;
         size_t   op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) mpfr_ui_pow_ui (rop_ptr + i,
                                                              (unsigned long int) op1_ptr[
@@ -1501,7 +1471,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         mpfr_ptr rop_ptr    = &mpfr_data[rop.start - 1];
         mpfr_ptr op_ptr     = &mpfr_data[op.start - 1];
         size_t   ret_stride = (nlhs) ? 1 : 0;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (rop_ptr + i, op_ptr + i, rnd);
         return;
@@ -1542,7 +1511,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         double * op_ptr     = mxGetPr (prhs[2]);
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op_stride  = ((opM * opN) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (rop_ptr + i,
                                                   (unsigned long int) op_ptr[i *
@@ -1593,7 +1561,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op1_stride = (length (&op1) == 1) ? 0 : 1;
         size_t   op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (rop_ptr + i,
                                                   op1_ptr + (i * op1_stride),
@@ -1643,7 +1610,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op1_stride = (length (&op1) == 1) ? 0 : 1;
         size_t   op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (rop_ptr + i,
                                                   op1_ptr + (i * op1_stride),
@@ -1732,7 +1698,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   op1_stride = (length (&op1) == 1) ? 0 : 1;
         size_t   op2_stride = (length (&op2) == 1) ? 0 : 1;
         size_t   op3_stride = (length (&op3) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (rop_ptr + i,
                                                   op1_ptr + (i * op1_stride),
@@ -1782,7 +1747,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   op2_stride = (length (&op2) == 1) ? 0 : 1;
         size_t   op3_stride = (length (&op3) == 1) ? 0 : 1;
         size_t   op4_stride = (length (&op4) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (rop_ptr + i,
                                                   op1_ptr + (i * op1_stride),
@@ -1818,7 +1782,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         mpfr_ptr rop_ptr = &mpfr_data[rop.start - 1];
 
         mpfr_ptr *tab_ptr = (mpfr_ptr *) mxMalloc (n * sizeof(mpfr_ptr *));
-        #pragma omp parallel for
         for (size_t i = 0; i < n; i++)
           tab_ptr[i] = mpfr_data + tab.start - 1 + i;
 
@@ -1858,7 +1821,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
 
         mpfr_ptr *a_ptr = (mpfr_ptr *) mxMalloc (n * sizeof(mpfr_ptr *));
         mpfr_ptr *b_ptr = (mpfr_ptr *) mxMalloc (n * sizeof(mpfr_ptr *));
-        #pragma omp parallel for
         for (size_t i = 0; i < n; i++)
           {
             a_ptr[i] = mpfr_data + a.start - 1 + i;
@@ -1931,7 +1893,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op1_stride = (length (&op1) == 1) ? 0 : 1;
         size_t   op2_stride = (length (&op2) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < max_length; i++)
           ret_ptr[i * ret_stride] = (double) fcn (op1_ptr + (i * op1_stride),
                                                   op2_ptr + (i * op2_stride));
@@ -1964,14 +1925,12 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
         if (cmd_code == 1064)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_d (
                 op1_ptr + (i * op1_stride), op2_ptr[i * op2_stride]);
           }
         else if (cmd_code == 1034)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_ui (
                 op1_ptr + (i * op1_stride),
@@ -1979,14 +1938,12 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else if (cmd_code == 1037)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_si (
                 op1_ptr + (i * op1_stride), (long) op2_ptr[i * op2_stride]);
           }
         else if (cmd_code == 1035)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_si (
                 op1_ptr + (i * op1_stride),
@@ -1999,7 +1956,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
             MEX_FCN_ERR ("cmd[%d]: Not supported in MPFR %s.\n",
                          cmd_code, MPFR_VERSION_STRING);
           #else
-            #pragma omp parallel for
             for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmpabs_ui (
                 op1_ptr + (i * op1_stride),
@@ -2033,7 +1989,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   op2_stride = ((op2M * op2N) == 1) ? 0 : 1;
         if (cmd_code == 1065)
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_ui_2exp (
                 op1_ptr + (i * op1_stride),
@@ -2041,7 +1996,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
           }
         else
           {
-            #pragma omp parallel for
             for (size_t i = 0; i < max_length; i++)
               ret_ptr[i * ret_stride] = (double) mpfr_cmp_si_2exp (
                 op1_ptr + (i * op1_stride), (long int) op2_ptr[i * op2_stride],
@@ -2070,7 +2024,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         mpfr_ptr rop_ptr   = &mpfr_data[rop.start - 1];
         mpfr_ptr op_ptr    = &mpfr_data[op.start - 1];
         size_t   op_stride = (length (&op) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           {
             int signp = 0;
@@ -2109,7 +2062,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         double *ret_ptr    = mxGetPr (plhs[0]);
         size_t  ret_stride = (nlhs) ? 1 : 0;
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (&mpfr_data[rop.start - 1 + i],
                                                   rnd);
@@ -2149,7 +2101,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         double *ret_ptr    = mxGetPr (plhs[0]);
         size_t  ret_stride = (nlhs) ? 1 : 0;
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) fcn (&mpfr_data[rop.start - 1 + i],
                                                   &mpfr_data[op.start - 1 + i]);
@@ -2192,7 +2143,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   x_stride   = (length (&x) == 1) ? 0 : 1;
         size_t   y_stride   = (length (&y) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&x); i++)
           {
             long q;
@@ -2220,7 +2170,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         mpfr_ptr x_ptr      = &mpfr_data[x.start - 1];
         size_t   ret_stride = (nlhs) ? 1 : 0;
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&x); i++)
           ret_ptr[i * ret_stride] = (double) mpfr_prec_round (x_ptr + i, prec,
                                                               rnd);
@@ -2245,7 +2194,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         mpfr_ptr b_ptr      = &mpfr_data[b.start - 1];
         size_t   ret_stride = (nlhs) ? 1 : 0;
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&b); i++)
           ret_ptr[i * ret_stride] = (double) mpfr_can_round (b_ptr + i, err,
                                                              rnd1, rnd2, prec);
@@ -2263,7 +2211,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         double * ret_ptr = mxGetPr (plhs[0]);
         mpfr_ptr x_ptr   = &mpfr_data[x.start - 1];
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&x); i++)
           ret_ptr[i] = (double) mpfr_get_exp (x_ptr + i);
         return;
@@ -2283,7 +2230,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         mpfr_ptr x_ptr      = &mpfr_data[x.start - 1];
         size_t   ret_stride = (nlhs) ? 1 : 0;
 
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&x); i++)
           ret_ptr[i * ret_stride] = (double) mpfr_set_exp (x_ptr + i, e);
         return;
@@ -2315,7 +2261,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   op_stride  = (length (&op) == 1) ? 0 : 1;
         size_t   s_stride   = ((sM * sN) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&rop); i++)
           ret_ptr[i * ret_stride] = (double) mpfr_setsign (rop_ptr + i,
                                                            op_ptr +
@@ -2371,7 +2316,6 @@ mex_mpfr_interface (int nlhs, mxArray *plhs[],
         double * t_ptr      = mxGetPr (prhs[2]);
         size_t   ret_stride = (nlhs) ? 1 : 0;
         size_t   t_stride   = ((tM * tN) == 1) ? 0 : 1;
-        #pragma omp parallel for
         for (size_t i = 0; i < length (&x); i++)
           ret_ptr[i * ret_stride] = (double) fcn (x_ptr + i,
                                                   (int) t_ptr[i * t_stride],

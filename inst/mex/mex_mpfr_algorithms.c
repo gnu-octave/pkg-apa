@@ -173,16 +173,13 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         uint64_t K_save = ((INFO == 0) ? K : (uint64_t) INFO);
 
         // Copy A to U.
-        #pragma omp parallel for
         for (size_t j = 0; j < N; j++)
           for (size_t i = 0; (i < (j + 1)) && (i < K_save); i++)
             mpfr_set (&U_ptr[i + j * K], &A_ptr[i + j * M], rnd);
 
         // Copy A to L.
-        #pragma omp parallel for
         for (size_t j = 0; j < K; j++)
           mpfr_set_ui (&L_ptr[j + j * M], 1, rnd);  // Set diagonal 1.
-        #pragma omp parallel for
         for (size_t j = 0; j < K_save; j++)
           for (size_t i = j + 1; i < M; i++)
             mpfr_set (&L_ptr[i + j * M], &A_ptr[i + j * M], rnd);
@@ -193,7 +190,6 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
             for (size_t i = 0; i < K_save; i++)
               if (IPIV[i] != i)
                 {
-                  #pragma omp parallel for
                   for (size_t j = 0; j < K; j++)
                     mpfr_swap (&L_ptr[i + j * M], &L_ptr[IPIV[i] + j * M]);
                 }
@@ -286,7 +282,6 @@ mex_mpfr_algorithms (int nlhs, mxArray *plhs[],
         double * ret_ptr = mxGetPr (plhs[0]);
         mpfr_ptr rop_ptr = &mpfr_data[rop.start - 1];
         mpfr_ptr op_ptr  = &mpfr_data[op.start - 1];
-        #pragma omp parallel for
         for (size_t j = 0; j < N; j++)
           {
             int ret = mpfr_set (rop_ptr + j, op_ptr + M * j, rnd);

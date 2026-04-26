@@ -73,7 +73,6 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
 
 
       case 3: // 1 omp for-loop ijk
-        #pragma omp parallel for
         for (uint64_t i = 0; i < M; i++)
           for (uint64_t j = 0; j < N; j++)
             {
@@ -89,7 +88,6 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
 
 
       case 4:  // 1 omp for-loop jik
-        #pragma omp parallel for
         for (uint64_t j = 0; j < N; j++)
           for (uint64_t i = 0; i < M; i++)
             {
@@ -105,10 +103,8 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
 
 
       case 5:  // 2 omp for-loops ijk
-        #pragma omp parallel for
         for (uint64_t i = 0; i < M; i++)
           {
-            #pragma omp parallel for
             for (uint64_t j = 0; j < N; j++)
               {
                 int ret = 0;
@@ -123,10 +119,8 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
         break;
 
       case 6:  // 2 omp for-loops jik
-        #pragma omp parallel for
         for (uint64_t j = 0; j < N; j++)
           {
-            #pragma omp parallel for
             for (uint64_t i = 0; i < M; i++)
               {
                 int ret = 0;
@@ -146,7 +140,6 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
         // If A is a M=1 x K vector, no copy and i-loop necessary.
         if (M == 1)
           {
-            #pragma omp parallel for
             for (uint64_t j = 0; j < N; j++)
               ret_ptr[j * ret_stride] = (double) mpfr_apa_dot (C + j,
                                                                A, B + (K * j),
@@ -156,7 +149,6 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
 
         // Memory for row i of matrix A.
         mpfr_ptr Ai = (mpfr_ptr) mxMalloc (K * sizeof(mpfr_t));
-        #pragma omp parallel for
         for (uint64_t k = 0; k < K; k++)
           mpfr_init2 (Ai + k, prec);
 
@@ -164,11 +156,9 @@ mpfr_apa_mmm (mpfr_ptr C, mpfr_ptr A, mpfr_ptr B,
         for (uint64_t i = 0; i < M; i++)
           {
             // Copy row Ai.
-            #pragma omp parallel for
             for (uint64_t k = 0; k < K; k++)
               mpfr_set (Ai + k, A + i + (M * k), rnd);
 
-            #pragma omp parallel for
             for (uint64_t j = 0; j < N; j++)
               ret_ptr[((M * j) + i) * ret_stride] = (double) mpfr_apa_dot (
                 C + (M * j) + i, Ai, B + (K * j), K, prec, rnd);
