@@ -1,6 +1,6 @@
 name: apa
-version: 1.2.0
-date: 2026-04-26
+version: 1.2.1
+date: 2026-05-02
 author: Kai T. Ohlhus <k.ohlhus@gmail.com>
 maintainer: Kai T. Ohlhus <k.ohlhus@gmail.com>
 title: Arbitrary Precision Arithmetic via MPFR interface for Octave/Matlab.
