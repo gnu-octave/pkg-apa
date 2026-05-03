@@ -32,10 +32,16 @@ function install_apa (varargin)
 
     % Set cflags and ldflags according to OS and Octave/Matlab.
     cflags = {'-Wall', '-Wextra'};
-    if (ismac ())
-      cflags = [cflags, {'-Xpreprocessor'}];
-    end
     ldflags = {'-lmpfr', '-lgmp'};
+    if ismac()
+        cflags = [cflags, {'-Xpreprocessor'}];
+        [has_brew, brew_path] = system ('brew --prefix');
+        if (has_brew == 0)  % return code 0 means brew command is found
+            brew_path = deblank (brew_path);
+            cflags = [cflags(:)', {['-I', fullfile(brew_path, 'include')]}];
+            ldflags = [{['-L', fullfile(brew_path, 'lib')]}, ldflags(:)'];
+        end
+    end
 
 
     try
