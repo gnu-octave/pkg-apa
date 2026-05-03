@@ -34,7 +34,6 @@ function install_apa (varargin)
     cflags = {'-Wall', '-Wextra'};
     ldflags = {'-lmpfr', '-lgmp'};
     if ismac()
-        cflags = [cflags, {'-Xpreprocessor'}];
         [has_brew, brew_path] = system ('brew --prefix');
         if (has_brew == 0)  % return code 0 means brew command is found
             brew_path = deblank (brew_path);
